@@ -79,7 +79,6 @@ RandomCarPool = {
 	"sportsB",
 	"SUVA",
 	"taxiA",
-	"tt",
 	"votetruc",
 	"wagonA",
 	"wiggu_v",
