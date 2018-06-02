@@ -32,7 +32,12 @@ if Midx ~= nil then
 			-- Because we create a "forced vehicle", delete stages before the reset as it automatically respawns you to the reset point anyway
 			-- (So objectives like "leave office" or "head to car" don't work)
 			-- Also look if we delete a stage which adds a vehicle, then replicate that. (TODO: Is this all?)
-			Match = string.match(NewFile, "AddStage%(.-%);.*(AddStageVehicle%(.-%);).*AddStage%((.-)%);%s*\n%s*RESET_TO_HERE%(%);");
+			
+			-- Take a substring because we don't care about anything after RESET_TO_HERE (which appears once) and if we don'than
+			-- Wolves takes AGES to (fail to) match the regex below. 
+			ResetIndex = string.find(File,"RESET_TO_HERE%(%)")
+			EarlySubstring = string.sub(File, 1, ResetIndex+15)			
+			Match = string.match(EarlySubstring, "AddStage%(.-%);.*(AddStageVehicle%(.-%);).*AddStage%(.-%);%s*\n%s*RESET_TO_HERE%(%);")
 			FakeStage = ""
 			if Match ~= nil then
 				FakeStage = "AddStage();\n" .. Match .. "\nAddObjective(\"timer\");\nSetDurationTime(1);\nCloseObjective();\nCloseStage();\n"
