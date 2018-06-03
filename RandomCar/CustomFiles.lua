@@ -91,16 +91,12 @@ RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
 
--- Count number of random cars
-RandomCarPoolN = 0
-for i in ipairs(RandomCarPool) do
-	RandomCarPoolN = RandomCarPoolN + 1
+-- Add the husk unless disabled
+if not GetSetting("NoHusk") then
+	table.insert(RandomCarPool, "huskA")
 end
 
--- Add the husk unless disabled
-if GetSetting("NoHusk") == false then
-	RandomCarPool[RandomCarPoolN] = "huskA"
-	RandomCarPoolN = RandomCarPoolN + 1
-end
+-- Count number of random cars
+RandomCarPoolN = #RandomCarPool
 
 print("Random Cars: Using " .. RandomCarPoolN .. " cars")
