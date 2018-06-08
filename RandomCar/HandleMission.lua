@@ -11,7 +11,7 @@ local LevelInit = string.match(Path, "leveli.mfk")
 
 if Midx ~= nil then
 	-- The random car should have been predecided by the mission load script
-	
+	File = string.gsub(File, "//.-\n", "")
 	local NewFile = ""
 	local ForcedMission = false
 	local Spawn, Match
