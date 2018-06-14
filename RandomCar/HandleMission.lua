@@ -56,6 +56,9 @@ if Midx ~= nil then
 		-- Debugging
 		print("Randomising car for mission " ..  Midx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
 	end
+	if GetSetting("SkipFMVs") then
+		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\nSetDurationTime(1);\nCloseObjective();", 1)
+	end
 	Output(NewFile)
 elseif Lidx ~= nil then
 	if GetSetting("RandomPlayerVehicles") then
@@ -88,9 +91,6 @@ elseif Lidx ~= nil then
 		end
 		-- Debugging
 		print("Randomising car for mission (load) " ..  Lidx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
-	end
-	if GetSetting("SkipFMVs") then
-		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\nSetDurationTime(1);\nCloseObjective();", 1)
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
