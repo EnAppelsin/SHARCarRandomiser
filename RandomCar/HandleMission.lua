@@ -89,6 +89,9 @@ elseif Lidx ~= nil then
 		-- Debugging
 		print("Randomising car for mission (load) " ..  Lidx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
 	end
+	if GetSetting("SkipFMVs") then
+		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\nSetDurationTime(1);\nCloseObjective();", 1)
+	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
 	if GetSetting("RandomPlayerVehicles") then
@@ -110,6 +113,9 @@ elseif SDInit ~= nil then
 		if string.match(NewFile, "locked") then
 			NewFile = string.gsub(NewFile, "AddStage%(\"locked\".-%);(.-)CloseStage%(%);%s*AddStage%(.-%);.-CloseStage%(%);", "AddStage();%1CloseStage();", 1);
 		end
+	end
+	if GetSetting("SkipFMVs") then
+		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\nSetDurationTime(1);\nCloseObjective();", 1)
 	end
 	Output(NewFile)
 else
