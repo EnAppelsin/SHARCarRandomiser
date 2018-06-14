@@ -64,6 +64,7 @@ RandomCarPool = {
 	"oblit_v",
 	"otto_v",
 	"pickupA",
+	"pizza",
 	"plowk_v",
 	"redbrick",
 	"rocke_v",
