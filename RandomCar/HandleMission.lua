@@ -107,6 +107,16 @@ elseif LevelInit ~= nil then
 		NewFile = string.gsub(NewFile, "InitLevelPlayerVehicle%(%s*\".-\"%s*,%s*\"(.-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
 		print("Randomising car for level -> " .. RandomCarName)
 	end
+	if GetSetting("RandomPedestrians") then
+		local Peds = ""
+		NewFile = string.gsub(NewFile, "AddPed%(%s*\".-\"%s*,%s*(%d)%s*%);", function(rate)
+			local ped = math.random(RandomCharPoolN)
+			local pedName = RandomCharPool[ped]
+			Peds = Peds .. pedName .. ", "
+			return "AddPed(" .. pedName .. ", " .. rate .. ");"
+		end)
+		print("Random pedestrians for level -> " .. Peds)
+	end
 	Output(NewFile)
 elseif SDInit ~= nil then
 	if GetSetting("SkipLocks") then
