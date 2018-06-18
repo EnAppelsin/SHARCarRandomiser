@@ -109,13 +109,6 @@ elseif LevelLoad ~= nil then
 		end
 		local Cars = ""
 		NewFile = string.gsub(NewFile, "SuppressDriver%(\"(.-)\"%);", "//SuppressDriver(%1)")
-		NewFile = string.gsub(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);", function(orig)
-			if orig == "huskA" then
-				return "LoadP3DFile(\"art\\cars\\" .. orig .. ".p3d\");"
-			else
-				return "//LoadP3DFile(\"art\\cars\\" .. orig .. ".p3d\");"
-			end
-		end)
 		for i = 1, 5 do
 			local car = math.random(#TmpCarPool)
 			local carName = TmpCarPool[car]
