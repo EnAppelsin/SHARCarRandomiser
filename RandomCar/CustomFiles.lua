@@ -207,6 +207,8 @@ RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
 
+TrafficCars = {}
+
 -- Add the husk unless disabled
 if not GetSetting("NoHusk") then
 	table.insert(RandomCarPool, "huskA")
