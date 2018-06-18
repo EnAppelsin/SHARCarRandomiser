@@ -86,11 +86,11 @@ RandomCarPool = {
 	"wiggu_v",
 	"willi_v",
 	"witchcar",
-	"zombi_v",
+	"zombi_v"
 }
 
--- CHAR LIST
-RandomCharPool = {
+-- PED LIST
+RandomPedPool = {
     "apu",
     "askinn",
     "a_amer",
@@ -206,7 +206,7 @@ RandomCharPool = {
 RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
-
+RandomChase = nil
 TrafficCars = {}
 
 -- Add the husk unless disabled
@@ -216,6 +216,6 @@ end
 
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
-RandomCharPoolN = #RandomCharPool
+RandomPedPoolN = #RandomPedPool
 
 print("Random Cars: Using " .. RandomCarPoolN .. " cars")

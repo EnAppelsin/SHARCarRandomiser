@@ -102,6 +102,7 @@ elseif LevelLoad ~= nil then
 		print("Randomising car for level (load) -> " .. RandomCarName)
 	end
 	if GetSetting("RandomTraffic") then
+		TrafficCars = {}
 		local TmpCarPool = {table.unpack(RandomCarPool)}
 		if not GetSetting("NoHusk") then
 			table.remove(TmpCarPool, #TmpCarPool)
@@ -109,7 +110,7 @@ elseif LevelLoad ~= nil then
 		local Cars = ""
 		NewFile = string.gsub(NewFile, "SuppressDriver%(\"(.-)\"%);", "//SuppressDriver(%1)")
 		NewFile = string.gsub(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);", function(orig)
-			if orig == "huskA" or orig == "cPolice" or orig == "cHears" then
+			if orig == "huskA" then
 				return "LoadP3DFile(\"art\\cars\\" .. orig .. ".p3d\");"
 			else
 				return "//LoadP3DFile(\"art\\cars\\" .. orig .. ".p3d\");"
@@ -122,11 +123,15 @@ elseif LevelLoad ~= nil then
 			table.insert(TrafficCars, carName)
 			Cars = Cars .. carName .. ", "
 		end
+		local chaseCar = math.random(#TmpCarPool)
+		RandomChase = TmpCarPool[chaseCar]
+		Cars = Cars .. RandomChase .. ", "
 		for i = 1, #TrafficCars do
 			local carName = TrafficCars[i]
 			NewFile = NewFile .. "\nLoadP3DFile(\"art\\cars\\" .. carName .. ".p3d\");"
 			--TODO: Only comment out suppress drivers for cars that are used
 		end
+		NewFile = NewFile .. "\nLoadP3DFile(\"art\\cars\\" .. RandomChase .. ".p3d\");"
 		print("Random traffic cars for level -> " .. Cars)
 	end
 	Output(NewFile)
@@ -137,7 +142,7 @@ elseif LevelInit ~= nil then
 	end
 	if GetSetting("RandomPedestrians") then
 		local Peds = ""
-		local TmpPedPool = {table.unpack(RandomCharPool)}
+		local TmpPedPool = {table.unpack(RandomPedPool)}
 		NewFile = string.gsub(NewFile, "AddPed%(%s*\".-\"%s*,%s*(%d)%s*%);", function(rate)
 			local ped = math.random(#TmpPedPool)
 			local pedName = TmpPedPool[ped]
@@ -148,6 +153,7 @@ elseif LevelInit ~= nil then
 		print("Random pedestrians for level -> " .. Peds)
 	end
 	if GetSetting("RandomTraffic") then
+		NewFile = string.gsub(NewFile, "CreateChaseManager%(%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
 		NewFile = string.gsub(NewFile, "CreateTrafficGroup", "//CreateTrafficGroup", 1)
 		NewFile = string.gsub(NewFile, "AddTrafficModel", "//AddTrafficModel")
 		NewFile = string.gsub(NewFile, "CloseTrafficGroup", "//CloseTrafficGroup", 1)
@@ -157,7 +163,6 @@ elseif LevelInit ~= nil then
 			NewFile = NewFile .. "\nAddTrafficModel( \"" .. carName .. "\",1 );"
 		end
 		NewFile = NewFile .. "\nCloseTrafficGroup( );"
-		TrafficCars = {}
 	end
 	Output(NewFile)
 elseif SDInit ~= nil then
