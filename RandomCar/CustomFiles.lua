@@ -203,11 +203,42 @@ RandomPedPool = {
     "zmale4"
 }
 
+-- DRIVER LIST
+CarDrivers = {}
+CarDrivers["apu"] = {"apu_v"}
+CarDrivers["bart"] = {"bart_v", "honor_v"}
+CarDrivers["cletus"] = {"cletu_v"}
+CarDrivers["cbg"] = {"comic_v"}
+CarDrivers["lisa"] = {"elect_v", "lisa_v"}
+CarDrivers["homer"] = {"famil_v", "homer_v"}
+CarDrivers["frink"] = {"frink_v"}
+CarDrivers["grandpa"] = {"gramp_v", "gramR_v"}
+CarDrivers["marge"] = {"marge_v"}
+CarDrivers["otto"] = {"otto_v"}
+CarDrivers["skinner"] = {"skinn_m1", "skinn_v"}
+CarDrivers["smithers"] = {"smith_v"}
+CarDrivers["snake"] = {"snake_v"}
+CarDrivers["wiggum"] = {"wiggu_v"}
+CarDrivers["zmale1"] = {"zombi_v"}
+
+-- CHAR LIST
+RandomCharPool = {
+	"apu",
+	"bart",
+	"homer",
+	"lisa",
+	"marge"
+}
+
+OrigChar = nil
+RandomChar = nil
 RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
+LastLevelMV = nil
 RandomChase = nil
 TrafficCars = {}
+MissionVehicles = {}
 
 -- Add the husk unless disabled
 if not GetSetting("NoHusk") then
@@ -219,3 +250,4 @@ RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
 
 print("Random Cars: Using " .. RandomCarPoolN .. " cars")
+print("Random Cars: Using " .. RandomPedPoolN .. " pedestrians")
