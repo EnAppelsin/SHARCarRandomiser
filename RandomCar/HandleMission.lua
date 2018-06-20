@@ -15,7 +15,18 @@ local SDInit = string.match(Path, "m%dsdi.mfk")
 -- Remove comments because there's A LOT of commented out stuff that can confuse the simple regexes below
 local NewFile = string.gsub(File, "//.-\r\n", "\r\n")
 
-if Midx ~= nil then
+if string.match(Path, "rewards.mfk") then
+	if GetSetting("SkipLocks") then
+		NewFile = string.gsub(NewFile, "BindReward%(%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"", function(name, fileName, rewardType, obtainType)
+			if rewardType == "car" then
+				return "BindReward(\"huskA\", \"art\\cars\\huskA.p3d\", \"" .. rewardType .. "\", \"" .. obtainType .. "\""
+			else
+				return "BindReward(\"" .. name .. "\", \"" .. fileName .. "\", \"" .. rewardType .. "\", \"" .. obtainType .. "\""
+			end
+		end)
+		Output(NewFile)
+	end
+elseif Midx ~= nil then
 	-- The random car should have been predecided by the mission load script
 	
 	if GetSetting("RandomPlayerVehicles") then
@@ -302,7 +313,4 @@ elseif SDLoad ~= nil then
 	end
 else
 	LastLevel = nil
-	-- Don't modify other scripts
-	--print("Script " .. Path)
-	Output(NewFile);
 end
