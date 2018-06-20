@@ -2,27 +2,78 @@
 local Path = "/GameData/" .. GetPath();
 local File = ReadFile(Path);
 
--- Only update the randomly spawned car
-if RandomCarName and string.match(Path, RandomCarName) then
+local function randomStats(data)
+	local mass = round(math.random() + math.random(0, 5000), 2)
+	local gasScale = round(math.random() + math.random(1, 10), 2)
+	local slipGasScale = round(math.random() + math.random(1, 10), 2)
+	local breakGasScale = round(math.random() + math.random(1, 10), 2)
+	local topSpeedKmh = round(math.random() + math.random(100, 4000), 2)
+	local maxWheelTurnAngle = round(math.random() + math.random(10, 50), 2)
+	local highSpeedSteeringDrop = round(math.random(), 2)
+	local tireGrip = round(math.random() + math.random(1, 10), 2)
+	local normalSteering = round(math.random() + math.random(50, 100), 2)
+	local slipSteering = round(math.random() + math.random(20, 100), 2)
+	local eBrakeEffect = round(math.random(), 2)
+	local slipSteeringNoEBreak = round(math.random() + math.random(20, 100), 2)
+	local slipEffectNoEBreak = round(math.random(), 2)
+	local hitPoints = round(math.random() + math.random(0, 15), 2)
+	local burnoutRange = round(math.random() / 2, 2)
+	local maxSpeedBurstTime = round(math.random() + math.random(1, 5), 2)
+	local donutTorque = round(math.random() + math.random(1, 20), 2)
+	data = string.gsub(data, "SetMass%(.-%);", "SetMass(" .. mass .. ");", 1)
+	data = string.gsub(data, "SetGasScale%(.-%);", "SetGasScale(" .. gasScale .. ");", 1)
+	data = string.gsub(data, "SetSlipGasScale%(.-%);", "SetSlipGasScale(" .. slipGasScale .. ");", 1)
+	data = string.gsub(data, "SetBrakeScale%(.-%);", "SetBrakeScale(" .. breakGasScale .. ");", 1)
+	data = string.gsub(data, "SetTopSpeedKmh%(.-%);", "SetTopSpeedKmh(" .. topSpeedKmh .. ");", 1)
+	data = string.gsub(data, "SetMaxWheelTurnAngle%(.-%);", "SetMaxWheelTurnAngle(" .. maxWheelTurnAngle .. ");", 1)
+	data = string.gsub(data, "SetHighSpeedSteeringDrop%(.-%);", "SetHighSpeedSteeringDrop(" .. highSpeedSteeringDrop .. ");", 1)
+	data = string.gsub(data, "SetTireGrip%(.-%);", "SetTireGrip(" .. tireGrip .. ");", 1)
+	data = string.gsub(data, "SetNormalSteering%(.-%);", "SetNormalSteering(" .. normalSteering .. ");", 1)
+	data = string.gsub(data, "SetSlipSteering%(.-%);", "SetSlipSteering(" .. slipSteering .. ");", 1)
+	data = string.gsub(data, "SetEBrakeEffect%(.-%);", "SetEBrakeEffect(" .. eBrakeEffect .. ");", 1)
+	data = string.gsub(data, "SetSlipSteeringNoEBrake%(.-%);", "SetSlipSteeringNoEBrake(" .. slipSteeringNoEBreak .. ");", 1)
+	data = string.gsub(data, "SetSlipEffectNoEBrake%(.-%);", "SetSlipEffectNoEBrake(" .. slipEffectNoEBreak .. ");", 1)
+	data = string.gsub(data, "SetHitPoints%(.-%);", "SetHitPoints(" .. hitPoints .. ");", 1)
+	data = string.gsub(data, "SetBurnoutRange%(.-%);", "SetBurnoutRange(" .. burnoutRange .. ");", 1)
+	data = string.gsub(data, "SetMaxSpeedBurstTime%(.-%);", "SetMaxSpeedBurstTime(" .. maxSpeedBurstTime .. ");", 1)
+	data = string.gsub(data, "SetDonutTorque%(.-%);", "SetDonutTorque(" .. donutTorque .. ");", 1)
+	return data 
+end
 
-	if GetSetting("BoostHP") then
+-- Only update the randomly spawned car
+if GetSetting("RandomPlayerVehicles") and RandomCarName and string.match(Path, RandomCarName) then
+
+	if GetSetting("RandomStats") then	
+		File = randomStats(File)
+	elseif GetSetting("BoostHP") then
 		HP = string.match(File, "SetHitPoints%((.-)%);")
 		if HP and tonumber(HP) < 0.8 then
 			File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.8);", 1)
 			print("Boosting HP up from " .. HP .. " to 0.8 for " .. Path)
 		end
 	end
-	
 end
 
 if GetSetting("RandomMissionVehicles") and MissionVehicles then
 	for k,v in pairs(MissionVehicles) do
 		if string.match(Path, v) then
-			HP = string.match(File, "SetHitPoints%((.-)%);")
-			if HP and tonumber(HP) < 0.6 then
-				File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
-				print("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+			if GetSetting("RandomStats") then
+				File = randomStats(File)
+			else
+				HP = string.match(File, "SetHitPoints%((.-)%);")
+				if HP and tonumber(HP) < 0.6 then
+					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
+					print("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+				end
 			end
+		end
+	end
+end
+
+if GetSetting("RandomStats") and GetSetting("RandomTraffic") and TrafficCars and #TrafficCars > 0 then
+	for i = 1, #TrafficCars do
+		if string.match(Path, TrafficCars[i]) then
+			File = randomStats(File)
 		end
 	end
 end
