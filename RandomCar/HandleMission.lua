@@ -80,7 +80,6 @@ if Midx ~= nil then
 			NewFile = string.gsub(NewFile, "SetCondTargetVehicle%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "AddDriver%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
-			--NewFile = string.gsub(NewFile, "\"" .. k .. "\"", "\"" .. v .. "\"")
 		end
 		local TmpDriverPool = {}
 		for k in pairs(CarDrivers) do
@@ -98,7 +97,7 @@ if Midx ~= nil then
 			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
 		end)
 	end
-	--print(NewFile)
+	
 	Output(NewFile)
 elseif Lidx ~= nil then
 	if GetSetting("RandomPlayerVehicles") then
@@ -142,16 +141,14 @@ elseif Lidx ~= nil then
 					table.remove(TmpCarPool, #TmpCarPool)
 				end
 				for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-					--if orig ~= "cVan" then --Crashes and idk why
-						local car = math.random(#TmpCarPool)
-						local carName = TmpCarPool[car]
-						table.remove(TmpCarPool, car)
-						MissionVehicles[orig] = carName
-						print("Randomising " .. orig .. " to " .. carName)
-					--end
+					local car = math.random(#TmpCarPool)
+					local carName = TmpCarPool[car]
+					table.remove(TmpCarPool, car)
+					MissionVehicles[orig] = carName
+					print("Randomising " .. orig .. " to " .. carName)
 				end
 				for orig,var2,carType in string.gmatch(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-					if carType == "AI" then --Crashes and idk why and var2 ~= "cvan" 
+					if carType == "AI" then
 						local car = math.random(#TmpCarPool)
 						local carName = TmpCarPool[car]
 						table.remove(TmpCarPool, car)
@@ -168,16 +165,14 @@ elseif Lidx ~= nil then
 				table.remove(TmpCarPool, #TmpCarPool)
 			end
 			for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-				--if orig ~= "cVan" then --Crashes and idk why
-					local car = math.random(#TmpCarPool)
-					local carName = TmpCarPool[car]
-					table.remove(TmpCarPool, car)
-					MissionVehicles[orig] = carName
-					print("Randomising " .. orig .. " to " .. carName)
-				--end
+				local car = math.random(#TmpCarPool)
+				local carName = TmpCarPool[car]
+				table.remove(TmpCarPool, car)
+				MissionVehicles[orig] = carName
+				print("Randomising " .. orig .. " to " .. carName)
 			end
 			for orig,var2,carType in string.gmatch(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-				if carType == "AI" then --Crashes and idk why and var2 ~= "cvan" 
+				if carType == "AI" then
 					local car = math.random(#TmpCarPool)
 					local carName = TmpCarPool[car]
 					table.remove(TmpCarPool, car)
@@ -191,7 +186,6 @@ elseif Lidx ~= nil then
 			NewFile = string.gsub(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"" .. k .. "\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
 			NewFile = string.gsub(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"cvan\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
 		end
-		--print(NewFile)
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
@@ -222,7 +216,7 @@ elseif LevelLoad ~= nil then
 		for i = 1, #TrafficCars do
 			local carName = TrafficCars[i]
 			NewFile = NewFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. carName .. ".p3d\");"
-		end		
+		end
 		NewFile = string.gsub(NewFile, "SuppressDriver%(\"(.-)\"%);", "//SuppressDriver(\"%1\");")
 		print("Random traffic cars for level -> " .. Cars)
 	end
