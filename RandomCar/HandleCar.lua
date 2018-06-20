@@ -43,7 +43,7 @@ end
 -- Only update the randomly spawned car
 if GetSetting("RandomPlayerVehicles") and RandomCarName and string.match(Path, RandomCarName) then
 
-	if GetSetting("RandomStats") then	
+	if GetSetting("RandomStats") and RandomCarName ~= "huskA" then	
 		File = randomStats(File)
 	elseif GetSetting("BoostHP") then
 		HP = string.match(File, "SetHitPoints%((.-)%);")
