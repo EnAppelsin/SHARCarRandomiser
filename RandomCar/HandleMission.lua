@@ -68,7 +68,7 @@ if Midx ~= nil then
 	if GetSetting("RandomMissionVehicles") then
 		for k,v in pairs(MissionVehicles) do
 			print("Replacing " .. k .. " with " .. v)
-			if GetSetting("RandomMissionVehiclesStats") then
+			if GetSetting("RandomMissionVehiclesStats") or GetSetting("RandomStats") then
 				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
 			else
 				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
@@ -80,7 +80,6 @@ if Midx ~= nil then
 			NewFile = string.gsub(NewFile, "SetCondTargetVehicle%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "AddDriver%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
-			--NewFile = string.gsub(NewFile, "\"" .. k .. "\"", "\"" .. v .. "\"")
 		end
 		local TmpDriverPool = {}
 		for k in pairs(CarDrivers) do
@@ -98,7 +97,7 @@ if Midx ~= nil then
 			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
 		end)
 	end
-	--print(NewFile)
+	
 	Output(NewFile)
 elseif Lidx ~= nil then
 	if GetSetting("RandomPlayerVehicles") then
@@ -142,16 +141,14 @@ elseif Lidx ~= nil then
 					table.remove(TmpCarPool, #TmpCarPool)
 				end
 				for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-					--if orig ~= "cVan" then --Crashes and idk why
-						local car = math.random(#TmpCarPool)
-						local carName = TmpCarPool[car]
-						table.remove(TmpCarPool, car)
-						MissionVehicles[orig] = carName
-						print("Randomising " .. orig .. " to " .. carName)
-					--end
+					local car = math.random(#TmpCarPool)
+					local carName = TmpCarPool[car]
+					table.remove(TmpCarPool, car)
+					MissionVehicles[orig] = carName
+					print("Randomising " .. orig .. " to " .. carName)
 				end
 				for orig,var2,carType in string.gmatch(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-					if carType == "AI" then --Crashes and idk why and var2 ~= "cvan" 
+					if carType == "AI" then
 						local car = math.random(#TmpCarPool)
 						local carName = TmpCarPool[car]
 						table.remove(TmpCarPool, car)
@@ -168,16 +165,14 @@ elseif Lidx ~= nil then
 				table.remove(TmpCarPool, #TmpCarPool)
 			end
 			for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-				--if orig ~= "cVan" then --Crashes and idk why
-					local car = math.random(#TmpCarPool)
-					local carName = TmpCarPool[car]
-					table.remove(TmpCarPool, car)
-					MissionVehicles[orig] = carName
-					print("Randomising " .. orig .. " to " .. carName)
-				--end
+				local car = math.random(#TmpCarPool)
+				local carName = TmpCarPool[car]
+				table.remove(TmpCarPool, car)
+				MissionVehicles[orig] = carName
+				print("Randomising " .. orig .. " to " .. carName)
 			end
 			for orig,var2,carType in string.gmatch(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-				if carType == "AI" then --Crashes and idk why and var2 ~= "cvan" 
+				if carType == "AI" then
 					local car = math.random(#TmpCarPool)
 					local carName = TmpCarPool[car]
 					table.remove(TmpCarPool, car)
@@ -191,7 +186,6 @@ elseif Lidx ~= nil then
 			NewFile = string.gsub(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"" .. k .. "\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
 			NewFile = string.gsub(NewFile, "LoadDisposableCar%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"cvan\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
 		end
-		--print(NewFile)
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
@@ -223,24 +217,6 @@ elseif LevelLoad ~= nil then
 			local carName = TrafficCars[i]
 			NewFile = NewFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. carName .. ".p3d\");"
 		end
-		--[[for k,v in pairs(CarDrivers) do
-			local suppress = true
-			for i = 1, #v do
-				for j = 1, #TrafficCars do
-					if v[i] == TrafficCars[j] then
-						suppress = false
-						break
-					end
-				end
-				if suppress == false then
-					break
-				end
-			end
-			if not suppress then
-				print("Removing suppress from: " .. k)
-				NewFile = string.gsub(NewFile, "SuppressDriver%(\"" .. k .. "\"%);", "//SuppressDriver(\"" .. k .. "\");")
-			end
-		end]]--
 		NewFile = string.gsub(NewFile, "SuppressDriver%(\"(.-)\"%);", "//SuppressDriver(\"%1\");")
 		print("Random traffic cars for level -> " .. Cars)
 	end
@@ -286,13 +262,6 @@ elseif LevelInit ~= nil then
 		NewFile = string.gsub(NewFile, "CreatePedGroup%(%s*(%d)%s*%);(.*)ClosePedGroup%(%s*%);", function(group, current)
 			return ret
 		end)
-		--[[NewFile = string.gsub(NewFile, "AddPed%(%s*\".-\"%s*,%s*(%d)%s*%);", function(rate)
-			local ped = math.random(#TmpPedPool)
-			local pedName = TmpPedPool[ped]
-			table.remove(TmpPedPool, ped)
-			Peds = Peds .. pedName .. ", "
-			return "AddPed(" .. pedName .. ", " .. rate .. ");"
-		end)]]--
 		print("Random pedestrians for level -> " .. Peds)
 	end
 	if GetSetting("RandomTraffic") then
@@ -307,10 +276,13 @@ elseif LevelInit ~= nil then
 		NewFile = NewFile .. "\r\nCloseTrafficGroup( );"
 	end
 	if GetSetting("RandomChase") then
-		if GetSetting("RandomChaseStats") then
+		if GetSetting("RandomChaseStats") or GetSetting("RandomStats") then
 			NewFile = string.gsub(NewFile, "CreateChaseManager%(%s*\".-\"%s*,%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\",\"" .. RandomChase .. ".con\"", 1)
 		else
 			NewFile = string.gsub(NewFile, "CreateChaseManager%(%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
+		end
+		if GetSetting("RandomChaseAmount") then
+			NewFile = string.gsub(NewFile, "SetNumChaseCars%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 4) .."\"", 1)
 		end
 	end
 	Output(NewFile)
