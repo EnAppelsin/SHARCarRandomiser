@@ -1,3 +1,8 @@
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
 -- CAR LIST
 RandomCarPool = {
 	"ambul",
@@ -222,13 +227,12 @@ CarDrivers["wiggum"] = {"wiggu_v"}
 CarDrivers["zmale1"] = {"zombi_v"}
 
 -- CHAR LIST
-RandomCharPool = {
-	"apu",
-	"bart",
-	"homer",
-	"lisa",
-	"marge"
-}
+RandomCharPool = {}
+RandomCarPool["apu"] = {"a_army", "a_american", "a_besharp"}
+RandomCarPool["bart"] = {"b_tall", "b_football", "b_ninja", "b_hugo", "b_military", "b_man"}
+RandomCarPool["homer"] = {"h_undrwr", "h_fat", "h_stcrobe", "h_scuzzy", "h_evil", "h_donut"}
+RandomCarPool["lisa"] = {"l_cool", "l_florida", "l_jersey"}
+RandomCarPool["marge"] = {"m_prison", "m_pink", "m_police"}
 
 OrigChar = nil
 RandomChar = nil
