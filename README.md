@@ -61,7 +61,7 @@ If this is checked weak cars like the rocket car will have their HP slightly boo
 It raises the minimum HP to 0.8 for all cars.
 ### Misc
 #### No Husk (Destroyed Car)
-Off by default.
+On by default.
 If this is checked the destroyed car (husk) is not in the list of random cars to use.
 	
 ## Potential Limitations/Issues
