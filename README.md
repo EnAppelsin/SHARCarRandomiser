@@ -10,6 +10,10 @@ You can change a couple of settings in the mod settings
 
 ## Settings
 ### Randomisations
+#### Random player character
+Off by default.
+If this is checked, you will get a random player character from any model in the game.
+This will remove all mission dialogs, and potentially some driving dialogs too.
 #### Random player vehicles
 On by default.
 If this is checked, you will get a random vehicle per level/mission.
@@ -18,6 +22,9 @@ On by default.
 If this is checked and you restart the mission (or retry after failing) you will get the same car again.
 You can change the car by cancelling the mission first and starting it again.
 If this is disabled you'll get a random car each time you restart.
+#### Random car scale
+Off by default.
+If this is checked, the model scale for any character in a car will be randomised.
 #### Random pedestrians
 On by default.
 If this is checked, pedestrians and drivers will be randomised per level load.
@@ -46,6 +53,9 @@ You will get the same traffic cars for each mission of a level.
 On by default.
 If this is checked, random mission vehicles will have the stats of the chosen vehicle.
 Otherwise, random mission vehicles will have the stats of the level's default vehicles.
+#### Different random cellouts
+On by default.
+If this is checked, cellouts will be 4 random cars instead of the same car 4 times.
 #### Same mission vehicle if restarting/failing mission
 On by default.
 If this is checked and you restart the mission (or retry after failing) you will get the same mission vehicles again.
