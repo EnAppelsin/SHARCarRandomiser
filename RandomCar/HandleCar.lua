@@ -40,6 +40,13 @@ local function randomStats(data)
 	return data 
 end
 
+-- Fix Audi TT Missing some entries
+if string.match(Path, "tt.con") then
+	File = File .. [[SetCharactersVisible(1);
+			SetDriver("none");
+			SetHasDoors(0);]]
+end
+
 -- Only update the randomly spawned car
 if GetSetting("RandomPlayerVehicles") and RandomCarName and string.match(Path, RandomCarName) then
 
