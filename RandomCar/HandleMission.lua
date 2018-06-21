@@ -277,7 +277,7 @@ elseif LevelInit ~= nil then
 	if GetSetting("RandomCharacter") then
 		NewFile = string.gsub(NewFile, "AddCharacter%(%s*\"(.-)\"%s*,%s*\".-\"%s*%);", function(orig)
 			OrigChar = orig
-			local TmpCharPool = {table.unpack(RandomCharPool)}
+			local TmpCharPool = {table.unpack(RandomPedPool)}
 			if string.match(Path, "level01") then
 				for i=#TmpCharPool,1,-1 do
 					for j=1,#LevelOneBlock do
