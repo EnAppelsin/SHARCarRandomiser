@@ -130,7 +130,6 @@ if Midx ~= nil then
 	
 	Output(NewFile)
 elseif Lidx ~= nil then
-
 	if GetSetting("RandomPlayerVehicles") then
 		if GetSetting("SaveChoice") then
 			if LastLevel ~= Path then
