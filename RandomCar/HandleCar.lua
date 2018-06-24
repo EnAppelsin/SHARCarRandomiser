@@ -41,7 +41,7 @@ local function randomStats(data)
 end
 
 -- Fix Audi TT Missing some entries
-if string.match(Path, "tt.con") then
+if string.match(Path, "tt%.con") then
 	File = File .. [[SetCharactersVisible(1);
 			SetDriver("none");
 			SetHasDoors(0);]]

@@ -96,8 +96,8 @@ RandomCarPool = {
 
 -- PED LIST
 RandomPedPool = {
-	"apu",  
-    "askinner", 
+	"apu",
+	"askinner",
     "a_american", 
     "a_army",  
     "a_besharp", 
@@ -216,10 +216,16 @@ LevelOneBlock = {
 	"ralph",
 	"louie",
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"moleman",
 	"grandpa",
 	"patty",
 	"lisa",
+    "l_cool", 
+    "l_florida", 
+    "l_jersey", 
 	"willie",
 	"eddie",
 	"krusty",
@@ -255,11 +261,20 @@ LevelOneBlock = {
 	"snake",
 	"wiggum",
 	"marge",
+    "m_pink", 
+    "m_police", 
+    "m_prison", 
 	"ned",
 	"burns",
 	"smithers",
 	"skinner",
 	"bart",
+    "b_football", 
+    "b_hugo", 
+    "b_man",  
+    "b_military", 
+    "b_ninja", 
+    "b_tall", 
 	"jasper",
 	"selma"
 }
@@ -280,6 +295,12 @@ LevelTwoBlock = {
 	"lou",
 	"gil",
 	"homer",
+    "h_donut", 
+    "h_evil", 
+    "h_fat", 
+    "h_scuzzy", 
+    "h_stcrobe", 
+    "h_undrwr", 
 	"male6",
 	"fem3",
 	"fem4",
@@ -310,6 +331,9 @@ LevelTwoBlock = {
 	"male2",
 	"joger2",
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"skinner",
 	"jimbo",
 	"kearney",
@@ -319,6 +343,9 @@ LevelTwoBlock = {
 	"frink",
 	"nriviera",
 	"lisa",
+    "l_cool", 
+    "l_florida", 
+    "l_jersey", 
 	"selma"
 }
 
@@ -365,11 +392,23 @@ LevelThreeBlock = {
 	"wiggum",
 	"cletus",
 	"bart",
+    "b_football", 
+    "b_hugo", 
+    "b_man",  
+    "b_military", 
+    "b_ninja", 
+    "b_tall", 
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"frink",
 	"grandpa",
 	"marge",
-	"l_cool",
+	"lisa",
+    "l_cool", 
+    "l_florida", 
+    "l_jersey", 
 	"eddie",
 	"patty",
 	"selma"
@@ -382,6 +421,9 @@ LevelFourBlock = {
 	"ralph",
 	"louie",
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"skinner",
 	"beeman",
 	"selma",
@@ -419,10 +461,18 @@ LevelFourBlock = {
 	"moleman",
 	"grandpa",
 	"bart",
+    "b_football", 
+    "b_hugo", 
+    "b_man",  
+    "b_military", 
+    "b_ninja", 
+    "b_tall", 
 	"frink",
-	"m_prison",
 	"jimbo",
-	"m_police",
+	"marge",
+    "m_pink", 
+    "m_police", 
+    "m_prison", 
 	"patty"
 }
 
@@ -441,6 +491,12 @@ LevelFiveBlock = {
 	"otto",
 	"gil",
 	"homer",
+    "h_donut", 
+    "h_evil", 
+    "h_fat", 
+    "h_scuzzy", 
+    "h_stcrobe", 
+    "h_undrwr", 
 	"olady3",
 	"boy1",
 	"male5",
@@ -467,8 +523,17 @@ LevelFiveBlock = {
 	"hibbert",
 	"krusty",
 	"bart",
+    "b_football", 
+    "b_hugo", 
+    "b_man",  
+    "b_military", 
+    "b_ninja", 
+    "b_tall", 
 	"barney",
-	"a_american",
+	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"eddie"
 }
 
@@ -512,9 +577,18 @@ LevelSixBlock = {
 	"sail3",
 	"fem2",
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"otto",
 	"barney",
 	"homer",
+    "h_donut", 
+    "h_evil", 
+    "h_fat", 
+    "h_scuzzy", 
+    "h_stcrobe", 
+    "h_undrwr", 
 	"krusty",
 	"skinner",
 	"frink",
@@ -533,6 +607,9 @@ LevelSevenBlock = {
 	"louie",
 	"gil",
 	"apu",
+    "a_american", 
+    "a_army",  
+    "a_besharp", 
 	"wiggum",
 	"beeman",
 	"teen",
@@ -548,6 +625,9 @@ LevelSevenBlock = {
 	"ralph",
 	"frankenstein",
 	"lisa",
+    "l_cool", 
+    "l_florida", 
+    "l_jersey", 
 	"ned",
 	"grandpa",
 	"cbg",
@@ -578,6 +658,7 @@ CarDrivers["zmale1"] = {"zombi_v"}
 
 OrigChar = nil
 RandomChar = nil
+RandomChars = {}
 RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
@@ -597,3 +678,16 @@ RandomPedPoolN = #RandomPedPool
 
 print("Random Cars: Using " .. RandomCarPoolN .. " cars")
 print("Random Cars: Using " .. RandomPedPoolN .. " pedestrians")
+
+dialogspt = nil
+conversations = nil
+dialogsptend = nil
+
+shortnames = {}
+origShort = {"Hom", "Brt", "Mrg", "Lis", "Apu", "Brt", "Hom"}
+if GetSetting("RandomCharacter") then
+	dofile("/Mods/RandomCar/RandomDialog.lua")
+end
+
+cartunespt = nil
+dofile("/Mods/RandomCar/RandomCarTune.lua")
