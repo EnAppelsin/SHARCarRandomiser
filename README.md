@@ -5,15 +5,15 @@ Each randomisation has it's own option, detailed below.
 
 ## Installation
 Copy the mod file (.lmlm) to your Mods folder (usually Documents\My Games\Lucas' Simpsons Hit & Run Mod Launcher\Mods)
-Run the Mod Launcher and enable "Random Mission Cars" then play the game.
-You can change a couple of settings in the mod settings
+Run the Mod Launcher and change the settings to match your needs, then play the game.
+All possible randomisations are available in separate settings.
 
 ## Settings
 ### Randomisations
 #### Random player character
 Off by default.
-If this is checked, you will get a random player character from any model in the game.
-This will remove all mission dialogs, and potentially some driving dialogs too.
+If this is checked, you will get a random player character from (almost) any model in the game.
+Due to some limitations, some models aren't available.
 #### Random player vehicles
 On by default.
 If this is checked, you will get a random vehicle per level/mission.
@@ -89,3 +89,5 @@ If this is checked the destroyed car (husk) is not in the list of random cars to
 and if a mod removes cars the game will crash if the randomiser picks it.
 
 - Your car will vanish at the end of the mission, even if you are in it. Again this is because of how forced cars work.
+
+- There is a spot where random characters will be sat in mid air. This is due to how passengers/drivers work.
