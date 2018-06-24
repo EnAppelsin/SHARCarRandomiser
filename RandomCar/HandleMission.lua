@@ -3,14 +3,14 @@ local Path = "/GameData/" .. GetPath();
 local File = ReadFile(Path);
 
 -- Determine if the file is for a mission (bonus, main or races)
-local Midx = string.match(Path, "b?m%di.mfk") or string.match(Path, "[gs]r%di.mfk")
-local Lidx = string.match(Path, "b?m%dl.mfk") or string.match(Path, "[gs]r%dl.mfk")
+local Midx = string.match(Path, "b?m%di%.mfk") or string.match(Path, "[gs]r%di%.mfk")
+local Lidx = string.match(Path, "b?m%dl%.mfk") or string.match(Path, "[gs]r%dl%.mfk")
 -- Determine if the file is for a level
-local LevelLoad = string.match(Path, "level.mfk")
-local LevelInit = string.match(Path, "leveli.mfk")
+local LevelLoad = string.match(Path, "level%.mfk")
+local LevelInit = string.match(Path, "leveli%.mfk")
 -- Determine if the file is for "sunday drive" (pre-mission)
-local SDLoad = string.match(Path, "m%dsdl.mfk")
-local SDInit = string.match(Path, "m%dsdi.mfk")
+local SDLoad = string.match(Path, "m%dsdl%.mfk")
+local SDInit = string.match(Path, "m%dsdi%.mfk")
 
 -- Remove comments because there's A LOT of commented out stuff that can confuse the simple regexes below
 local NewFile = string.gsub(File, "//.-\r\n", "\r\n")
