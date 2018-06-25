@@ -2938,4 +2938,5 @@ if GetSetting("RandomCarSounds") then
         local horn = RandomHornPool[math.random(#RandomHornPool)]
         return "SetHornClipName ( \"" .. horn .. "\""
     end)
+    -- TODO: Overlay sound(s)
 end
