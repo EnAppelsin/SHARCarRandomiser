@@ -2921,6 +2921,23 @@ local RandomHornPool = {
 	"brick_car_horn"
 }
 
+-- OVERLAY LIST
+local RandomOverlayPool = {
+	"rocket",
+	"generator",
+	"cCellA_overlay",
+	"cCellB_overlay",
+	"cCellC_overlay",
+	"cCellD_overlay",
+	"cVan_overlay",
+	"ship_overlay",
+	"ice_cream_truck",
+	"i_and_s_truck",
+	"nuctruck_glow",
+	"pizza_car_overlay",
+	"vote_quimby"
+}
+
 if GetSetting("RandomCarSounds") then
     cartunespt = string.gsub(cartunespt, "SetEngineClipName%s*%(%s*\".-\"", function()
         local engine = RandomEnginePool[math.random(#RandomEnginePool)]
@@ -2938,5 +2955,13 @@ if GetSetting("RandomCarSounds") then
         local horn = RandomHornPool[math.random(#RandomHornPool)]
         return "SetHornClipName ( \"" .. horn .. "\""
     end)
-    -- TODO: Overlay sound(s)
+    cartunespt = string.gsub(cartunespt, "{(.-)}", function(orig)
+        local overlay = RandomOverlayPool[math.random(#RandomOverlayPool)]
+        if string.match(orig, "SetOverlayClipName%s*%(%s*\".-\"") then
+            orig = string.gsub(orig, "SetOverlayClipName%s*%(%s*\".-\"", "SetOverlayClipName ( \"" .. overlay .. "\"")
+        elseif math.random() >= 0.5 then
+            orig = orig .. "    SetOverlayClipName ( \"" .. overlay .. "\" )\r\n
+        end
+	return "{" .. orig .. "}"
+    end)
 end
