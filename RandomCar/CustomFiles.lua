@@ -127,7 +127,7 @@ RandomPedPool = {
     "const1", 
     "const2", 
     "dolph", 
-    "eddie", 
+    --"eddie", 
     "farmr1", 
     "fem1", 
     "fem2", 
@@ -140,7 +140,7 @@ RandomPedPool = {
     "girl2", 
     "girl3", 
     "girl4", 
-    "grandpa", 
+    --"grandpa", 
     "hibbert", 
     "homer", 
     "hooker", 
@@ -155,8 +155,8 @@ RandomPedPool = {
     "joger1", 
     "joger2", 
     "kearney", 
-    "krusty", 
-    "lenny", 
+    --"krusty", 
+    --"lenny", 
     "lisa", 
     "louie", 
     "lou", 
@@ -172,8 +172,8 @@ RandomPedPool = {
     "marge", 
     "milhouse", 
     "mobstr", 
-    "moe", 
-    "moleman", 
+    --"moe", 
+    --"moleman", 
     "m_pink", 
     "m_police", 
     "m_prison", 
@@ -185,8 +185,8 @@ RandomPedPool = {
     "olady2", 
     "olady3", 
     "otto", 
-    "patty", 
-    "ralph", 
+    --"patty", 
+    --"ralph", 
     "rednk1", 
     "rednk2", 
     "sail1", 
@@ -199,7 +199,7 @@ RandomPedPool = {
     "snake", 
     "teen", 
     "wiggum", 
-    "willie", 
+    --"willie", 
     "witch", 
     "zfem1", 
     "zfem5", 
@@ -666,6 +666,7 @@ LastLevelMV = nil
 RandomChase = nil
 TrafficCars = {}
 MissionVehicles = {}
+ModPath = GetModPath()
 
 -- Add the husk unless disabled
 if not GetSetting("NoHusk") then

@@ -14,8 +14,9 @@ if GetSetting("RandomCharacter") and OrigChar and RandomChar then
 	end
 
 	if origShort and randomShort and string.match(Path, "conversations") and string.match(Path, randomShort .. "_L") then
-		local newPath = string.gsub(Path, "/GameData/conversations\\", "/Mods/RandomCar/conversations/")
+		local newPath = string.gsub(Path, "/GameData/conversations\\", ModPath .. "/conversations/")
 		local newPath = string.gsub(newPath, "_" .. randomShort .. "_", "_" .. origShort .. "_")
-		Output(ReadFile(newPath))
+		Redirect(newPath)
+		--Output(ReadFile(newPath))
 	end
 end
