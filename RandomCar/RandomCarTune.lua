@@ -2960,7 +2960,8 @@ if GetSetting("RandomCarSounds") then
         if string.match(orig, "SetOverlayClipName%s*%(%s*\".-\"") then
             orig = string.gsub(orig, "SetOverlayClipName%s*%(%s*\".-\"", "SetOverlayClipName ( \"" .. overlay .. "\"")
         elseif math.random() >= 0.5 then
-            orig = orig .. "    SetOverlayClipName ( \"" .. overlay .. "\" )\r\n"
+            -- Removed because it appears that if too many cars with an overlay load, it crashes
+            --orig = orig .. "    SetOverlayClipName ( \"" .. overlay .. "\" )\r\n"
         end
 	return "{" .. orig .. "}"
     end)
