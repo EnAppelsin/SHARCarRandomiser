@@ -3,21 +3,24 @@ local Path = "/GameData/" .. GetPath();
 local File = ReadFile(Path);
 
 -- Determine if the file is for a mission (bonus, main or races)
-local Midx = string.match(Path, "b?m%di.mfk") or string.match(Path, "[gs]r%di.mfk")
-local Lidx = string.match(Path, "b?m%dl.mfk") or string.match(Path, "[gs]r%dl.mfk")
+local Midx = string.match(Path, "b?m%di%.mfk") or string.match(Path, "[gs]r%di%.mfk")
+local Lidx = string.match(Path, "b?m%dl%.mfk") or string.match(Path, "[gs]r%dl%.mfk")
 -- Determine if the file is for a level
-local LevelLoad = string.match(Path, "level.mfk")
-local LevelInit = string.match(Path, "leveli.mfk")
+local LevelLoad = string.match(Path, "level%.mfk")
+local LevelInit = string.match(Path, "leveli%.mfk")
 -- Determine if the file is for "sunday drive" (pre-mission)
-local SDLoad = string.match(Path, "m%dsdl.mfk")
-local SDInit = string.match(Path, "m%dsdi.mfk")
+local SDLoad = string.match(Path, "m%dsdl%.mfk")
+local SDInit = string.match(Path, "m%dsdi%.mfk")
 
 -- Remove comments because there's A LOT of commented out stuff that can confuse the simple regexes below
 local NewFile = string.gsub(File, "//.-\r\n", "\r\n")
 
 if Midx ~= nil then
+	if GetSetting("RandomCharacter") then
+		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"" .. RandomChar .. "\"")
+		NewFile = string.gsub(NewFile, "AddStageCharacter%(%s*\"" .. OrigChar .. "\"", "AddStageCharacter(\"" .. RandomChar .. "\"")
+	end
 	-- The random car should have been predecided by the mission load script
-	
 	if GetSetting("RandomPlayerVehicles") then
 		local ForcedMission = false
 		local Spawn, Match
@@ -66,9 +69,28 @@ if Midx ~= nil then
 		NewFile = string.gsub(NewFile, "\"cHears\"", "\"" .. RandomChase .. "\"")
 	end
 	if GetSetting("RandomMissionVehicles") then
+		if GetSetting("DifferentCellouts") and string.match(Path, "level02\\m7i.mfk") then
+			NewFile = string.gsub(NewFile, "AddStageVehicle%(\"cCellA\",\"m7_cellstart(%d)", "AddStageVehicle(\"cCellA%1\",\"m7_cellstart%1")
+			NewFile = string.gsub(NewFile, "ActivateVehicle%(\"cCellA\"(.-)\r\n", "ActivateVehicle(\"cCellA1\"%1\r\nSetHitNRun();\r\n")
+			local i = 0
+			NewFile = string.gsub(NewFile, "SetVehicleAIParams%(%s*\"cCellA\"", function()
+				i = i + 1
+				return "SetHitNRun();\r\n\tSetVehicleAIParams( \"cCellA" .. i .. "\""
+			end)
+			i = 0
+			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(\"cCellA\"", function()
+				i = i + 1
+				return "SetObjTargetVehicle(\"cCellA" .. i .. "\""
+			end)
+			i = 1
+			NewFile = string.gsub(NewFile, "AddStageVehicle%(\"cCellA\"", function()
+				i = i + 1
+				return "AddStageVehicle(\"cCellA" .. i .. "\""
+			end)
+		end
 		for k,v in pairs(MissionVehicles) do
 			print("Replacing " .. k .. " with " .. v)
-			if GetSetting("RandomMissionVehiclesStats") then
+			if GetSetting("RandomMissionVehiclesStats") or GetSetting("RandomStats") then
 				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
 			else
 				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
@@ -140,6 +162,12 @@ elseif Lidx ~= nil then
 				if not GetSetting("NoHusk") then
 					table.remove(TmpCarPool, #TmpCarPool)
 				end
+				if GetSetting("DifferentCellouts") and string.match(Path, "level02\\m7l.mfk") then
+					NewFile = string.gsub(NewFile, "cCellA", "cCellA1")
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
+				end
 				for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 					local car = math.random(#TmpCarPool)
 					local carName = TmpCarPool[car]
@@ -156,6 +184,11 @@ elseif Lidx ~= nil then
 						print("Randomising " .. orig .. " to " .. carName)
 					end
 				end
+			elseif GetSetting("DifferentCellouts") and string.match(Path, "level02\\m7l.mfk") then
+				NewFile = string.gsub(NewFile, "cCellA", "cCellA1")
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
 			end
 			LastLevelMV = Path
 		else
@@ -163,6 +196,12 @@ elseif Lidx ~= nil then
 			local TmpCarPool = {table.unpack(RandomCarPool)}
 			if not GetSetting("NoHusk") then
 				table.remove(TmpCarPool, #TmpCarPool)
+			end
+			if string.match(Path, "level02\\m7l.mfk") then
+				NewFile = string.gsub(NewFile, "cCellA", "cCellA1")
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
 			end
 			for orig in string.gmatch(NewFile, "LoadP3DFile%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 				local car = math.random(#TmpCarPool)
@@ -231,6 +270,13 @@ elseif LevelLoad ~= nil then
 	end
 	Output(NewFile)
 elseif LevelInit ~= nil then
+	if GetSetting("RandomCharacter") then
+		NewFile = string.gsub(NewFile, "AddCharacter%(%s*\"(.-)\"%s*,%s*\".-\"%s*%);", function(orig)
+			OrigChar = orig
+			RandomChar = RandomChars[tonumber(string.match(Path, "level0(%d)\\"))]
+			return "AddCharacter(\"" .. RandomChar .. "\",\"" .. orig .. "\");"
+		end)
+	end
 	if GetSetting("RandomPlayerVehicles") then
 		NewFile = string.gsub(NewFile, "InitLevelPlayerVehicle%(%s*\".-\"%s*,%s*\"(.-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
 		print("Randomising car for level -> " .. RandomCarName)
@@ -276,10 +322,13 @@ elseif LevelInit ~= nil then
 		NewFile = NewFile .. "\r\nCloseTrafficGroup( );"
 	end
 	if GetSetting("RandomChase") then
-		if GetSetting("RandomChaseStats") then
+		if GetSetting("RandomChaseStats") or GetSetting("RandomStats") then
 			NewFile = string.gsub(NewFile, "CreateChaseManager%(%s*\".-\"%s*,%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\",\"" .. RandomChase .. ".con\"", 1)
 		else
 			NewFile = string.gsub(NewFile, "CreateChaseManager%(%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
+		end
+		if GetSetting("RandomChaseAmount") then
+			NewFile = string.gsub(NewFile, "SetNumChaseCars%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 4) .."\"", 1)
 		end
 	end
 	Output(NewFile)
@@ -292,6 +341,10 @@ elseif SDInit ~= nil then
 	if GetSetting("SkipFMVs") then
 		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
 	end
+	if GetSetting("RandomCharacter") then
+		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"" .. RandomChar .. "\"")
+		NewFile = string.gsub(NewFile, "AddStageCharacter%(%s*\"" .. OrigChar .. "\"", "AddStageCharacter(\"" .. RandomChar .. "\"")
+	end
 	Output(NewFile)
 elseif SDLoad ~= nil then
 	if GetSetting("RandomMissionVehicles") then
@@ -299,7 +352,4 @@ elseif SDLoad ~= nil then
 	end
 else
 	LastLevel = nil
-	-- Don't modify other scripts
-	--print("Script " .. Path)
-	Output(NewFile);
 end
