@@ -100,4 +100,4 @@ and if a mod removes cars the game will crash if the randomiser picks it.
 ## Acknowledgements
 Thanks to the following people for helping with the development and testing of this mod:
 
-Gadie, Gibstack, Jake, Loren, Sparrow, Vapo42
+Gadie, Gibstack, Jake, Loren, Sparrow, Nytheris
