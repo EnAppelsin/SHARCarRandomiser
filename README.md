@@ -25,6 +25,10 @@ If this is disabled you'll get a random car each time you restart.
 #### Random car scale
 Off by default.
 If this is checked, the model scale for any character in a car will be randomised.
+#### Random car sounds
+Off by default.
+If this is checked, car sounds (horns, engine, etc) will be randomised.
+If the car has an overlay (phone ringing, ice cream, etc) these are randomised too.
 #### Random pedestrians
 On by default.
 If this is checked, pedestrians and drivers will be randomised per level load.
@@ -81,6 +85,7 @@ It raises the minimum HP to 0.8 for all cars.
 #### No Husk (Destroyed Car)
 On by default.
 If this is checked the destroyed car (husk) is not in the list of random cars to use.
+The husk can cause problems with certain missions.
 	
 ## Potential Limitations/Issues
 - Missions will spawn you where you start if you restart the mission once, this is because adding a forced car teleports you.
@@ -91,3 +96,8 @@ and if a mod removes cars the game will crash if the randomiser picks it.
 - Your car will vanish at the end of the mission, even if you are in it. Again this is because of how forced cars work.
 
 - There is a spot where random characters will be sat in mid air. This is due to how passengers/drivers work.
+
+## Acknowledgements
+Thanks to the following people for helping with the development and testing of this mod:
+
+Gadie, Gibstack, Jake, Loren, Sparrow, Vapo42
