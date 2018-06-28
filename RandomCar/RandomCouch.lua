@@ -13,85 +13,17 @@
 -- After this is data specific to the chunk type, and then the subchunks with the same structure
 -- The file itself seems to be a "chunk" with type P3D\255, and no chunk specific data
 
-
--- Some functions for converting binary numbers in strings to Lua numbers
-function String1ToInt(str)
-    return str:byte(1)
-end
-
-function String4ToInt(str)
-    b1, b2, b3, b4 = str:byte(1, 4)
-    return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
-end
-
-function IntToString4(int)
-    b1 = int % 256
-    b2 = math.floor(int / 256) % 256
-    b3 = math.floor(int / 256 / 256) % 256
-    b4 = math.floor(int / 256 / 256 / 256) % 256
-    return string.char(b1, b2, b3, b4)
-end
-
--- Iterate a chunk to find its subchunks, because simple pattern matching can find false matches
-
-function FindSubchunks(Chunk, ID)
-    local LengthStr = Chunk:sub(5, 8)
-    local Position = 1 + String4ToInt(LengthStr)
-    return function()
-        while Position < Chunk:len() do
-            local ChunkID = Chunk:sub(Position + 0, Position + 3)
-            local ChunkLength = String4ToInt(Chunk:sub(Position + 8, Position + 11))
-           Position = Position + ChunkLength
-            if ChunkID == ID then
-                return Position - ChunkLength, ChunkLength
-            end
-        end
-        return nil
-    end
-end
-
--- Simple use of iterator to the find the first chunk of an ID
-function FindSubchunk(Chunk, ID)
-    return FindSubchunks(Chunk, ID)()
-end
-
--- Extract a string from a P3D chunk
-function GetP3DString(Chunk, Offset)
-    local NLength = String1ToInt(Chunk:sub(Offset, Offset))
-    local Name =  Chunk:sub(Offset + 1, Offset + NLength)
-    return Name, NLength
-end
-
---Remove a substring from a string
-function RemoveString(Str, Start, End)
-    return Str:sub(1, Start - 1) .. Str:sub(End)
-end
-
--- Uncomment to print more debug messages about the P3D file patching process
-function p3d_debug(message)
-    --print(message)
-end
-
-PedN = math.random(#RandomPedPool)
-Ped = RandomPedPool[PedN]
+local PedN = math.random(#RandomPedPool)
+local Ped = RandomPedPool[PedN]
 
 local Path = "/GameData/" .. GetPath();
-Original = ReadFile(Path)
+local Original = ReadFile(Path)
 local ReplacePath = "/GameData/art/chars/" .. Ped:sub(1,6) .. "_m.p3d"
-Replace = ReadFile(ReplacePath)
+local Replace = ReadFile(ReplacePath)
 local GlobalPath = "/GameData/art/chars/global.p3d"
-Global = ReadFile(GlobalPath)
+local Global = ReadFile(GlobalPath)
 
-TEXTURE_CHUNK = "\000\144\001\000"
-SHADER_CHUNK = "\000\016\001\000"
-SKIN_CHUNK = "\001\000\001\000"
-SKELETON_CHUNK = "\000\069\000\000"
-COMP_DRAW_CHUNK = "\018\069\000\000"
-COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
-COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
-MOTION_ROOT_LABEL = "\012Motion_Root\000"
-
-Adjust = 0
+local Adjust = 0
 
 for position, length in FindSubchunks(Original, SKIN_CHUNK) do
     p3d_debug("Found a skin at " .. position)
@@ -100,7 +32,7 @@ for position, length in FindSubchunks(Original, SKIN_CHUNK) do
     p3d_debug("> Removed a skin")
 end
 
-Textures = ""
+local Textures = ""
 
 for position, length in FindSubchunks(Global, TEXTURE_CHUNK) do
     Textures = Textures .. Global:sub(position, position + length - 1)
@@ -110,8 +42,8 @@ for position, length in FindSubchunks(Replace, TEXTURE_CHUNK) do
     Textures = Textures .. Replace:sub(position, position + length - 1)
 end
 
-Shaders = ""
-ShaderList = {}
+local Shaders = ""
+local ShaderList = {}
 
 for position, length in FindSubchunks(Replace, SHADER_CHUNK) do
     local ShaderName, SNLength = GetP3DString(Replace, position + 12)
