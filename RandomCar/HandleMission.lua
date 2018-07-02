@@ -104,6 +104,23 @@ if Midx ~= nil then
 			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "AddDriver%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
 		end
+		for i = 1, #RemovedTrafficCars) do
+			local k = RemovedTrafficCars[i]
+			local v = TrafficCars[math.random(#TrafficCars)]
+			print("Replacing " .. k .. " with " .. v)
+			if GetSetting("RandomMissionVehiclesStats") or GetSetting("RandomStats") then
+				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
+			else
+				NewFile = string.gsub(NewFile, "AddStageVehicle%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
+			end
+			NewFile = string.gsub(NewFile, "ActivateVehicle%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "SetVehicleAIParams%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "SetStageAIRaceCatchupParams%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "SetStageAITargetCatchupParams%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "SetCondTargetVehicle%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
+			NewFile = string.gsub(NewFile, "AddDriver%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
+		end
 		local TmpDriverPool = {}
 		for k in pairs(CarDrivers) do
 			table.insert(TmpDriverPool, k)
@@ -312,8 +329,12 @@ elseif LevelInit ~= nil then
 		print("Random pedestrians for level -> " .. Peds)
 	end
 	if GetSetting("RandomTraffic") then
+		RemovedTrafficCars = {}
 		NewFile = string.gsub(NewFile, "CreateTrafficGroup", "//CreateTrafficGroup", 1)
-		NewFile = string.gsub(NewFile, "AddTrafficModel", "//AddTrafficModel")
+		NewFile = string.gsub(NewFile, "AddTrafficModel%s*%(%s*\"(.-)\"", function(car)
+			table.insert(RemovedTrafficCars, car)
+			return "//AddTrafficModel(\"" .. car .. "\"") --( "minivanA"
+		end)
 		NewFile = string.gsub(NewFile, "CloseTrafficGroup", "//CloseTrafficGroup", 1)
 		NewFile = NewFile .. "\r\nCreateTrafficGroup( 0 );"
 		for i = 1, #TrafficCars do
