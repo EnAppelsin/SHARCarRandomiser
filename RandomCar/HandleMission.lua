@@ -104,7 +104,7 @@ if Midx ~= nil then
 			NewFile = string.gsub(NewFile, "SetObjTargetVehicle%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
 			NewFile = string.gsub(NewFile, "AddDriver%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
 		end
-		for i = 1, #RemovedTrafficCars) do
+		for i = 1, #RemovedTrafficCars do
 			local k = RemovedTrafficCars[i]
 			local v = TrafficCars[math.random(#TrafficCars)]
 			print("Replacing " .. k .. " with " .. v)
@@ -333,7 +333,7 @@ elseif LevelInit ~= nil then
 		NewFile = string.gsub(NewFile, "CreateTrafficGroup", "//CreateTrafficGroup", 1)
 		NewFile = string.gsub(NewFile, "AddTrafficModel%s*%(%s*\"(.-)\"", function(car)
 			table.insert(RemovedTrafficCars, car)
-			return "//AddTrafficModel(\"" .. car .. "\"") --( "minivanA"
+			return "//AddTrafficModel(\"" .. car .. "\"" --( "minivanA"
 		end)
 		NewFile = string.gsub(NewFile, "CloseTrafficGroup", "//CloseTrafficGroup", 1)
 		NewFile = NewFile .. "\r\nCreateTrafficGroup( 0 );"
