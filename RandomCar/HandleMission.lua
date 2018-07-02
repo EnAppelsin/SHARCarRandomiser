@@ -17,9 +17,15 @@ local NewFile = string.gsub(File, "//.-\r\n", "\r\n")
 
 if Midx ~= nil then
 	if GetSetting("RandomCharacter") then
-		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"" .. RandomChar .. "\"")
+		NewFile = string.gsub(NewFile, "SetDialogueInfo%s*%(%s*\"(.-)\"%s*,%s*\"(.-)\"", function(char1, char2)
+			if char1 == OrigChar then
+				char1 = RandomChar
+			elseif char2 == OrigChar then
+				char2 = RandomChar
+			end
+			return "SetDialogueInfo(\"" .. char1 .. "\",\"" .. char2 .. "\""
+		end)
 		NewFile = string.gsub(NewFile, "AddStageCharacter%(%s*\"" .. OrigChar .. "\"", "AddStageCharacter(\"" .. RandomChar .. "\"")
-		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"(.-)\"%s*,%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"%1\",\"" .. RandomChar .. "\"")
 	end
 	-- The random car should have been predecided by the mission load script
 	if GetSetting("RandomPlayerVehicles") then
@@ -364,9 +370,16 @@ elseif SDInit ~= nil then
 		NewFile = string.gsub(NewFile, "AddObjective%(\"fmv\"%);.-CloseObjective%(%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
 	end
 	if GetSetting("RandomCharacter") then
-		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"" .. RandomChar .. "\"")
+		NewFile = string.gsub(NewFile, "SetDialogueInfo%s*%(%s*\"(.-)\"%s*,%s*\"(.-)\"", function(char1, char2)
+			print(char1 .. " - " .. char2)
+			if char1 == OrigChar then
+				char1 = RandomChar
+			elseif char2 == OrigChar then
+				char2 = RandomChar
+			end
+			return "SetDialogueInfo(\"" .. char1 .. "\",\"" .. char2 .. "\""
+		end)
 		NewFile = string.gsub(NewFile, "AddStageCharacter%(%s*\"" .. OrigChar .. "\"", "AddStageCharacter(\"" .. RandomChar .. "\"")
-		NewFile = string.gsub(NewFile, "SetDialogueInfo%(%s*\"(.-)\"%s*,%s*\"" .. OrigChar .. "\"", "SetDialogueInfo(\"%1\",\"" .. RandomChar .. "\"")
 	end
 	Output(NewFile)
 elseif SDLoad ~= nil then

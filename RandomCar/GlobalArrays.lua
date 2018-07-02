@@ -769,4 +769,4 @@ CarDrivers["wiggum"] = {"wiggu_v"}
 CarDrivers["zmale1"] = {"zombi_v"}
 
 shortnames = {}
-origShort = {"Hom", "Brt", "Mrg", "Lis", "Apu", "Brt", "Hom"}
+origShort = {"Hom", "Brt", "Lis", "Mrg", "Apu", "Brt", "Hom"}
