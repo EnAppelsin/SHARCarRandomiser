@@ -15,6 +15,7 @@ RandomCarName = nil
 LastLevel = nil
 LastLevelMV = nil
 RandomChase = nil
+RemovedTrafficCars = {}
 TrafficCars = {}
 MissionVehicles = {}
 

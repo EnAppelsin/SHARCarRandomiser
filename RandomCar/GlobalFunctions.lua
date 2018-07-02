@@ -58,5 +58,5 @@ end
 
 -- Uncomment to print more debug messages about the P3D file patching process
 function p3d_debug(message)
-    print(message)
+    --print(message)
 end
