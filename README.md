@@ -10,6 +10,9 @@ All possible randomisations are available in separate settings.
 
 ## Settings
 ### Randomisations
+#### Random couch character
+On by default.
+If this is checked, you will get a random character sitting on the couch in the main menu.
 #### Random player character
 Off by default.
 If this is checked, you will get a random player character from (almost) any model in the game.
