@@ -51,6 +51,30 @@ function GetP3DString(Chunk, Offset)
     return Name, NLength
 end
 
+-- Change a string inside a P3D string
+-- Returns the new P3D, the change in length for updating header data, and the original string
+function SetP3DString(Chunk, Offset, NewString)
+	local OrigName, OrigLength = GetP3DString(Chunk, Offset)
+    local LengthByte = string.char(NewString:len())
+	local New = Chunk:sub(1, Offset - 1) .. LengthByte .. NewString .. Chunk:sub(Offset + OrigLength + 1)
+    local Delta = NewString:len() - OrigLength
+    return New, Delta, OrigName
+end
+
+function GetP3DInt4(Chunk, Offset)
+    return String4ToInt(Chunk:sub(Offset, Offset + 3))
+end
+
+function SetP3DInt4(Chunk, Offset, NewValue)
+    NewValue = IntToString4(NewValue)
+    return Chunk:sub(1, Offset - 1) .. NewValue .. Chunk:sub(Offset + 4)
+end
+
+function AddP3DInt4(Chunk, Offset, Adjust)
+    local New = GetP3DInt4(Chunk, Offset) + Adjust
+    return SetP3DInt4(Chunk, Offset, New)
+end
+
 --Remove a substring from a string
 function RemoveString(Str, Start, End)
     return Str:sub(1, Start - 1) .. Str:sub(End)

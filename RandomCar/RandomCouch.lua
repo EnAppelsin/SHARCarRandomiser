@@ -133,22 +133,19 @@ if GetSetting("RandomCouch") then
 
 	-- Patch the last composite drawable skin
 	LastCDS = CDIndex + CDSLIndex +  positions[#positions] - Adjust - 2
-	CDSName, CDSLength = GetP3DString(Original, LastCDS + 12)
-	p3d_debug("Original comp draw skin name is " .. CDSName)
-	LengthByte = string.char(NewSkinName:len())
 
-	p3d_debug("> Changing name to " .. NewSkinName)
-	Original = Original:sub(1, LastCDS + 11) .. LengthByte .. NewSkinName .. Original:sub(LastCDS + CDSLength + 13)
+	p3d_debug("> Changing comp drawable name to " .. NewSkinName)
+    Original, Delta = SetP3DString(Original, LastCDS + 12, NewSkinName)
 
 	HeaderLength = String4ToInt(Original:sub(LastCDS + 4, LastCDS + 7))
-	HeaderLength = HeaderLength - CDSLength + NewSkinName:len()
+	HeaderLength = HeaderLength + Delta
 	HeaderBytes = IntToString4(HeaderLength)
 	Original = Original:sub(1, LastCDS + 3) .. HeaderBytes .. Original:sub(LastCDS + 8)
 	ChunkLength = String4ToInt(Original:sub(LastCDS + 8, LastCDS + 11))
-	LengthBytes = IntToString4(ChunkLength - CDSLength + NewSkinName:len())
+	LengthBytes = IntToString4(ChunkLength + Delta)
 	Original = Original:sub(1, LastCDS + 7) .. LengthBytes .. Original:sub(LastCDS + 12)
 
-	Adjust = Adjust + CDSLength - NewSkinName:len()
+	Adjust = Adjust - Delta
 
 	p3d_debug("Patching composite drawable skin list")
 	LengthBytes = IntToString4(CDSLLength - Adjust)
