@@ -10,6 +10,32 @@ elseif Path == "art\\chars\\homer_m.p3d" then
     local ReplacePath = "/GameData/art/chars/franke_m.p3d"
 	local Replace = ReadFile(ReplacePath)
     
+    -- Copy textures over
+    local Textures = ""
+	for position, length in FindSubchunks(Replace, TEXTURE_CHUNK) do
+		Textures = Textures .. Replace:sub(position, position + length - 1)
+	end
+
+    -- Copy shaders over
+	local Shaders = ""
+	local ShaderList = {}
+	for position, length in FindSubchunks(Replace, SHADER_CHUNK) do
+		local ShaderName = GetP3DString(Replace, position + 12)
+		ShaderList[ShaderName] = true
+		local Shader =  Replace:sub(position, position + length - 1)
+		Shaders = Shaders .. Shader
+	end
+
+    -- Remove clashing shaders
+	local Adjust = 0
+	for position, length in FindSubchunks(Original, SHADER_CHUNK) do
+		local ShaderName = GetP3DString(Original, position + 12 - Adjust)
+		if ShaderList[ShaderName] then
+			p3d_debug("Removing clashing shader " .. ShaderName)
+			Original = RemoveString(Original, position - Adjust, position + length - Adjust)
+		end
+	end
+    
     -- Load new skeleton
     local SKIndex, SKLength = FindSubchunk(Replace, SKELETON_CHUNK)
     local NewSkel = Replace:sub(SKIndex, SKIndex + SKLength - 1)
@@ -40,7 +66,7 @@ elseif Path == "art\\chars\\homer_m.p3d" then
     print(OSName, "->", SkelName, OS2Name, "->", SkinName, OS3Name, "->", SkelName)
     
     -- Add to original model
-    Original = Original:sub(1, SNIndex - 1) .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
+    Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
     
     -- Update file length
     Original = SetP3DInt4(Original, 9, Original:len())
