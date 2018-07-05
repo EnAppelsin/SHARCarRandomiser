@@ -9,7 +9,6 @@ MOTION_ROOT_LABEL = "Motion_Root\000"
 
 OrigChar = nil
 RandomChar = nil
-RandomChars = {}
 RandomCar = nil
 RandomCarName = nil
 LastLevel = nil
@@ -18,15 +17,39 @@ RandomChase = nil
 RemovedTrafficCars = {}
 TrafficCars = {}
 MissionVehicles = {}
+LevelCharacters = {}
+MissionCharacters = {}
 
-dialogspt = nil
-conversations = nil
-dialogsptend = nil
+-- Count number of random cars
+RandomCarPoolN = #RandomCarPool
+RandomPedPoolN = #RandomPedPool
 
 cartunespt = nil
 
+SettingRandomCouch = GetSetting("RandomCouch")
+SettingRandomCharacter = GetSetting("RandomCharacter")
+SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
+SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
+SettingSaveChoice = GetSetting("SaveChoice")
+SettingRandomCarScale = GetSetting("RandomCarScale")
+SettingRandomCarSounds = GetSetting("RandomCarSounds")
+SettingRandomPedestrians = GetSetting("RandomPedestrians")
+SettingRandomTraffic = GetSetting("RandomTraffic")
+SettingRandomChase = GetSetting("RandomChase")
+SettingRandomChaseAmount = GetSetting("RandomChaseAmount")
+SettingRandomChaseStats = GetSetting("RandomChaseStats")
+SettingRandomMissionVehicles = GetSetting("RandomMissionVehicles")
+SettingRandomMissionVehiclesStats = GetSetting("RandomMissionVehiclesStats")
+SettingDifferentCellouts = GetSetting("DifferentCellouts")
+SettingSaveChoiceMV = GetSetting("SaveChoiceMV")
+SettingRandomStats = GetSetting("RandomStats")
+SettingSkipLocks = GetSetting("SkipLocks")
+SettingSkipFMVs = GetSetting("SkipFMVs")
+SettingBoostHP = GetSetting("BoostHP")
+SettingNoHusk = GetSetting("NoHusk")
+
 --Random Stat Min/Max Variables
-if GetSetting("RandomStats") then
+if SettingRandomStats then
 --Mass Variables
 	MinMass = GetSetting("StatMinMass")
 	MaxMass = GetSetting("StatMaxMass")

@@ -1,3 +1,12 @@
+function GetRandomFromTbl(tbl, remove)
+    local i = math.random(#tbl)
+    local result = tbl[i]
+    if remove then
+        table.remove(tbl, i)
+    end
+    return result
+end
+
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult

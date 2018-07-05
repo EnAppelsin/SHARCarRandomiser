@@ -2938,7 +2938,7 @@ local RandomOverlayPool = {
 	"vote_quimby"
 }
 
-if GetSetting("RandomCarSounds") then
+if SettingRandomCarSounds then
     cartunespt = string.gsub(cartunespt, "SetEngineClipName%s*%(%s*\".-\"", function()
         local engine = RandomEnginePool[math.random(#RandomEnginePool)]
         return "SetEngineClipName ( \"" .. engine .. "\""
