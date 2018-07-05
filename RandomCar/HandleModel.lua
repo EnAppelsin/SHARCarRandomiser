@@ -1,15 +1,6 @@
 local Path = GetPath()
 
--- Handle the couch logic separately (it's quite long)
-if Path == "art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d" then
-    dofile(ModPath .. "/RandomCouch.lua")
--- TODO: This will randomise chosen model p3d files properly
-elseif Path == "art\\chars\\homer_m.p3d" then
-    local Original = ReadFile("GameData/" .. Path)
-    -- TODO: This is obviously hard coded at the moment
-    local ReplacePath = "/GameData/art/chars/franke_m.p3d"
-	local Replace = ReadFile(ReplacePath)
-    
+function ReplaceCharacterSkinSkel(Original, Replace)
     -- Copy textures over
     local Textures = ""
 	for position, length in FindSubchunks(Replace, TEXTURE_CHUNK) do
@@ -63,13 +54,28 @@ elseif Path == "art\\chars\\homer_m.p3d" then
     NewSkin = AddP3DInt4(NewSkin, 5, SkinDelta + SkinDelta2)
     NewSkin = AddP3DInt4(NewSkin, 9, SkinDelta + SkinDelta2)
     
-    print(OSName, "->", SkelName, OS2Name, "->", SkinName, OS3Name, "->", SkelName)
+    p3d_debug(OSName, "->", SkelName, OS2Name, "->", SkinName, OS3Name, "->", SkelName)
     
     -- Add to original model
     Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
     
     -- Update file length
     Original = SetP3DInt4(Original, 9, Original:len())
+    
+    return Original
+end
+
+-- Handle the couch logic separately (it's quite long)
+if Path == "art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d" then
+    dofile(ModPath .. "/RandomCouch.lua")
+-- TODO: This will randomise chosen model p3d files properly
+elseif Path == "art\\chars\\homer_m.p3d" then
+    local Original = ReadFile("GameData/" .. Path)
+    -- TODO: This is obviously hard coded at the moment
+    local ReplacePath = "/GameData/art/chars/franke_m.p3d"
+	local Replace = ReadFile(ReplacePath)
+    
+    Original = ReplaceCharacterSkinSkel(Original, Replace)
    
     Output(Original)
 end
