@@ -4,10 +4,10 @@ local Path = GetPath()
 if Path == "art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d" then
     dofile(ModPath .. "/RandomCouch.lua")
 -- TODO: This will randomise chosen model p3d files properly
-elseif Path == "art\\chars\\marge_m.p3d" then
+elseif Path == "art\\chars\\homer_m.p3d" then
     local Original = ReadFile("GameData/" .. Path)
     -- TODO: This is obviously hard coded at the moment
-    local ReplacePath = "/GameData/art/chars/homer_m.p3d"
+    local ReplacePath = "/GameData/art/chars/franke_m.p3d"
 	local Replace = ReadFile(ReplacePath)
     
     -- Load new skeleton
@@ -34,8 +34,8 @@ elseif Path == "art\\chars\\marge_m.p3d" then
     NewSkin, SkinDelta, OS2Name = SetP3DString(NewSkin, 13, SkinName)
     local SkelNameIndex = SkinName:len() + 18
     NewSkin, SkinDelta2, OS3Name = SetP3DString(NewSkin, SkelNameIndex, SkelName)
-    NewSkel = AddP3DInt4(NewSkel, 5, SkinDelta + SkinDelta2)
-    NewSkel = AddP3DInt4(NewSkel, 9, SkinDelta + SkinDelta2)
+    NewSkin = AddP3DInt4(NewSkin, 5, SkinDelta + SkinDelta2)
+    NewSkin = AddP3DInt4(NewSkin, 9, SkinDelta + SkinDelta2)
     
     print(OSName, "->", SkelName, OS2Name, "->", SkinName, OS3Name, "->", SkelName)
     
