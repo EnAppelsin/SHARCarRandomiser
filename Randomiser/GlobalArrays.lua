@@ -334,8 +334,3 @@ RandomCharP3DPool = {
 	"zmale3_m",
 	"zmale4_m"
 }
-
--- Add the husk unless disabled
-if not SettingNoHusk then
-	table.insert(RandomCarPool, "huskA")
-end

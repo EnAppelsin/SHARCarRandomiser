@@ -50,6 +50,11 @@ SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
 SettingNoHusk = GetSetting("NoHusk")
 
+-- Add the husk unless disabled
+if not SettingNoHusk then
+	table.insert(RandomCarPool, "huskA")
+end
+
 --Random Stat Min/Max Variables
 if SettingRandomStats then
 --Mass Variables
