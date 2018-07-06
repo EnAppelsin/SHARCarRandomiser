@@ -48,11 +48,11 @@ if string.match(Path, "tt%.con") then
 end
 
 -- Only update the randomly spawned car
-if GetSetting("RandomPlayerVehicles") and RandomCarName and string.match(Path, RandomCarName) then
+if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCarName) then
 
-	if GetSetting("RandomStats") and RandomCarName ~= "huskA" then	
+	if SettingRandomStats and RandomCarName ~= "huskA" then	
 		File = randomStats(File)
-	elseif GetSetting("BoostHP") then
+	elseif SettingBoostHP then
 		HP = string.match(File, "SetHitPoints%((.-)%);")
 		if HP and tonumber(HP) < 0.8 then
 			File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.8);", 1)
@@ -61,10 +61,10 @@ if GetSetting("RandomPlayerVehicles") and RandomCarName and string.match(Path, R
 	end
 end
 
-if GetSetting("RandomMissionVehicles") and MissionVehicles then
+if SettingRandomMissionVehicles and MissionVehicles then
 	for k,v in pairs(MissionVehicles) do
 		if string.match(Path, v) then
-			if GetSetting("RandomStats") then
+			if SettingRandomStats then
 				File = randomStats(File)
 			else
 				HP = string.match(File, "SetHitPoints%((.-)%);")
@@ -77,7 +77,7 @@ if GetSetting("RandomMissionVehicles") and MissionVehicles then
 	end
 end
 
-if GetSetting("RandomStats") and GetSetting("RandomTraffic") and TrafficCars and #TrafficCars > 0 then
+if SettingRandomStats and SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
 	for i = 1, #TrafficCars do
 		if string.match(Path, TrafficCars[i]) then
 			File = randomStats(File)
@@ -85,16 +85,11 @@ if GetSetting("RandomStats") and GetSetting("RandomTraffic") and TrafficCars and
 	end
 end
 
-if GetSetting("RandomPedestrians") then
-	local TmpDriverPool = {}
-	for k in pairs(CarDrivers) do
-		table.insert(TmpDriverPool, k)
-	end
-	local driver = math.random(#TmpDriverPool)
-	local driverName = TmpDriverPool[driver]
+if SettingRandomPedestrians then
+	local driverName = GetRandomFromTbl(RandomPedPool, false)
 		if string.match(File, "SetCharactersVisible%(%s*1%s*%);") then
 		File = string.gsub(File, "SetDriver%(%s*\"(.-)\"%s*%);", function(orig)
-			if GetSetting("RandomTraffic") and TrafficCars and #TrafficCars > 0 then
+			if SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
 				for i = 1, #TrafficCars do
 					if string.match(Path, TrafficCars[i]) then
 						print("Setting driver for traffic car " .. TrafficCars[i])
@@ -111,7 +106,7 @@ if GetSetting("RandomPedestrians") then
 	end
 end
 
-if GetSetting("RandomCarScale") and not string.match(Path, "huskA") then
+if SettingRandomCarScale and not string.match(Path, "huskA") then
 	local scale = round(math.random() + math.random(0, 4) + 0.3, 2)
 	if string.match(File, "SetCharacterScale%(") then
 		File = string.gsub(File, "SetCharacterScale%(%s*.-%s*%);", "SetCharacterScale(" .. scale .. ");")
