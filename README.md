@@ -15,8 +15,11 @@ On by default.
 If this is checked, you will get a random character sitting on the couch in the main menu.
 #### Random player character
 Off by default.
-If this is checked, you will get a random player character from (almost) any model in the game.
-Due to some limitations, some models aren't available.
+If this is checked, you will get a random player character every time you load a level, from any character model in the game.
+#### Random player character
+Off by default.
+If this is checked, mission specific characters will be randomised every time you load a mission.
+Note: This excludes ambient characters (such as Apu in the Kwik-E Mart). These are randomised through Random pedestrians.
 #### Random player vehicles
 On by default.
 If this is checked, you will get a random vehicle per level/mission.
@@ -34,7 +37,7 @@ If this is checked, car sounds (horns, engine, etc) will be randomised.
 If the car has an overlay (phone ringing, ice cream, etc) these are randomised too.
 #### Random pedestrians
 On by default.
-If this is checked, pedestrians and drivers will be randomised per level load.
+If this is checked, pedestrians, drivers and ambient characters will be randomised per level load.
 You will get the same pedestrians for each mission of a level.
 #### Random traffic
 On by default.
@@ -70,22 +73,43 @@ You can change the vehicles by cancelling the mission first and starting it agai
 If this is disabled you'll get random mission vehicles each time you restart.
 #### Random stats
 On by default.
-If this is checked, all randomised vehicles will also have random stats (to an extent).
-Disclaimer: This can cause missions to be impossible, I.E. if your random vehicle doesn't have the mass to destroy a mission vehicle
-### Gameplay Changes
-#### Remove car/costume requirements
+If this is checked, all randomised vehicles will have random stats. To customise, use the Random Stat Variables page.
+### Random Stat Variables
+#### Min/Max Mass
+These change the limits for the mass of a vehicle when using random stats.
+#### Min/Max Gas Scale
+These change the limits for the gas scale of a vehicle when using random stats.
+#### Min/Max Slip Gas Scale
+These change the limits for the slip gas scale of a vehicle when using random stats.
+#### Min/Max Break Gas Scale
+These change the limits for the break gas scale of a vehicle when using random stats.
+#### Min/Max Vehicle Speed
+These change the limits for the speed of a vehicle when using random stats.
+#### Min/Max Steering Angle
+These change the limits for the steering angle of a vehicle when using random stats.
+#### Min/Max Wheel Grip
+These change the limits for the wheel grip of a vehicle when using random stats.
+#### Min/Max Steering
+These change the limits for the steering of a vehicle when using random stats.
+#### Min/Max Slip Steering
+These change the limits for the slip steering of a vehicle when using random stats.
+#### Min/Max HP
+These change the limits for the HP of a vehicle when using random stats.
+### Misc
+#### Gameplay Changes
+##### Remove car/costume requirements
 Off by default.
 If this is checked, you won't need to be wearing a specific costume/be driving a specific car to start a mission.
 Removes the need for a coin route.
-#### Skip cutscenes (except intro cutscene)
+##### Skip cutscenes (except intro cutscene)
 Off by default.
 If this is checked, all cutscenes bar the introduction cutscene won't be played.
-#### Increase HP for weak cars
+##### Increase HP for weak cars
 Off by default.
 If this is checked weak cars like the rocket car will have their HP slightly boosted so they're not quite as fragile.
 It raises the minimum HP to 0.8 for all cars.
-### Misc
-#### No Husk (Destroyed Car)
+#### Misc
+##### No Husk (Destroyed Car)
 On by default.
 If this is checked the destroyed car (husk) is not in the list of random cars to use.
 The husk can cause problems with certain missions.
