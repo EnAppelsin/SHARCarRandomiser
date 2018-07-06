@@ -1,4 +1,5 @@
 # Simpsons Hit & Run Randomiser
+![The Randomiser](RandomiserBanner.png)
 
 This mod allows for randomising vehicles and characters throughout the game.
 Each randomisation has it's own option, detailed below.
