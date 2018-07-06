@@ -72,6 +72,29 @@ If this is disabled you'll get random mission vehicles each time you restart.
 On by default.
 If this is checked, all randomised vehicles will also have random stats (to an extent).
 Disclaimer: This can cause missions to be impossible, I.E. if your random vehicle doesn't have the mass to destroy a mission vehicle
+##### Vehicle Mass
+The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.
+Notice: It is believed that mass effects the toughness of a vehicle.
+#####Gas Scale
+The Gas scale is the acceleration of the vehicle if you were to just hold the acceleration button.
+#####Slip Gas Scale
+The Slip Gas Scale is the acceleration of a vehicle while it is sliding from speed or through the e-break
+#####Break Gas Scale
+The Break Gas Scale is the breaking speed of a vehicle when it is not sliding or e-breaking.
+#####Vehicle Speed
+Provides a value for the top speed of the vehicle
+#####Wheel Turn Angle
+The turn angle of the wheel effects how the vehicle steers, too high of a value being used can cause uncontrollability with a vehicle.
+#####High Speed Steering Drop
+High Speed Steering Drop changes the turn angle when the vehicle is close to its highest speed - making it harder to drive.
+#####Wheel Grip
+The wheel grip controls how the car will drift when it is driving [Primarily on acceleration and steering] - the higher the grip the more likely the car is to drift.
+#####Steering
+This controls the steering of the vehicle
+#####Slip Steering
+This controls the steering of the vehicle while in a drift
+#####HP
+This controls the amount of health that a vehicle has - 15HP is Armored Truck in 5-6
 ### Gameplay Changes
 #### Remove car/costume requirements
 Off by default.
