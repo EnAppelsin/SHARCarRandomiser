@@ -76,26 +76,29 @@ If this is disabled you'll get random mission vehicles each time you restart.
 On by default.
 If this is checked, all randomised vehicles will have random stats. To customise, use the Random Stat Variables page.
 ### Random Stat Variables
-#### Min/Max Mass
-These change the limits for the mass of a vehicle when using random stats.
-#### Min/Max Gas Scale
-These change the limits for the gas scale of a vehicle when using random stats.
-#### Min/Max Slip Gas Scale
-These change the limits for the slip gas scale of a vehicle when using random stats.
-#### Min/Max Break Gas Scale
-These change the limits for the break gas scale of a vehicle when using random stats.
-#### Min/Max Vehicle Speed
-These change the limits for the speed of a vehicle when using random stats.
-#### Min/Max Steering Angle
-These change the limits for the steering angle of a vehicle when using random stats.
-#### Min/Max Wheel Grip
-These change the limits for the wheel grip of a vehicle when using random stats.
-#### Min/Max Steering
-These change the limits for the steering of a vehicle when using random stats.
-#### Min/Max Slip Steering
-These change the limits for the slip steering of a vehicle when using random stats.
-#### Min/Max HP
-These change the limits for the HP of a vehicle when using random stats.
+##### Vehicle Mass
+The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.
+Notice: It is believed that mass affects the toughness of a vehicle.
+##### Gas Scale
+The Gas scale is the acceleration of the vehicle if you were to just hold the acceleration button.
+##### Slip Gas Scale
+The Slip Gas Scale is the acceleration of a vehicle while it is sliding from speed or through the e-break
+##### Break Gas Scale
+The Break Gas Scale is the breaking speed of a vehicle when it is not sliding or e-breaking.
+##### Vehicle Speed
+Provides a value for the top speed of the vehicle
+##### Wheel Turn Angle
+The turn angle of the wheel effects how the vehicle steers, too high of a value being used can cause uncontrollability with a vehicle.
+#####High Speed Steering Drop
+High Speed Steering Drop changes the turn angle when the vehicle is close to its highest speed - making it harder to drive.
+##### Wheel Grip
+The wheel grip controls how the car will drift when it is driving - primarily on acceleration and steering - the higher the grip the more likely the car is to drift.
+##### Steering
+This controls the steering of the vehicle
+##### Slip Steering
+This controls the steering of the vehicle while in a drift
+##### HP
+This controls the amount of health that a vehicle has - The Armoured truck in 5-6 has 15 HP
 ### Misc
 #### Gameplay Changes
 ##### Remove car/costume requirements
