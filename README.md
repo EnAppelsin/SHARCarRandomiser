@@ -78,7 +78,7 @@ If this is checked, all randomised vehicles will have random stats. To customise
 ### Random Stat Variables
 ##### Vehicle Mass
 The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.
-Notice: It is believed that mass effects the toughness of a vehicle.
+Notice: It is believed that mass affects the toughness of a vehicle.
 ##### Gas Scale
 The Gas scale is the acceleration of the vehicle if you were to just hold the acceleration button.
 ##### Slip Gas Scale
@@ -92,13 +92,13 @@ The turn angle of the wheel effects how the vehicle steers, too high of a value 
 #####High Speed Steering Drop
 High Speed Steering Drop changes the turn angle when the vehicle is close to its highest speed - making it harder to drive.
 ##### Wheel Grip
-The wheel grip controls how the car will drift when it is driving [Primarily on acceleration and steering] - the higher the grip the more likely the car is to drift.
+The wheel grip controls how the car will drift when it is driving - primarily on acceleration and steering - the higher the grip the more likely the car is to drift.
 ##### Steering
 This controls the steering of the vehicle
 ##### Slip Steering
 This controls the steering of the vehicle while in a drift
 ##### HP
-This controls the amount of health that a vehicle has - 15HP is Armored Truck in 5-6
+This controls the amount of health that a vehicle has - The Armoured truck in 5-6 has 15 HP
 ### Misc
 #### Gameplay Changes
 ##### Remove car/costume requirements
