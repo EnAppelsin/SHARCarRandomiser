@@ -91,7 +91,7 @@ end
 
 -- Uncomment to print more debug messages about the P3D file patching process
 function p3d_debug(message)
-    --print(message)
+    -- print(message)
 end
 
 function ReplaceCharacterSkinSkel(Original, Replace)
@@ -118,8 +118,20 @@ function ReplaceCharacterSkinSkel(Original, Replace)
 		if ShaderList[ShaderName] then
 			p3d_debug("Removing clashing shader " .. ShaderName)
 			Original = RemoveString(Original, position - Adjust, position + length - Adjust)
+            Adjust = Adjust + length
 		end
 	end
+    
+    -- Locate the new animation
+    ANIndex, ANLength = FindSubchunk(Replace, ANIMATION_CHUNK)
+    local Animation = ""
+    if ANIndex ~= nil then
+        p3d_debug("Replacing eyeball animation")
+        Animation = Replace:sub(ANIndex, ANIndex + ANLength - 1)        
+        -- Remove the original animation
+        local ANIndex, ANLength = FindSubchunk(Original, ANIMATION_CHUNK)
+        Original = RemoveString(Original, ANIndex, ANIndex + ANLength)    
+    end
     
     -- Load new skeleton
     local SKIndex, SKLength = FindSubchunk(Replace, SKELETON_CHUNK)
@@ -148,10 +160,22 @@ function ReplaceCharacterSkinSkel(Original, Replace)
     NewSkin = AddP3DInt4(NewSkin, 5, SkinDelta + SkinDelta2)
     NewSkin = AddP3DInt4(NewSkin, 9, SkinDelta + SkinDelta2)
     
-    p3d_debug(OSName, "->", SkelName, OS2Name, "->", SkinName, OS3Name, "->", SkelName)
+    p3d_debug(OSName .. "->" .. SkelName .. OS2Name .. "->" .. SkinName .. OS3Name .. "->" .. SkelName)
     
     -- Add to original model
-    Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
+    Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. Animation .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
+    
+    -- Locate the new OFC, if one exists
+    local NFCIndex, NFCLength = FindSubchunk(Replace, OLD_FRAME_CONTROLLER_CHUNK)
+    if NFCIndex ~= nil then
+        p3d_debug("Replacing eyeball frame controller")
+        -- Locate original OFC
+        local OFCIndex, OFCLength = FindSubchunk(Original, OLD_FRAME_CONTROLLER_CHUNK)
+        -- Get new OFC   
+        local NFC = Replace:sub(NFCIndex, NFCIndex + NFCLength - 1)
+        -- Replace the original OFC with the new one
+        Original = Original:sub(1, OFCIndex - 1) .. NFC .. Original:sub(OFCIndex + OFCLength)
+    end
     
     -- Update file length
     Original = SetP3DInt4(Original, 9, Original:len())

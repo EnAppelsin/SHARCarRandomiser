@@ -8,8 +8,9 @@ elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. Orig
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 	local Replace = ReadFile(ReplacePath)
 	
+    print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 	Original = ReplaceCharacterSkinSkel(Original, Replace)
-	print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+	
 	Output(Original)
 else
 	if SettingRandomMissionCharacters and MissionCharacters then
@@ -23,8 +24,9 @@ else
 				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 				local Replace = ReadFile(ReplacePath)
 				
+                print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 				Original = ReplaceCharacterSkinSkel(Original, Replace)
-				print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+				
 				Output(Original)
 				break
 			end
@@ -41,8 +43,9 @@ else
 				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 				local Replace = ReadFile(ReplacePath)
 				
+                print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 				Original = ReplaceCharacterSkinSkel(Original, Replace)
-				print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+                
 				Output(Original)
 				break
 			end
