@@ -5,7 +5,7 @@ We welcome all forms of contribution to help make this mod great, and many peopl
 If you have found an issue with the randomiser (such a crash!) please file an issue on [our issue tracker](https://github.com/EnAppelsin/SHARCarRandomiser/issues).
 Please use the templates provided, especially for bugs, and be as detailed as you can! If we can reproduce the bug it's much easier for us to fix it!
 
-In order to assist troubleshooting you can enable the 'Console' mod in the Lucas' Mod Launcher, and enable 'Mods' is enabled in Console's settings, this will create a window where some diagnostic information (such as chosen randomisations) will be displayed during the game. This may be particularly helpful if you would like to fix the bug yourself.
+In order to assist troubleshooting you can enable the 'Console' mod in Lucas' Mod Launcher, and ensure 'Mods' is enabled in Console's settings, this will create a window where some diagnostic information (such as chosen randomisations) will be displayed during the game. This may be particularly helpful if you would like to fix the bug yourself.
 
 ## Code
 Want to fix a bug? Add a feature? We welcome code contributions no matter how small as a [pull request](https://github.com/EnAppelsin/SHARCarRandomiser/pulls).
