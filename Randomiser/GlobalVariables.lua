@@ -20,6 +20,7 @@ RemovedTrafficCars = {}
 TrafficCars = {}
 MissionVehicles = {}
 LevelCharacters = {}
+BonusCharacters = {}
 MissionCharacters = {}
 
 -- Count number of random cars

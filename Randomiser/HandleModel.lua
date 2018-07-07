@@ -13,22 +13,43 @@ elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. Orig
 	
 	Output(Original)
 else
-	if SettingRandomMissionCharacters and MissionCharacters then
-		for i = 1, #MissionCharacters do
-			local model = MissionCharacters[i]
-			if model:len() > 6 then
-				model = model:sub(1, 6)
+	if SettingRandomMissionCharacters then
+		if MissionCharacters then
+			for i = 1, #MissionCharacters do
+				local model = MissionCharacters[i]
+				if model:len() > 6 then
+					model = model:sub(1, 6)
+				end
+				if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
+					local Original = ReadFile("GameData/" .. Path)
+					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+					local Replace = ReadFile(ReplacePath)
+					
+					print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+					Original = ReplaceCharacterSkinSkel(Original, Replace)
+					
+					Output(Original)
+					break
+				end
 			end
-			if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
-				local Original = ReadFile("GameData/" .. Path)
-				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
-				local Replace = ReadFile(ReplacePath)
-				
-                print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
-				Original = ReplaceCharacterSkinSkel(Original, Replace)
-				
-				Output(Original)
-				break
+		end
+		if BonusCharacters then
+			for i = 1, #BonusCharacters do
+				local model = BonusCharacters[i]
+				if model:len() > 6 then
+					model = model:sub(1, 6)
+				end
+				if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
+					local Original = ReadFile("GameData/" .. Path)
+					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+					local Replace = ReadFile(ReplacePath)
+					
+					print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+					Original = ReplaceCharacterSkinSkel(Original, Replace)
+					
+					Output(Original)
+					break
+				end
 			end
 		end
 	end

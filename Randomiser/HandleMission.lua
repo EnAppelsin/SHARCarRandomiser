@@ -316,9 +316,9 @@ elseif LevelInit ~= nil then
 		print("Random pedestrians for level -> " .. Peds)
 	end
 	if SettingRandomMissionCharacters then
-		MissionCharacters = {}
+		BonusCharacters = {}
 		for npc in NewFile:gmatch("AddNPCCharacterBonusMission%s*%(%s*\"(.-)\"") do
-			table.insert(MissionCharacters, npc)
+			table.insert(BonusCharacters, npc)
 		end
 	end
 	if SettingRandomTraffic then
