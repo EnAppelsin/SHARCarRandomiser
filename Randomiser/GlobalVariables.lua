@@ -20,6 +20,8 @@ MissionVehicles = {}
 LevelCharacters = {}
 MissionCharacters = {}
 
+
+
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
@@ -48,6 +50,10 @@ SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
 SettingNoHusk = GetSetting("NoHusk")
 
+-- Random Car Scale
+MinCarScale = GetSetting("StatMinScale")
+MaxCarScale = GetSetting("StatMaxScale")
+
 --Random Stat Min/Max Variables
 if SettingRandomStats then
 --Mass Variables
@@ -60,7 +66,7 @@ if SettingRandomStats then
 	MinGas = GetSetting("StatMinGas")
 	MaxGas = GetSetting("StatMaxGas")
 	if MaxGas < MinGas then
-		MaxGass = MinGas
+		MaxGas = MinGas
 	end
 --Slip Gas Scale Variables
 	MinSlipGas = GetSetting("StatMinSlipGasScale")
