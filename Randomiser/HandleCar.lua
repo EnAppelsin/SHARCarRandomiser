@@ -107,7 +107,7 @@ if SettingRandomPedestrians then
 end
 
 if SettingRandomCarScale and not string.match(Path, "huskA") then
-	local scale = round(math.random() + math.random(0, 4) + 0.3, 2)
+	local scale = round(math.random() + math.random(MinCarScale, MaxCarScale) + 0.3, 2)
 	if string.match(File, "SetCharacterScale%(") then
 		File = string.gsub(File, "SetCharacterScale%(%s*.-%s*%);", "SetCharacterScale(" .. scale .. ");")
 	else

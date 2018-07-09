@@ -68,7 +68,7 @@ if SettingRandomStats then
 	MinGas = GetSetting("StatMinGas")
 	MaxGas = GetSetting("StatMaxGas")
 	if MaxGas < MinGas then
-		MaxGass = MinGas
+		MaxGas = MinGas
 	end
 --Slip Gas Scale Variables
 	MinSlipGas = GetSetting("StatMinSlipGasScale")
@@ -117,5 +117,14 @@ if SettingRandomStats then
 	MaxHP = GetSetting("StatMaxHP")
 	if MaxHP < MinHP then
 		MaxHP = MinHP
+	end
+end
+
+if SettingRandomCarScale then
+	-- Random Car Scale
+	MinCarScale = GetSetting("StatMinScale")
+	MaxCarScale = GetSetting("StatMaxScale")
+	if MaxCarScale < MinCarScale then
+		MaxCarScale = MinCarScale
 	end
 end
