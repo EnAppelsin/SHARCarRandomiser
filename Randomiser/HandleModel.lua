@@ -13,8 +13,9 @@ elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. Orig
 	
 	Output(Original)
 else
+	local updated = false
 	if SettingRandomMissionCharacters then
-		if MissionCharacters then
+		if MissionCharacters and not updated then
 			for i = 1, #MissionCharacters do
 				local model = MissionCharacters[i]
 				if model:len() > 6 then
@@ -29,11 +30,12 @@ else
 					Original = ReplaceCharacterSkinSkel(Original, Replace)
 					
 					Output(Original)
+					updated = true
 					break
 				end
 			end
 		end
-		if BonusCharacters then
+		if BonusCharacters and not updated then
 			for i = 1, #BonusCharacters do
 				local model = BonusCharacters[i]
 				if model:len() > 6 then
@@ -48,12 +50,13 @@ else
 					Original = ReplaceCharacterSkinSkel(Original, Replace)
 					
 					Output(Original)
+					updated = true
 					break
 				end
 			end
 		end
 	end
-	if SettingRandomPedestrians and LevelCharacters then
+	if SettingRandomPedestrians and LevelCharacters and not updated then
 		for i = 1, #LevelCharacters do
 			local model = LevelCharacters[i]
 			if model:len() > 6 then
@@ -68,6 +71,7 @@ else
 				Original = ReplaceCharacterSkinSkel(Original, Replace)
                 
 				Output(Original)
+				updated = true
 				break
 			end
 		end
