@@ -130,7 +130,9 @@ function ReplaceCharacterSkinSkel(Original, Replace)
         Animation = Replace:sub(ANIndex, ANIndex + ANLength - 1)        
         -- Remove the original animation
         local ANIndex, ANLength = FindSubchunk(Original, ANIMATION_CHUNK)
-        Original = RemoveString(Original, ANIndex, ANIndex + ANLength)    
+        if ANIndex ~= nil then
+            Original = RemoveString(Original, ANIndex, ANIndex + ANLength)
+        end
     end
     
     -- Load new skeleton
@@ -171,10 +173,12 @@ function ReplaceCharacterSkinSkel(Original, Replace)
         p3d_debug("Replacing eyeball frame controller")
         -- Locate original OFC
         local OFCIndex, OFCLength = FindSubchunk(Original, OLD_FRAME_CONTROLLER_CHUNK)
-        -- Get new OFC   
-        local NFC = Replace:sub(NFCIndex, NFCIndex + NFCLength - 1)
-        -- Replace the original OFC with the new one
-        Original = Original:sub(1, OFCIndex - 1) .. NFC .. Original:sub(OFCIndex + OFCLength)
+        if OFCIndex ~= nil then
+            -- Get new OFC   
+            local NFC = Replace:sub(NFCIndex, NFCIndex + NFCLength - 1)
+            -- Replace the original OFC with the new one
+            Original = Original:sub(1, OFCIndex - 1) .. NFC .. Original:sub(OFCIndex + OFCLength)
+        end
     end
     
     -- Update file length
