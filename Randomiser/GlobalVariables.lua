@@ -1,10 +1,12 @@
 TEXTURE_CHUNK = "\000\144\001\000"
 SHADER_CHUNK = "\000\016\001\000"
+ANIMATION_CHUNK = "\000\016\018\000"
 SKIN_CHUNK = "\001\000\001\000"
 SKELETON_CHUNK = "\000\069\000\000"
 COMP_DRAW_CHUNK = "\018\069\000\000"
 COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
 COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
+OLD_FRAME_CONTROLLER_CHUNK = "\000\018\018\000"
 MOTION_ROOT_LABEL = "Motion_Root\000"
 
 OrigChar = nil
@@ -18,9 +20,8 @@ RemovedTrafficCars = {}
 TrafficCars = {}
 MissionVehicles = {}
 LevelCharacters = {}
+BonusCharacters = {}
 MissionCharacters = {}
-
-
 
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
@@ -50,9 +51,10 @@ SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
 SettingNoHusk = GetSetting("NoHusk")
 
--- Random Car Scale
-MinCarScale = GetSetting("StatMinScale")
-MaxCarScale = GetSetting("StatMaxScale")
+-- Add the husk unless disabled
+if not SettingNoHusk then
+	table.insert(RandomCarPool, "huskA")
+end
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then
@@ -115,5 +117,14 @@ if SettingRandomStats then
 	MaxHP = GetSetting("StatMaxHP")
 	if MaxHP < MinHP then
 		MaxHP = MinHP
+	end
+end
+
+if SettingRandomCarScale then
+	-- Random Car Scale
+	MinCarScale = GetSetting("StatMinScale")
+	MaxCarScale = GetSetting("StatMaxScale")
+	if MaxCarScale < MinCarScale then
+		MaxCarScale = MinCarScale
 	end
 end

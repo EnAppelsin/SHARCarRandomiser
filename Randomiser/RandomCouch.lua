@@ -61,6 +61,7 @@ if SettingRandomCouch then
 		if ShaderList[ShaderName] then
 			p3d_debug("Removing clashing shader " .. ShaderName)
 			Original = RemoveString(Original, position - Adjust, position + length - Adjust)
+            Adjust = Adjust + length
 		end
 	end
 
