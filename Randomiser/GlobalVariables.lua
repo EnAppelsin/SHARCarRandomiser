@@ -30,6 +30,8 @@ RandomPedPoolN = #RandomPedPool
 cartunespt = nil
 
 SettingRandomCouch = GetSetting("RandomCouch")
+SettingRandomMusic = GetSetting("RandomMusic")
+SettingRandomMusicCues = GetSetting("RandomMusicCues")
 SettingRandomCharacter = GetSetting("RandomCharacter")
 SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
 SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
