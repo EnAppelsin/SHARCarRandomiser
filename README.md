@@ -14,6 +14,12 @@ All possible randomisations are available in separate settings.
 #### Random couch character
 On by default.
 If this is checked, you will get a random character sitting on the couch in the main menu.
+#### Random music
+On by default.
+If this is checked, the music played will be randomised to any track in the game.
+#### Random music cues
+Off by default.
+If this is checked, the cues that trigger different music tracks are randomised.
 #### Random player character
 Off by default.
 If this is checked, you will get a random player character every time you load a level, from any character model in the game.
@@ -89,8 +95,6 @@ The Break Gas Scale is the breaking speed of a vehicle when it is not sliding or
 Provides a value for the top speed of the vehicle
 ##### Wheel Turn Angle
 The turn angle of the wheel effects how the vehicle steers, too high of a value being used can cause uncontrollability with a vehicle.
-#####High Speed Steering Drop
-High Speed Steering Drop changes the turn angle when the vehicle is close to its highest speed - making it harder to drive.
 ##### Wheel Grip
 The wheel grip controls how the car will drift when it is driving - primarily on acceleration and steering - the higher the grip the more likely the car is to drift.
 ##### Steering
