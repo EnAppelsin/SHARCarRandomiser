@@ -89,7 +89,7 @@ The Break Gas Scale is the breaking speed of a vehicle when it is not sliding or
 Provides a value for the top speed of the vehicle
 ##### Wheel Turn Angle
 The turn angle of the wheel effects how the vehicle steers, too high of a value being used can cause uncontrollability with a vehicle.
-#####High Speed Steering Drop
+##### High Speed Steering Drop
 High Speed Steering Drop changes the turn angle when the vehicle is close to its highest speed - making it harder to drive.
 ##### Wheel Grip
 The wheel grip controls how the car will drift when it is driving - primarily on acceleration and steering - the higher the grip the more likely the car is to drift.
