@@ -1,5 +1,5 @@
 ## Summary of changes
-<!--- Put an `x` in all the boxes that apply: -->
+<!--- Replace the space with an `x` in all the boxes that apply: -->
 - [ ] I have read the **CONTRIBUTING** document
 - [ ] Bug fix (change which fixes an issue)
 - [ ] New feature (change which adds functionality) (target dev!)
