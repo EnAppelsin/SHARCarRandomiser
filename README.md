@@ -17,9 +17,11 @@ If this is checked, you will get a random character sitting on the couch in the 
 #### Random music
 On by default.
 If this is checked, the music played will be randomised to any track in the game.
+*If enabled with random music cues, both cues and music will be randomised*
 #### Random music cues
 Off by default.
 If this is checked, the cues that trigger different music tracks are randomised.
+*If enabled with random music, both cues and music will be randomised*
 #### Random player character
 Off by default.
 If this is checked, you will get a random player character every time you load a level, from any character model in the game.
