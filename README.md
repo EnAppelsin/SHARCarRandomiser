@@ -1,128 +1,128 @@
 # Simpsons Hit & Run Randomiser
 ![The Randomiser](RandomiserBanner.png)
 
-This mod allows for randomising vehicles and characters throughout the game.
-Each randomisation has it's own option, detailed below.
+This mod allows for randomising vehicles and characters throughout the game.  
+Each randomisation has it's own option, detailed below.  
 
 ## Installation
-Copy the mod file (.lmlm) to your Mods folder (usually Documents\My Games\Lucas' Simpsons Hit & Run Mod Launcher\Mods)
-Run the Mod Launcher and change the settings to match your needs, then play the game.
-All possible randomisations are available in separate settings.
+Copy the mod file (.lmlm) to your Mods folder (usually Documents\My Games\Lucas' Simpsons Hit & Run Mod Launcher\Mods).  
+Run the Mod Launcher and change the settings to match your needs, then play the game.  
+All possible randomisations are available in separate settings.  
 
 ## Settings
 ### Randomisations
 #### Random couch character
-On by default.
+On by default.  
 If this is checked, you will get a random character sitting on the couch in the main menu.
 #### Random music
-On by default.
-If this is checked, the music played will be randomised to any track in the game.
+On by default.  
+If this is checked, the music played will be randomised to any track in the game.  
 *If enabled with random music cues, both cues and music will be randomised*
 #### Random music cues
-Off by default.
-If this is checked, the cues that trigger different music tracks are randomised.
+Off by default.  
+If this is checked, the cues that trigger different music tracks are randomised.  
 *If enabled with random music, both cues and music will be randomised*
 #### Random player character
-Off by default.
+Off by default.  
 If this is checked, you will get a random player character every time you load a level, from any character model in the game.
 #### Random player character
-Off by default.
-If this is checked, mission specific characters will be randomised every time you load a mission.
+Off by default.  
+If this is checked, mission specific characters will be randomised every time you load a mission.  
 Note: This excludes ambient characters (such as Apu in the Kwik-E Mart). These are randomised through Random pedestrians.
 #### Random player vehicles
-On by default.
+On by default.  
 If this is checked, you will get a random vehicle per level/mission.
 #### Same car if restarting/failing mission
-On by default.
-If this is checked and you restart the mission (or retry after failing) you will get the same car again.
-You can change the car by cancelling the mission first and starting it again.
+On by default.  
+If this is checked and you restart the mission (or retry after failing) you will get the same car again.  
+You can change the car by cancelling the mission first and starting it again.  
 If this is disabled you'll get a random car each time you restart.
 #### Random car scale
-Off by default.
+Off by default.  
 If this is checked, the model scale for any character in a car will be randomised.
 #### Random car sounds
-Off by default.
-If this is checked, car sounds (horns, engine, etc) will be randomised.
+Off by default.  
+If this is checked, car sounds (horns, engine, etc) will be randomised.  
 If the car has an overlay (phone ringing, ice cream, etc) these are randomised too.
 #### Random pedestrians
-On by default.
-If this is checked, pedestrians, drivers and ambient characters will be randomised per level load.
+On by default.  
+If this is checked, pedestrians, drivers and ambient characters will be randomised per level load.  
 You will get the same pedestrians for each mission of a level.
 #### Random traffic
-On by default.
-If this is checked, traffic cars will be randomised per level load.
+On by default.  
+If this is checked, traffic cars will be randomised per level load.  
 You will get the same traffic cars for each mission of a level.
 #### Random chase car
-On by default.
-If this is checked, chase cars will be randomised per level load.
+On by default.  
+If this is checked, chase cars will be randomised per level load.  
 You will get the same chase cars for each mission of a level.
 #### Random chase car amount
-On by default.
-If this is checked, the number of chase cars will be randomised per level load.
+On by default.  
+If this is checked, the number of chase cars will be randomised per level load.  
 You will get the same number for each mission of a level.
 #### Random chase car - stats
-On by default.
-If this is checked, random chase cars will have the stats of the chosen car.
+On by default.  
+If this is checked, random chase cars will have the stats of the chosen car.  
 Otherwise, random chase cars will have the stats of the level's default chase cars.
 #### Random mission vehicles
-On by default.
-If this is checked, most mission vehicles will be randomised (including races).
+On by default.  
+If this is checked, most mission vehicles will be randomised (including races).  
 You will get the same traffic cars for each mission of a level.
 #### Random mission vehicles - stats
-On by default.
-If this is checked, random mission vehicles will have the stats of the chosen vehicle.
+On by default.  
+If this is checked, random mission vehicles will have the stats of the chosen vehicle.  
 Otherwise, random mission vehicles will have the stats of the level's default vehicles.
 #### Different random cellouts
-On by default.
+On by default.  
 If this is checked, cellouts will be 4 random cars instead of the same car 4 times.
 #### Same mission vehicle if restarting/failing mission
-On by default.
-If this is checked and you restart the mission (or retry after failing) you will get the same mission vehicles again.
-You can change the vehicles by cancelling the mission first and starting it again.
+On by default.  
+If this is checked and you restart the mission (or retry after failing) you will get the same mission vehicles again.  
+You can change the vehicles by cancelling the mission first and starting it again.  
 If this is disabled you'll get random mission vehicles each time you restart.
 #### Random stats
-On by default.
+On by default.  
 If this is checked, all randomised vehicles will have random stats. To customise, use the Random Stat Variables page.
 ### Random Stat Variables
 ##### Vehicle Mass
-The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.
+The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.  
 Notice: It is believed that mass affects the toughness of a vehicle.
 ##### Gas Scale
 The Gas scale is the acceleration of the vehicle if you were to just hold the acceleration button.
 ##### Slip Gas Scale
-The Slip Gas Scale is the acceleration of a vehicle while it is sliding from speed or through the e-break
+The Slip Gas Scale is the acceleration of a vehicle while it is sliding from speed or through the e-break.
 ##### Break Gas Scale
 The Break Gas Scale is the breaking speed of a vehicle when it is not sliding or e-breaking.
 ##### Vehicle Speed
-Provides a value for the top speed of the vehicle
+Provides a value for the top speed of the vehicle.
 ##### Wheel Turn Angle
 The turn angle of the wheel effects how the vehicle steers, too high of a value being used can cause uncontrollability with a vehicle.
 ##### Wheel Grip
 The wheel grip controls how the car will drift when it is driving - primarily on acceleration and steering - the higher the grip the more likely the car is to drift.
 ##### Steering
-This controls the steering of the vehicle
+This controls the steering of the vehicle.
 ##### Slip Steering
-This controls the steering of the vehicle while in a drift
+This controls the steering of the vehicle while in a drift.
 ##### HP
-This controls the amount of health that a vehicle has - The Armoured truck in 5-6 has 15 HP
+This controls the amount of health that a vehicle has - The Armoured truck in 5-6 has 15 HP.
 ### Misc
 #### Gameplay Changes
 ##### Remove car/costume requirements
-Off by default.
-If this is checked, you won't need to be wearing a specific costume/be driving a specific car to start a mission.
+Off by default.  
+If this is checked, you won't need to be wearing a specific costume/be driving a specific car to start a mission.  
 Removes the need for a coin route.
 ##### Skip cutscenes (except intro cutscene)
-Off by default.
+Off by default.  
 If this is checked, all cutscenes bar the introduction cutscene won't be played.
 ##### Increase HP for weak cars
-Off by default.
-If this is checked weak cars like the rocket car will have their HP slightly boosted so they're not quite as fragile.
+Off by default.  
+If this is checked weak cars like the rocket car will have their HP slightly boosted so they're not quite as fragile.  
 It raises the minimum HP to 0.8 for all cars.
 #### Misc
 ##### No Husk (Destroyed Car)
-On by default.
-If this is checked the destroyed car (husk) is not in the list of random cars to use.
-The husk can cause problems with certain missions.
+On by default.  
+If this is checked the destroyed car (husk) is not in the list of random cars to use.  
+The husk can cause problems with certain missions.  
 	
 ## Potential Limitations/Issues
 - Missions will spawn you where you start if you restart the mission once, this is because adding a forced car teleports you.
