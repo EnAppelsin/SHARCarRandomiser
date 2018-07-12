@@ -90,10 +90,6 @@ RandomCarPool = {
 	"huskA"
 }
 
--- Count number of random cars
-RandomCarPoolN = #RandomCarPool
-RandomPedPoolN = #RandomPedPool
-
 RandomCarPoolPlayer = {table.unpack(RandomCarPool)}
 for i = #RandomCarPoolPlayer, 1, -1 do
 	if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then

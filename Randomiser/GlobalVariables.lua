@@ -25,6 +25,10 @@ LevelCharacters = {}
 BonusCharacters = {}
 MissionCharacters = {}
 
+-- Count number of random cars
+RandomCarPoolN = #RandomCarPool
+RandomPedPoolN = #RandomPedPool
+
 cartunespt = nil
 
 SettingRandomCouch = GetSetting("RandomCouch")
