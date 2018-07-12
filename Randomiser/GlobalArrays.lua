@@ -86,8 +86,38 @@ RandomCarPool = {
 	"wiggu_v",
 	"willi_v",
 	"witchcar",
-	"zombi_v"
+	"zombi_v",
+	"huskA"
 }
+
+-- Count number of random cars
+RandomCarPoolN = #RandomCarPool
+RandomPedPoolN = #RandomPedPool
+
+RandomCarPoolPlayer = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolPlayer, 1, -1 do
+	if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then
+		table.remove(RandomCarPoolPlayer, i)
+	end
+end
+RandomCarPoolTraffic = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolPlayer, 1, -1 do
+	if not GetSetting(RandomCarPoolPlayer[i] .. "Traffic") then
+		table.remove(RandomCarPoolPlayer, i)
+	end
+end
+RandomCarPoolMission = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolPlayer, 1, -1 do
+	if not GetSetting(RandomCarPoolPlayer[i] .. "Mission") then
+		table.remove(RandomCarPoolPlayer, i)
+	end
+end
+RandomCarPoolChase = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolPlayer, 1, -1 do
+	if not GetSetting(RandomCarPoolPlayer[i] .. "Chase") then
+		table.remove(RandomCarPoolPlayer, i)
+	end
+end
 
 -- DRIVER LIST
 CarDrivers = {}

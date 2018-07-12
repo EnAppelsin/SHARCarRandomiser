@@ -142,13 +142,13 @@ elseif Lidx ~= nil then
 	if SettingRandomPlayerVehicles then
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
-				RandomCar = math.random(RandomCarPoolN)
+				RandomCar = math.random(#RandomCarPoolPlayer)
 			end
 			LastLevel = Path
 		else
-			RandomCar = math.random(RandomCarPoolN)
+			RandomCar = math.random(#RandomCarPoolPlayer)
 		end
-		RandomCarName = RandomCarPool[RandomCar]
+		RandomCarName = RandomCarPoolPlayer[RandomCar]
 
 		local ForcedMission = false
 		local Match
@@ -175,10 +175,7 @@ elseif Lidx ~= nil then
 		if SettingSaveChoiceMV then
 			if LastLevelMV == nil or LastLevelMV ~= Path then			
 				MissionVehicles = {}
-				local TmpCarPool = {table.unpack(RandomCarPool)}
-				if not SettingNoHusk then
-					table.remove(TmpCarPool, #TmpCarPool)
-				end
+				local TmpCarPool = {table.unpack(RandomCarPoolMission)}
 				if SettingDifferentCellouts and Path:match("level02\\m7l.mfk") then
 					NewFile = NewFile:gsub("cCellA", "cCellA1")
 					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
@@ -206,10 +203,7 @@ elseif Lidx ~= nil then
 			LastLevelMV = Path
 		else
 			MissionVehicles = {}
-			local TmpCarPool = {table.unpack(RandomCarPool)}
-			if not SettingNoHusk then
-				table.remove(TmpCarPool, #TmpCarPool)
-			end
+			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
 			if Path:match("level02\\m7l.mfk") then
 				NewFile = NewFile:gsub("cCellA", "cCellA1")
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
@@ -239,8 +233,8 @@ elseif Lidx ~= nil then
 elseif LevelLoad ~= nil then
 	if SettingRandomPlayerVehicles then
 		LastLevel = nil
-		RandomCar = math.random(RandomCarPoolN)
-		RandomCarName = RandomCarPool[RandomCar]
+		RandomCar = math.random(#RandomCarPoolPlayer)
+		RandomCarName = RandomCarPoolPlayer[RandomCar]
 		NewFile = NewFile:gsub("(.*)LoadDisposableCar%s*%(%s*\".-\"%s*,%s*\".-\"%s*,%s*\"DEFAULT\"%s*%);", "%1LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"DEFAULT\");", 1)
 		print("Randomising car for level (load) -> " .. RandomCarName)
 	end
@@ -249,10 +243,7 @@ elseif LevelLoad ~= nil then
 	end
 	if SettingRandomTraffic then
 		TrafficCars = {}
-		local TmpCarPool = {table.unpack(RandomCarPool)}
-		if not SettingNoHusk then
-			table.remove(TmpCarPool, #TmpCarPool)
-		end
+		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
 		for i = 1, 5 do
 			local carName = GetRandomFromTbl(TmpCarPool, true)
@@ -267,7 +258,7 @@ elseif LevelLoad ~= nil then
 		print("Random traffic cars for level -> " .. Cars)
 	end
 	if SettingRandomChase then
-		RandomChase = GetRandomFromTbl(RandomCarPool, false)
+		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
 		NewFile = NewFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. RandomChase .. ".p3d\");"
 		print("Random chase cars for level -> " .. RandomChase)
 	end

@@ -23,10 +23,6 @@ LevelCharacters = {}
 BonusCharacters = {}
 MissionCharacters = {}
 
--- Count number of random cars
-RandomCarPoolN = #RandomCarPool
-RandomPedPoolN = #RandomPedPool
-
 cartunespt = nil
 
 SettingRandomCouch = GetSetting("RandomCouch")
@@ -51,12 +47,6 @@ SettingRandomStats = GetSetting("RandomStats")
 SettingSkipLocks = GetSetting("SkipLocks")
 SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
-SettingNoHusk = GetSetting("NoHusk")
-
--- Add the husk unless disabled
-if not SettingNoHusk then
-	table.insert(RandomCarPool, "huskA")
-end
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then

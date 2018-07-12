@@ -1,6 +1,6 @@
 ModPath = GetModPath()
-dofile(ModPath .. "/GlobalArrays.lua")
 dofile(ModPath .. "/GlobalVariables.lua")
+dofile(ModPath .. "/GlobalArrays.lua")
 dofile(ModPath .. "/GlobalFunctions.lua")
 
 print("Random Cars: Using " .. RandomCarPoolN .. " cars")
