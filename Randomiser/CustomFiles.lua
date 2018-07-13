@@ -3,8 +3,10 @@ dofile(ModPath .. "/GlobalArrays.lua")
 dofile(ModPath .. "/GlobalVariables.lua")
 dofile(ModPath .. "/GlobalFunctions.lua")
 
-print("Random Cars: Using " .. RandomCarPoolN .. " cars")
-print("Random Cars: Using " .. RandomPedPoolN .. " pedestrians")
+ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)\r\n")
+print("Randomiser v" .. ModVersion)
+print("Randomiser: Using " .. RandomCarPoolN .. " cars")
+print("Randomiser: Using " .. RandomPedPoolN .. " pedestrians")
 
 dofile(ModPath .. "/RandomCarTune.lua")
 
