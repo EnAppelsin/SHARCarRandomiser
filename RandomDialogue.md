@@ -25,4 +25,4 @@ Once all files are extracted, copy the enter "RandomDialogue" folder to the root
 ## Step 5
 Setup complete. Now you can enable the "Random Dialogue" setting in mod settings.  
 
-Because of how this loads, you can actually add custom dialogue lines if you know how to setup dialogue RSD files, simply by putting them into that folder.
+*Because of how this loads, you can actually add custom dialogue lines if you know how to setup dialogue RSD files, simply by putting them into that folder.*
