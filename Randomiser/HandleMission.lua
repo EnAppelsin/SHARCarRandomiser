@@ -343,7 +343,7 @@ elseif LevelInit ~= nil then
 			NewFile = NewFile:gsub("CreateChaseManager%s*%(%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
 		end
 		if SettingRandomChaseAmount then
-			NewFile = NewFile:gsub("SetNumChaseCars%s*%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 5) .."\"", 1)
+			NewFile = NewFile:gsub("SetNumChaseCars%s*%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 4) .."\"", 1)
 		end
 	end
 	Output(NewFile)
