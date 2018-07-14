@@ -28,12 +28,14 @@ MissionCharacters = {}
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
+RandomDialoguePoolN = 0
 
 cartunespt = nil
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
 SettingRandomMusicCues = GetSetting("RandomMusicCues")
+SettingRandomDialogue = GetSetting("RandomDialogue")
 SettingRandomCharacter = GetSetting("RandomCharacter")
 SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
 SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")

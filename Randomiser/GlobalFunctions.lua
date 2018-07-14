@@ -186,3 +186,22 @@ function ReplaceCharacterSkinSkel(Original, Replace)
     
     return Original
 end
+
+function endsWith(String,End)
+   return End=='' or string.sub(String:lower(),-string.len(End))==End:lower()
+end
+
+function GetFiles(tbl, dir, extension, count)
+	DirectoryGetEntries(dir, function(name, directory)
+		if directory then
+			GetFiles(tbl, dir .. name, extension, count)
+		else
+			for i = 1, count do
+				if endsWith(name, extension) then
+					table.insert(tbl, dir .. "/" .. name)
+				end
+			end
+		end
+		return true
+	end)
+end

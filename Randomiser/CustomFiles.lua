@@ -8,4 +8,6 @@ print("Randomiser: Using " .. RandomCarPoolN .. " cars")
 print("Randomiser: Using " .. RandomPedPoolN .. " pedestrians")
 
 dofile(ModPath .. "/RandomCarTune.lua")
-
+if SettingRandomDialogue then
+	dofile(ModPath .. "/RandomDialogue.lua")
+end

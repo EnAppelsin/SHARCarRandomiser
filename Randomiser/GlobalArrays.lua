@@ -360,3 +360,5 @@ RandomCharP3DPool = {
 	"zmale3_m",
 	"zmale4_m"
 }
+
+RandomDialoguePool = {}
