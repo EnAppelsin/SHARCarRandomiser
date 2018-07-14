@@ -9,6 +9,8 @@ COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
 OLD_FRAME_CONTROLLER_CHUNK = "\000\018\018\000"
 MOTION_ROOT_LABEL = "Motion_Root\000"
 
+ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)\r\n")
+
 OrigChar = nil
 RandomChar = nil
 RandomCar = nil

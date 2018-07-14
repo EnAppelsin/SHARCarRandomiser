@@ -3,8 +3,9 @@ dofile(ModPath .. "/GlobalArrays.lua")
 dofile(ModPath .. "/GlobalVariables.lua")
 dofile(ModPath .. "/GlobalFunctions.lua")
 
-print("Random Cars: Using " .. RandomCarPoolN .. " cars")
-print("Random Cars: Using " .. RandomPedPoolN .. " pedestrians")
+print("Randomiser v" .. ModVersion)
+print("Randomiser: Using " .. RandomCarPoolN .. " cars")
+print("Randomiser: Using " .. RandomPedPoolN .. " pedestrians")
 
 dofile(ModPath .. "/RandomCarTune.lua")
 
