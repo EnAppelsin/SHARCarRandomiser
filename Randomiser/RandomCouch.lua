@@ -23,6 +23,15 @@ if SettingRandomCouch then
 	local Replace = ReadFile(ReplacePath)
 	local GlobalPath = "/GameData/art/chars/global.p3d"
 	local Global = ReadFile(GlobalPath)
+    
+    -- Easter egg?
+    if math.random(1, 20) == 1 then
+        local AniPos, AniLength = FindSubchunk(Original, ANIMATION_CHUNK)
+        local Ani = Original:sub(AniPos, AniPos + AniLength - 1)
+        local AniGroupPos, AniGroupLength = FindSubchunk(Ani, ANIMATION_GROUP_CHUNK)
+        Original = RemoveString(Original, AniPos + AniGroupPos - 1, AniPos + AniGroupPos - 1 + AniGroupLength)
+        Original = AddP3DInt4(Original, AniPos + 8, -AniGroupLength)
+    end
 
 	local Adjust = 0
 
