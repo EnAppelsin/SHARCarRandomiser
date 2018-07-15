@@ -1,6 +1,8 @@
 # How to contribute
 We welcome all forms of contribution to help make this mod great, and many people have already contributed for which we are very grateful.
 
+We have [a Discord](https://discord.gg/UQcTZgG) which you can join to ask us questions about the mod. We have a specific channel for questions relating to development/contributing to the mod (or SHAR modding in general) (\#modding-support)
+
 ## Bugs & Features
 If you have found an issue with the randomiser (such a crash!) please file an issue on [our issue tracker](https://github.com/EnAppelsin/SHARCarRandomiser/issues).
 Please use the templates provided, especially for bugs, and be as detailed as you can! If we can reproduce the bug it's much easier for us to fix it!
