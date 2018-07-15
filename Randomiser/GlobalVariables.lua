@@ -1,6 +1,7 @@
 TEXTURE_CHUNK = "\000\144\001\000"
 SHADER_CHUNK = "\000\016\001\000"
 ANIMATION_CHUNK = "\000\016\018\000"
+ANIMATION_GROUP_CHUNK = "\002\016\018\000"
 SKIN_CHUNK = "\001\000\001\000"
 SKELETON_CHUNK = "\000\069\000\000"
 COMP_DRAW_CHUNK = "\018\069\000\000"
@@ -55,6 +56,7 @@ SettingRandomStats = GetSetting("RandomStats")
 SettingSkipLocks = GetSetting("SkipLocks")
 SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
+SettingDebugLevel = GetSetting("DebugLevel")
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then
