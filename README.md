@@ -119,18 +119,20 @@ This controls which vehicles are in the random pool for the traffic random vehic
 #### Random Car Pool - Chase
 This controls which vehicles are in the random pool for the chase car random vehicles.
 ### Misc
-#### Gameplay Changes
-##### Remove car/costume requirements
+#### Remove car/costume requirements
 Off by default.  
 If this is checked, you won't need to be wearing a specific costume/be driving a specific car to start a mission.  
 Removes the need for a coin route.
-##### Skip cutscenes (except intro cutscene)
+#### Skip cutscenes (except intro cutscene)
 Off by default.  
 If this is checked, all cutscenes bar the introduction cutscene won't be played.
-##### Increase HP for weak cars
+#### Increase HP for weak cars
 Off by default.  
 If this is checked weak cars like the rocket car will have their HP slightly boosted so they're not quite as fragile.  
 It raises the minimum HP to 0.8 for all cars.
+#### Debug level
+0 by default.  
+This controls the verbosity of the console output. 0 will print basic information whereas 5 will print pretty much everything.  
 	
 ## Potential Limitations/Issues
 - Missions will spawn you where you start if you restart the mission once, this is because adding a forced car teleports you.
