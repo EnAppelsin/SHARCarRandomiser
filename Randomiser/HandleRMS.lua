@@ -1,7 +1,7 @@
 local Path = "/GameData/" .. GetPath()
 
 if Path:match("L%d_music") then
-    print("Replacing " .. Path)
+    DebugPrint("Replacing " .. Path)
     if SettingRandomMusic and SettingRandomMusicCues then
         Redirect(ModPath .. "/Resources/random_all.rms")
     elseif SettingRandomMusic  then

@@ -97,21 +97,21 @@ for i = #RandomCarPoolPlayer, 1, -1 do
 	end
 end
 RandomCarPoolTraffic = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolPlayer, 1, -1 do
-	if not GetSetting(RandomCarPoolPlayer[i] .. "Traffic") then
-		table.remove(RandomCarPoolPlayer, i)
+for i = #RandomCarPoolTraffic, 1, -1 do
+	if not GetSetting(RandomCarPoolTraffic[i] .. "Traffic") then
+		table.remove(RandomCarPoolTraffic, i)
 	end
 end
 RandomCarPoolMission = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolPlayer, 1, -1 do
-	if not GetSetting(RandomCarPoolPlayer[i] .. "Mission") then
-		table.remove(RandomCarPoolPlayer, i)
+for i = #RandomCarPoolMission, 1, -1 do
+	if not GetSetting(RandomCarPoolMission[i] .. "Mission") then
+		table.remove(RandomCarPoolMission, i)
 	end
 end
 RandomCarPoolChase = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolPlayer, 1, -1 do
-	if not GetSetting(RandomCarPoolPlayer[i] .. "Chase") then
-		table.remove(RandomCarPoolPlayer, i)
+for i = #RandomCarPoolChase, 1, -1 do
+	if not GetSetting(RandomCarPoolChase[i] .. "Chase") then
+		table.remove(RandomCarPoolChase, i)
 	end
 end
 
