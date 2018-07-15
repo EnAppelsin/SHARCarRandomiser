@@ -205,3 +205,17 @@ function GetFiles(tbl, dir, extension, count)
 		return true
 	end)
 end
+
+function DebugPrint(msg, level)
+	if level == nil then
+		level = 0
+	end
+	if SettingDebugLevel < level then
+		return false
+	end
+	local currTime = os.date("*t")
+	local currTimeStr = string.format("[%02d-%02d-%02d %02d:%02d:%02d] ", currTime.year, currTime.month, currTime.day, currTime.hour, currTime.min, currTime.sec)
+	local prefix = "<Randomiser v" .. ModVersion .. "> "
+	print(currTimeStr .. prefix .. msg)
+	return true
+end
