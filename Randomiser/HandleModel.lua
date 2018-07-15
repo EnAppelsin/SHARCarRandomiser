@@ -3,8 +3,6 @@ local Path = GetPath()
 -- Handle the couch logic separately (it's quite long)
 if Path == "art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d" then
 	dofile(ModPath .. "/RandomCouch.lua")
-elseif Path:match("beeman_m") then
-	print("Fuck beeman")
 elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
 	local Original = ReadFile("GameData/" .. Path)
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
