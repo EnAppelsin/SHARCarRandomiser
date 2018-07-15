@@ -56,7 +56,7 @@ if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCa
 		HP = string.match(File, "SetHitPoints%((.-)%);")
 		if HP and tonumber(HP) < 0.8 then
 			File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.8);", 1)
-			print("Boosting HP up from " .. HP .. " to 0.8 for " .. Path)
+			DebugPrint("Boosting HP up from " .. HP .. " to 0.8 for " .. Path)
 		end
 	end
 end
@@ -70,7 +70,7 @@ if SettingRandomMissionVehicles and MissionVehicles then
 				HP = string.match(File, "SetHitPoints%((.-)%);")
 				if HP and tonumber(HP) < 0.6 then
 					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
-					print("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+					DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
 				end
 			end
 		end
@@ -92,7 +92,7 @@ if SettingRandomPedestrians then
 			if SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
 				for i = 1, #TrafficCars do
 					if string.match(Path, TrafficCars[i]) then
-						print("Setting driver for traffic car " .. TrafficCars[i])
+						DebugPrint("Setting driver for traffic car " .. TrafficCars[i])
 						return "SetDriver(\"" .. driverName .. "\");"
 					end
 				end
