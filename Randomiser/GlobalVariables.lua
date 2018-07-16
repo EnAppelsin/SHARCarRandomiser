@@ -58,6 +58,9 @@ SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
 SettingDebugLevel = GetSetting("DebugLevel")
 
+--Chaos settings
+SettingRandomInteriors = GetSetting("RandomInteriors")
+
 --Random Stat Min/Max Variables
 if SettingRandomStats then
 --Mass Variables
