@@ -362,3 +362,44 @@ RandomCharP3DPool = {
 }
 
 RandomDialoguePool = {}
+
+--Level interiors
+l1interiors = {
+	"00",
+	"01",
+	"02",
+}
+
+l2interiors = {
+	"03",
+	"04"
+}
+
+l3interiors = {
+	"05",
+	"06"
+}
+
+l4interiors = {
+	"00",
+	"01",
+	"07"
+}
+
+l5interiors = {
+	"03",
+	"04"
+}
+
+l6interiors = {
+	"05",
+	"06"
+}
+
+l7interiors = {
+	"00",
+	"01",
+	"07"
+}
+
+interiorReplace = {}

@@ -16,8 +16,8 @@ local SDInit = Path:match("m%dsdi%.mfk")
 local NewFile = File:gsub("//.-\r\n", "\r\n")
 
 if Midx ~= nil then
-	local level = Path:match("level0(%d)")
-	local mission = Path:match("m(%d)i")
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)i"))
 	DebugPrint("NEW MISSION INIT: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
@@ -142,8 +142,8 @@ if Midx ~= nil then
 	
 	Output(NewFile)
 elseif Lidx ~= nil then
-	local level = Path:match("level0(%d)")
-	local mission = Path:match("m(%d)l")
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)l"))
 	DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomPlayerVehicles then
 		if SettingSaveChoice then
@@ -237,8 +237,60 @@ elseif Lidx ~= nil then
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
-	local level = Path:match("level0(%d)")
+	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
+	if SettingRandomInteriors then
+		if level == 1 then
+			DebugPrint("Setting up random interiors for level 1")
+			interiorReplace = {}
+			local tmpl1interiors = {table.unpack(l1interiors)}
+			for i = 1, #l1interiors do
+				interiorReplace[l1interiors[i]] = GetRandomFromTbl(tmpl1interiors, true)
+			end
+		elseif level == 2 then
+			DebugPrint("Setting up random interiors for level 2")
+			interiorReplace = {}
+			local tmpl2interiors = {table.unpack(l2interiors)}
+			for i = 1, #l2interiors do
+				interiorReplace[l2interiors[i]] = GetRandomFromTbl(tmpl2interiors, true)
+			end
+		elseif level == 3 then
+			DebugPrint("Setting up random interiors for level 3")
+			interiorReplace = {}
+			local tmpl3interiors = {table.unpack(l3interiors)}
+			for i = 1, #l3interiors do
+				interiorReplace[l3interiors[i]] = GetRandomFromTbl(tmpl3interiors, true)
+			end
+		elseif level == 4 then
+			DebugPrint("Setting up random interiors for level 4")
+			interiorReplace = {}
+			local tmpl4interiors = {table.unpack(l4interiors)}
+			for i = 1, #l4interiors do
+				interiorReplace[l4interiors[i]] = GetRandomFromTbl(tmpl4interiors, true)
+			end
+		elseif level == 5 then
+			DebugPrint("Setting up random interiors for level 5")
+			interiorReplace = {}
+			local tmpl5interiors = {table.unpack(l5interiors)}
+			for i = 1, #l5interiors do
+				interiorReplace[l5interiors[i]] = GetRandomFromTbl(tmpl5interiors, true)
+			end
+		elseif level == 6 then
+			DebugPrint("Setting up random interiors for level 6")
+			interiorReplace = {}
+			local tmpl6interiors = {table.unpack(l6interiors)}
+			for i = 1, #l6interiors do
+				interiorReplace[l6interiors[i]] = GetRandomFromTbl(tmpl6interiors, true)
+			end
+		elseif level == 7 then
+			DebugPrint("Setting up random interiors for level 7")
+			interiorReplace = {}
+			local tmpl7interiors = {table.unpack(l7interiors)}
+			for i = 1, #l7interiors do
+				interiorReplace[l7interiors[i]] = GetRandomFromTbl(tmpl7interiors, true)
+			end
+		end
+	end
 	if SettingRandomPlayerVehicles then
 		LastLevel = nil
 		RandomCar = math.random(#RandomCarPoolPlayer)
@@ -275,7 +327,7 @@ elseif LevelLoad ~= nil then
 	end
 	Output(NewFile)
 elseif LevelInit ~= nil then
-	local level = Path:match("level0(%d)")
+	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL INIT: Level " .. level)
 	if SettingRandomCharacter then
 		OrigChar = NewFile:match("AddCharacter%s*%(%s*\"(.-)\"")
@@ -349,9 +401,9 @@ elseif LevelInit ~= nil then
 	end
 	Output(NewFile)
 elseif SDInit ~= nil then
-	local level = Path:match("level0(%d)")
-	local mission = Path:match("m(%d)sdi")
-	DebugPrint("NEW SUNDAY DRIVE INIT: Level " .. level .. ", Mission " .. mission)
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)sdi"))
+	DebugPrint("NEW SD INIT: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
 		for npc in NewFile:gmatch("AddNPC%s*%(%s*\"(.-)\"") do
@@ -368,9 +420,9 @@ elseif SDInit ~= nil then
 	end
 	Output(NewFile)
 elseif SDLoad ~= nil then
-	local level = Path:match("level0(%d)")
-	local mission = Path:match("m(%d)sdl")
-	DebugPrint("NEW SUNDAY DRIVE LOAD: Level " .. level .. ", Mission " .. mission)
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)sdl"))
+	DebugPrint("NEW SD LOAD: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
