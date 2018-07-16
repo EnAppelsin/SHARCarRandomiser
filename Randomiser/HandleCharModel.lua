@@ -2,8 +2,6 @@ local Path = GetPath()
 
 if Path:match("beeman_m") then
 	DebugPrint("Fuck beeman")
-elseif Path:match("grandp_m") then
-	DebugPrint("Fuck grandpa")
 elseif Path:match("hibber_m") then
 	DebugPrint("Fuck hibbert")
 elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
