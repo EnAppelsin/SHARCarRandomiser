@@ -1,10 +1,6 @@
 local Path = GetPath()
 
-if Path:match("beeman_m") then
-	DebugPrint("Fuck beeman")
-elseif Path:match("hibber_m") then
-	DebugPrint("Fuck hibbert")
-elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
+if SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
 	local Original = ReadFile("GameData/" .. Path)
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 	local Replace = ReadFile(ReplacePath)

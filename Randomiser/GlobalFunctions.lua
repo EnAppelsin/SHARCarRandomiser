@@ -122,6 +122,12 @@ function ReplaceCharacterSkinSkel(Original, Replace)
 		end
 	end
     
+    -- Find meshes
+    local Meshes = ""
+    for position, length in FindSubchunks(Replace, MESH_CHUNK) do
+        Meshes = Meshes .. Replace:sub(position, position + length - 1)
+    end
+    
     -- Locate the new animation
     ANIndex, ANLength = FindSubchunk(Replace, ANIMATION_CHUNK)
     local Animation = ""
@@ -165,7 +171,7 @@ function ReplaceCharacterSkinSkel(Original, Replace)
     p3d_debug(OSName .. "->" .. SkelName .. OS2Name .. "->" .. SkinName .. OS3Name .. "->" .. SkelName)
     
     -- Add to original model
-    Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. Animation .. NewSkel .. NewSkin .. Original:sub(SNIndex + SNLength)
+    Original = Original:sub(1, SNIndex - 1) .. Textures .. Shaders .. Animation .. NewSkel .. Meshes .. NewSkin .. Original:sub(SNIndex + SNLength)
     
     -- Locate the new OFC, if one exists
     local NFCIndex, NFCLength = FindSubchunk(Replace, OLD_FRAME_CONTROLLER_CHUNK)
@@ -180,6 +186,19 @@ function ReplaceCharacterSkinSkel(Original, Replace)
             Original = Original:sub(1, OFCIndex - 1) .. NFC .. Original:sub(OFCIndex + OFCLength)
         end
     end
+    
+    -- Locate the new comp drawable prop list
+    local CDIndex, CDLength = FindSubchunk(Replace, COMP_DRAW_CHUNK)
+    local CD = Replace:sub(CDIndex, CDIndex + CDLength - 1)
+    local CDPIndex, CDPLength = FindSubchunk(CD, COMP_DRAW_PROP_LIST_SUBCHUNK)
+    local CDP = CD:sub(CDPIndex, CDPIndex + CDPLength - 1)
+    
+    -- Replace the old comp drawable prop list
+    local CDIndex, CDLength = FindSubchunk(Original, COMP_DRAW_CHUNK)
+    local CD = Original:sub(CDIndex, CDIndex + CDLength - 1)
+    local CDPIndex, CDPLength = FindSubchunk(CD, COMP_DRAW_PROP_LIST_SUBCHUNK)
+    Original = Original:sub(1, CDIndex + CDPIndex - 2) .. CDP .. Original:sub(CDIndex + CDPIndex - 1 + CDPLength)
+    Original = AddP3DInt4(Original, CDIndex + 8, CDP:len() - CDPLength)
     
     -- Update file length
     Original = SetP3DInt4(Original, 9, Original:len())
