@@ -22,6 +22,8 @@ if IsModEnabled("RandomiserDialogue") then
 		RandomDialoguePoolN = #RandomDialoguePool
 		DebugPrint("Loaded " .. RandomDialoguePoolN .. " dialogue files.")
 	else
-		DebugPrint("RandomiserDialogue was enabled, but no RandomDialogue folder was found.")
+		Alert("RandomiserDialogue was enabled, but no RandomDialogue folder was found.")
 	end
+else
+    Alert("You have Random Dialogue enabled without the RandomiserDialogue framework. Random Dialogue will not work without this.")
 end
