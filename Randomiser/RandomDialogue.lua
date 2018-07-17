@@ -20,7 +20,11 @@ if IsModEnabled("RandomiserDialogue") then
 	if hasFolder then
 		GetFiles(RandomDialoguePool, "/GameData/RandomDialogue/", ".rsd", 1)
 		RandomDialoguePoolN = #RandomDialoguePool
-		DebugPrint("Loaded " .. RandomDialoguePoolN .. " dialogue files.")
+		if RandomDialoguePoolN == 0 then
+            Alert("RandomiserDialogue was enabled, but no dialogue files were loaded.")
+        else
+            DebugPrint("Loaded " .. RandomDialoguePoolN .. " dialogue files.")
+        end
 	else
 		Alert("RandomiserDialogue was enabled, but no RandomDialogue folder was found.")
 	end
