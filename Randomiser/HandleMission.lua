@@ -17,8 +17,19 @@ local NewFile = File:gsub("//.-\r\n", "\r\n")
 
 if Midx ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
-	local mission = tonumber(Path:match("m(%d)i"))
-	DebugPrint("NEW MISSION INIT: Level " .. level .. ", Mission " .. mission)
+	local bmission = tonumber(Path:match("bm(%d)i"))
+    local mission = tonumber(Path:match("m(%d%)i"))
+    local sr = tonumber(Path:match("sr(%d%)i"))
+    local gr = tonumber(Path:match("gr(%d%)i"))
+    if bmission then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Bonus Mission " .. bmission)
+    elseif mission then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Mission " .. mission)
+    elseif sr then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Street Race " .. sr)
+    elseif gr then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Gambling Race " .. gr)
+    end
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
 		local found = "Found mission characters: "
@@ -143,8 +154,20 @@ if Midx ~= nil then
 	Output(NewFile)
 elseif Lidx ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
-	local mission = tonumber(Path:match("m(%d)l"))
-	DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Mission " .. mission)
+	local bmission = tonumber(Path:match("bm(%d)l"))
+    local mission = tonumber(Path:match("m(%d%)l"))
+    local sr = tonumber(Path:match("sr(%d%)l"))
+    local gr = tonumber(Path:match("gr(%d%)l"))
+    if bmission then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Bonus Mission " .. bmission)
+    elseif mission then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Mission " .. mission)
+    elseif sr then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Street Race " .. sr)
+    elseif gr then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Gambling Race " .. gr)
+    end
+        
 	if SettingRandomPlayerVehicles then
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
