@@ -9,6 +9,10 @@ DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission p
 DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 
+if IsModEnabled("RandomiserCars") and SettingCustomCars then
+	dofile(ModPath .. "/CustomCars.lua")
+end
+
 dofile(ModPath .. "/RandomCarTune.lua")
 if SettingRandomDialogue then
 	dofile(ModPath .. "/RandomDialogue.lua")
