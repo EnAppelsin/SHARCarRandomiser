@@ -23,6 +23,15 @@ if SettingRandomCouch then
 	local Replace = ReadFile(ReplacePath)
 	local GlobalPath = "/GameData/art/chars/global.p3d"
 	local Global = ReadFile(GlobalPath)
+    
+    -- Easter egg?
+    if math.random(1, 20) == 1 then
+        local AniPos, AniLength = FindSubchunk(Original, ANIMATION_CHUNK)
+        local Ani = Original:sub(AniPos, AniPos + AniLength - 1)
+        local AniGroupPos, AniGroupLength = FindSubchunk(Ani, ANIMATION_GROUP_CHUNK)
+        Original = RemoveString(Original, AniPos + AniGroupPos - 1, AniPos + AniGroupPos - 1 + AniGroupLength)
+        Original = AddP3DInt4(Original, AniPos + 8, -AniGroupLength)
+    end
 
 	local Adjust = 0
 
@@ -30,7 +39,7 @@ if SettingRandomCouch then
 		p3d_debug("Found a skin at " .. position)
 		Original = RemoveString(Original, position - Adjust, position + length - Adjust)
 		Adjust = Adjust + length
-		p3d_debug("> Removed a skin")
+		DebugPrint("> Removed a skin", 5)
 	end
 
 	local Textures = ""
@@ -95,7 +104,7 @@ if SettingRandomCouch then
 	NewSkel = AddP3DInt4(NewSkel, 5, Delta)
     NewSkel = AddP3DInt4(NewSkel, 9, Delta)
 
-	p3d_debug("Replacing skeleton and adding skin to couch model")
+	DebugPrint("Replacing skeleton and adding skin to couch model", 5)
 	Original = Original:sub(1, SKIndex - 1) .. Textures .. Shaders .. NewSkel .. NewSkin .. Original:sub(SKIndex + SKLength)
 
 	local CDIndex, CDLength = FindSubchunk(Original, COMP_DRAW_CHUNK)
@@ -118,7 +127,7 @@ if SettingRandomCouch then
 		local Length = String4ToInt(LengthStr)
 		Original = RemoveString(Original, CDIndex + CDSLIndex + positions[i] - 2 - Adjust, CDIndex + CDSLIndex + positions[i] + Length - Adjust - 2)
 		Adjust = Adjust + Length
-		p3d_debug("Removed the composite drawable skin")
+		DebugPrint("Removed the composite drawable skin", 5)
 	end
 
 	-- Patch the last composite drawable skin
@@ -131,17 +140,17 @@ if SettingRandomCouch then
 
 	Adjust = Adjust - Delta
 
-	p3d_debug("Patching composite drawable skin list")
+	DebugPrint("Patching composite drawable skin list", 5)
     Original = SetP3DInt4(Original, CDIndex + CDSLIndex + 8 - 1, CDSLLength - Adjust)
     Original = SetP3DInt4(Original, CDIndex + CDSLIndex + 12 - 1, 1)
 
-	p3d_debug("Patching composite drawable length")
+	DebugPrint("Patching composite drawable length", 5)
     Original = SetP3DInt4(Original, CDIndex + 8, CDLength - Adjust)
 
-	p3d_debug("Patching total file length")
+	DebugPrint("Patching total file length", 5)
     Original = SetP3DInt4(Original, 9, Original:len())
 
-	print ("Couch modified with model from " .. ReplacePath)
+	DebugPrint ("Couch modified with model from " .. ReplacePath)
 
 	Output(Original)
 end

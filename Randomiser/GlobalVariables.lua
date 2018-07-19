@@ -1,13 +1,18 @@
 TEXTURE_CHUNK = "\000\144\001\000"
 SHADER_CHUNK = "\000\016\001\000"
 ANIMATION_CHUNK = "\000\016\018\000"
+ANIMATION_GROUP_CHUNK = "\002\016\018\000"
 SKIN_CHUNK = "\001\000\001\000"
 SKELETON_CHUNK = "\000\069\000\000"
+MESH_CHUNK = "\000\000\001\000"
 COMP_DRAW_CHUNK = "\018\069\000\000"
-COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
 COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
+COMP_DRAW_PROP_LIST_SUBCHUNK = "\020\069\000\000"
+COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
 OLD_FRAME_CONTROLLER_CHUNK = "\000\018\018\000"
 MOTION_ROOT_LABEL = "Motion_Root\000"
+
+ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)\r\n")
 
 OrigChar = nil
 RandomChar = nil
@@ -26,12 +31,14 @@ MissionCharacters = {}
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
+RandomDialoguePoolN = 0
 
 cartunespt = nil
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
 SettingRandomMusicCues = GetSetting("RandomMusicCues")
+SettingRandomDialogue = GetSetting("RandomDialogue")
 SettingRandomCharacter = GetSetting("RandomCharacter")
 SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
 SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
@@ -51,12 +58,10 @@ SettingRandomStats = GetSetting("RandomStats")
 SettingSkipLocks = GetSetting("SkipLocks")
 SettingSkipFMVs = GetSetting("SkipFMVs")
 SettingBoostHP = GetSetting("BoostHP")
-SettingNoHusk = GetSetting("NoHusk")
+SettingDebugLevel = GetSetting("DebugLevel")
 
--- Add the husk unless disabled
-if not SettingNoHusk then
-	table.insert(RandomCarPool, "huskA")
-end
+--Chaos settings
+SettingRandomInteriors = GetSetting("RandomInteriors")
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then

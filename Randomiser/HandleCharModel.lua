@@ -1,14 +1,11 @@
 local Path = GetPath()
 
--- Handle the couch logic separately (it's quite long)
-if Path == "art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d" then
-	dofile(ModPath .. "/RandomCouch.lua")
-elseif SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
+if SettingRandomCharacter and OrigChar and Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") then
 	local Original = ReadFile("GameData/" .. Path)
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 	local Replace = ReadFile(ReplacePath)
 	
-	print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+	DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 	Original = ReplaceCharacterSkinSkel(Original, Replace)
 	
 	Output(Original)
@@ -26,7 +23,7 @@ else
 					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 					local Replace = ReadFile(ReplacePath)
 					
-					print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+					DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 					Original = ReplaceCharacterSkinSkel(Original, Replace)
 					
 					Output(Original)
@@ -46,7 +43,7 @@ else
 					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 					local Replace = ReadFile(ReplacePath)
 					
-					print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+					DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 					Original = ReplaceCharacterSkinSkel(Original, Replace)
 					
 					Output(Original)
@@ -67,7 +64,7 @@ else
 				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 				local Replace = ReadFile(ReplacePath)
 				
-				print("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
+				DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
 				Original = ReplaceCharacterSkinSkel(Original, Replace)
 				
 				Output(Original)
