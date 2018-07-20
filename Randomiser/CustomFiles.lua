@@ -9,6 +9,11 @@ DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission p
 DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 
+if SettingRandomInteriors then
+    if not Confirm("Random Interiors is an experimental addition that can cause the game to be unplayable. If you want to disable this, press Cancel") then
+        SettingRandomInteriors = false
+end
+
 dofile(ModPath .. "/RandomCarTune.lua")
 if SettingRandomDialogue then
 	dofile(ModPath .. "/RandomDialogue.lua")
