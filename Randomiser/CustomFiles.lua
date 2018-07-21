@@ -14,7 +14,8 @@ if SettingRandomInteriors then
 		SettingRandomInteriors = false
 	end
 end
-if IsModEnabled("RandomiserCars") and SettingCustomCars then
+
+if SettingCustomCars then
 	dofile(ModPath .. "/CustomCars.lua")
 end
 

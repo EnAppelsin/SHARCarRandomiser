@@ -33,8 +33,8 @@ RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
 RandomDialoguePoolN = 0
 
-cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt")
-carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt")
+cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")

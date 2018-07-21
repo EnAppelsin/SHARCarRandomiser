@@ -1,284 +1,45 @@
--- ENGINE LIST
-local RandomEnginePool = {
-	"snake_car",
-	"bookb",
-	"marge_car",
-	"carhom",
-	"krust_car",
-	"bbman",
-	"lisa_car",
-	"famil",
-	"bart_car",
-	"scorp",
-	"honor",
-	"hbike",
-	"frink",
-	"comic_car",
-	"lisa_v_car",
-	"smith",
-	"mrplo",
-	"fone",
-	"cletus_car",
-	"apu_car",
-	"plowk",
-	"wiggum_car",
-	"otto",
-	"moe",
-	"skinn",
-	"homer_car",
-	"zombi",
-	"burns",
-	"willi",
-	"gramp",
-	"gramR",
-	"atv_car",
-	"knigh_v_car",
-	"mono_v_car",
-	"oblit_v_car",
-	"hype_v_car",
-	"dune_v_car",
-	"rocke_v_car",
-	"cArmor_car",
-	"cCellA_v",
-	"cCellB_v",
-	"cCellC_v",
-	"cCellD_v",
-	"cSedan_car",
-	"cCola_car",
-	"cCube_v",
-	"cCurator_car",
-	"cDonut_car",
-	"cDuff_car",
-	"cHears_car",
-	"cKlimo_car",
-	"cLimo_car",
-	"cMilk_v",
-	"cNerd_car",
-	"cNonupV",
-	"cPolice_car",
-	"cVan_car",
-	"huskaV",
-	"compactA_car",
-	"minivanA_v",
-	"pickupA_car",
-	"sedanA_v",
-	"sedanB_v",
-	"sportsA_car",
-	"sportsB_car",
-	"SUVB_car",
-	"SUVA_car",
-	"taxiA_car",
-	"coffin_v",
-	"ship_v",
-	"hallo_v",
-	"witchcar_v",
-	"ambul_car",
-	"burnsarm_car",
-	"fishtruck",
-	"garbage_car",
-	"icecream_car",
-	"istruck_v",
-	"nuctruck_v",
-	"pizza_car",
-	"schoolbus",
-	"votetruck_v",
-	"glastruc_v",
-	"cfirecar_v",
-	"cBone_v",
-	"brick_car"
-}
-
--- ENGINE IDLE LIST
-local RandomEngineIdlePool = {
-	"snake_car",
-	"bookb",
-	"marge_car",
-	"carhom",
-	"krust_car",
-	"bbman",
-	"lisa_car",
-	"famil",
-	"bart_car",
-	"scorp",
-	"honor",
-	"hbike",
-	"frink",
-	"comic_car",
-	"lisa_v_car",
-	"smith",
-	"mrplo",
-	"fone",
-	"cletus_car",
-	"apu_car",
-	"plowk",
-	"wiggum_car",
-	"otto",
-	"moe",
-	"skinn",
-	"homer_car",
-	"zombi",
-	"burns",
-	"willi",
-	"gramp",
-	"gramR",
-	"atv_car",
-	"knigh_v_car",
-	"mono_v_car",
-	"oblit_v_car",
-	"hype_v_car",
-	"blank",
-	"rocke_v_car",
-	"cArmor_car",
-	"cCellA_v",
-	"cCellB_v",
-	"cCellC_v",
-	"cCellD_v",
-	"cSedan_car",
-	"cCola_car",
-	"cCube_v",
-	"cCurator_car",
-	"cDonut_car",
-	"cDuff_car",
-	"cHears_car",
-	"cKlimo_car",
-	"cLimo_car",
-	"cMilk_v",
-	"cNerd_car",
-	"cNonupV",
-	"cPolice_car",
-	"cVan_car",
-	"compactA_car",
-	"minivanA_v",
-	"pickupA_car",
-	"sedanA_v",
-	"sedanB_v",
-	"sportsA_car",
-	"sportsB_car",
-	"SUVB_car",
-	"SUVA_car",
-	"taxiA_car",
-	"coffin_v",
-	"ship_v",
-	"hallo_v",
-	"witchcar_v",
-	"ambul_car",
-	"burnsarm_car",
-	"fishtruck",
-	"garbage_car",
-	"icecream_car",
-	"istruck_v",
-	"nuctruck_v",
-	"pizza_car",
-	"schoolbus",
-	"votetruck_v",
-	"glastruc_v",
-	"cfirecar_v",
-	"cBone_v",
-	"brick_car"
-}
-
--- DAMAGED ENGINE LIST
-local RandomDamagedEnginePool = {
-	"fire"
-}
-
--- HORN LIST
-local RandomHornPool = {
-	"snake_horn",
-	"bookb_horn",
-	"marge_horn",
-	"carhom_horn",
-	"krust_horn",
-	"bbman_horn",
-	"lisa_horn",
-	"famil_horn",
-	"bart_horn",
-	"scorp_horn",
-	"honor_horn",
-	"frink_horn",
-	"comic_horn",
-	"smith_horn",
-	"mrplo_horn",
-	"fone_horn",
-	"cletus_horn",
-	"apu_horn",
-	"plowk_horn",
-	"siren",
-	"otto_horn",
-	"moe_horn",
-	"skinn_horn",
-	"homer_horn",
-	"zombi_horn",
-	"burns_horn",
-	"willi_horn",
-	"gramp_horn",
-	"gramR_horn",
-	"atv_horn",
-	"knigh_horn",
-	"mono_horn",
-	"oblit_horn",
-	"hype_v_horn",
-	"dune_horn",
-	"rocke_horn",
-	"cArmor_car_horn",
-	"cCellA_horn",
-	"cCellB_horn",
-	"cCellC_horn",
-	"cCellD_horn",
-	"cCola_horn",
-	"cCube_v_horn",
-	"cCurator_horn",
-	"cDonut_horn",
-	"cDuff_horn",
-	"cKlimo_horn",
-	"cLimo_horn",
-	"cMilk_horn",
-	"cNerd_horn",
-	"cNonupV_horn",
-	"cVan_horn",
-	"huskaV_horn",
-	"compactA_horn",
-	"minivanA_horn",
-	"pickupA_horn",
-	"sedanA_v_horn",
-	"sedanB_v_horn",
-	"sportsA_horn",
-	"sportsB_horn",
-	"SUVB_horn",
-	"horn",
-	"ship_v_horn",
-	"hallo_v_horn",
-	"witchcar_v_horn",
-	"ambul_car_horn",
-	"burnsarm_horn",
-	"fishtruck_horn",
-	"garbage_horn",
-	"icecream_horn",
-	"nuctruck_v_horn",
-	"schoolbus_horn",
-	"votetruc_horn",
-	"cfirecar_overlay",
-	"brick_car_horn"
-}
-
--- OVERLAY LIST
-local RandomOverlayPool = {
-	"rocket",
-	"generator",
-	"cCellA_overlay",
-	"cCellB_overlay",
-	"cCellC_overlay",
-	"cCellD_overlay",
-	"cVan_overlay",
-	"ship_overlay",
-	"ice_cream_truck",
-	"i_and_s_truck",
-	"nuctruck_glow",
-	"pizza_car_overlay",
-	"vote_quimby"
-}
-
 if SettingRandomCarSounds then
+	-- ENGINE LIST
+	local RandomEnginePool = {}
+
+	-- ENGINE IDLE LIST
+	local RandomEngineIdlePool = {}
+
+	-- DAMAGED ENGINE LIST
+	local RandomDamagedEnginePool = {}
+
+	-- HORN LIST
+	local RandomHornPool = {}
+
+	-- OVERLAY LIST
+	local RandomOverlayPool = {}
+
+	for engineClip in cartunespt:gmatch("SetEngineClipName%s*%(%s*\"(.-)\"") do
+		if not ExistsInTbl(RandomEnginePool, engineClip, false) then
+			table.insert(RandomEnginePool, engineClip)
+		end
+	end
+	for engineIdleClip in cartunespt:gmatch("SetEngineIdleClipName%s*%(%s*\"(.-)\"") do
+		if not ExistsInTbl(RandomEngineIdlePool, engineIdleClip, false) then
+			table.insert(RandomEngineIdlePool, engineIdleClip)
+		end
+	end
+	for damagedEngineClip in cartunespt:gmatch("SetDamagedEngineClipName%s*%(%s*\"(.-)\"") do
+		if not ExistsInTbl(RandomDamagedEnginePool, damagedEngineClip, false) then
+			table.insert(RandomDamagedEnginePool, damagedEngineClip)
+		end
+	end
+	for hornClip in cartunespt:gmatch("SetHornClipName%s*%(%s*\"(.-)\"") do
+		if not ExistsInTbl(RandomHornPool, hornClip, false) then
+			table.insert(RandomHornPool, hornClip)
+		end
+	end
+	for overlay in cartunespt:gmatch("SetOverlayClipName%s*%(%s*\"(.-)\"") do
+		if not ExistsInTbl(RandomOverlayPool, overlay, false) then
+			table.insert(RandomOverlayPool, overlay)
+		end
+	end
+
     cartunespt = string.gsub(cartunespt, "SetEngineClipName%s*%(%s*\".-\"", function()
         local engine = RandomEnginePool[math.random(#RandomEnginePool)]
         return "SetEngineClipName ( \"" .. engine .. "\""
