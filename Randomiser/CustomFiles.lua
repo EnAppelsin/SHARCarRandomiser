@@ -10,8 +10,12 @@ DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool"
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 
 if SettingRandomInteriors then
-    if not Confirm("Random Interiors is an experimental addition that can cause the game to be unplayable. If you want to disable this, press Cancel") then
-        SettingRandomInteriors = false
+	if not Confirm("Random Interiors is an experimental addition that can cause the game to be unplayable. If you want to disable this, press Cancel") then
+		SettingRandomInteriors = false
+	end
+end
+if IsModEnabled("RandomiserCars") and SettingCustomCars then
+	dofile(ModPath .. "/CustomCars.lua")
 end
 
 dofile(ModPath .. "/RandomCarTune.lua")

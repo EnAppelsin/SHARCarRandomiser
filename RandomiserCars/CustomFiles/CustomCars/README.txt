@@ -1,0 +1,1 @@
+To add custom cars to the randomiser pools, each car must have it's own folder with all required files.
