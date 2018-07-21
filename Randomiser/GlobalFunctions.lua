@@ -7,6 +7,28 @@ function GetRandomFromTbl(tbl, remove)
     return result
 end
 
+function ExistsInTbl(tbl, needle, caseSensitive)
+	if tbl == nil then
+		return false
+	end
+	if caseSensitive == nil then
+		caseSensitive = true
+	end
+	if not caseSensitive then
+		needle = needle:lower()
+	end
+	for i = 1, #tbl do
+		local haystack = tbl[i]
+		if not caseSensitive then
+			haystack = haystack:lower()
+		end
+		if haystack == needle then
+			return true
+		end
+	end
+	return false
+end
+
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult
@@ -210,14 +232,18 @@ function endsWith(String,End)
    return End=='' or string.sub(String:lower(),-string.len(End))==End:lower()
 end
 
-function GetFiles(tbl, dir, extension, count)
+function GetFiles(tbl, dir, extensions, count)
 	DirectoryGetEntries(dir, function(name, directory)
 		if directory then
-			GetFiles(tbl, dir .. name, extension, count)
+			GetFiles(tbl, dir .. name, extensions, count)
 		else
 			for i = 1, count do
-				if endsWith(name, extension) then
-					table.insert(tbl, dir .. "/" .. name)
+				for i = 1, #extensions do
+					local extension = extensions[i]
+					if endsWith(name, extension) then
+						table.insert(tbl, dir .. "/" .. name)
+						break
+					end
 				end
 			end
 		end
