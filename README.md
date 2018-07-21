@@ -1,13 +1,16 @@
 # Simpsons Hit & Run Randomiser
 ![The Randomiser](RandomiserBanner.png)
 
-This mod allows for randomising vehicles and characters throughout the game.  
-Each randomisation has it's own option, detailed below.  
+This mod allows for randomising vehicles, characters and more throughout the game.  
+Each randomisation has its own option, detailed below.  
 
 ## Installation
 Copy the mod file (.lmlm) to your Mods folder (usually Documents\My Games\Lucas' Simpsons Hit & Run Mod Launcher\Mods).  
 Run the Mod Launcher and change the settings to match your needs, then play the game.  
-All possible randomisations are available in separate settings.  
+All possible randomisations are available in separate settings.
+
+## Discord
+Questions about the mod or development can be asked on our [Discord Server](https://discord.gg/UQcTZgG).
 
 ## Settings
 ### Randomisations
@@ -145,6 +148,8 @@ and if a mod removes cars the game will crash if the randomiser picks it.
 - There is a spot where random characters will be sat in mid air. This is due to how passengers/drivers work.
 
 ## Acknowledgements
+Mod authors are EnAppelsin, Proddy, Sparrow and Gadie
+
 Thanks to the following people for helping with the development and testing of this mod:
 
-Gadie, Gibstack, Jake, Loren, Sparrow, Nytheris
+Gibstack, Kuinn, Jake, LiquidWiFi, Loren, Nytheris, Pepperdork
