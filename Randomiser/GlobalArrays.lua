@@ -86,8 +86,34 @@ RandomCarPool = {
 	"wiggu_v",
 	"willi_v",
 	"witchcar",
-	"zombi_v"
+	"zombi_v",
+	"huskA"
 }
+
+RandomCarPoolPlayer = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolPlayer, 1, -1 do
+	if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then
+		table.remove(RandomCarPoolPlayer, i)
+	end
+end
+RandomCarPoolTraffic = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolTraffic, 1, -1 do
+	if not GetSetting(RandomCarPoolTraffic[i] .. "Traffic") then
+		table.remove(RandomCarPoolTraffic, i)
+	end
+end
+RandomCarPoolMission = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolMission, 1, -1 do
+	if not GetSetting(RandomCarPoolMission[i] .. "Mission") then
+		table.remove(RandomCarPoolMission, i)
+	end
+end
+RandomCarPoolChase = {table.unpack(RandomCarPool)}
+for i = #RandomCarPoolChase, 1, -1 do
+	if not GetSetting(RandomCarPoolChase[i] .. "Chase") then
+		table.remove(RandomCarPoolChase, i)
+	end
+end
 
 -- DRIVER LIST
 CarDrivers = {}
@@ -334,3 +360,54 @@ RandomCharP3DPool = {
 	"zmale3_m",
 	"zmale4_m"
 }
+
+RandomDialoguePool = {}
+
+--Level interiors
+l1interiors = {
+	"00",
+	"01",
+	"02",
+}
+
+l2interiors = {
+	"03",
+	"04"
+}
+
+l3interiors = {
+	"05",
+	"06"
+}
+
+l4interiors = {
+	"00",
+	"01",
+	"07"
+}
+
+l5interiors = {
+	"03",
+	"04"
+}
+
+l6interiors = {
+	"05",
+	"06"
+}
+
+l7interiors = {
+	"00",
+	"01",
+	"07"
+}
+
+interiorReplace = {}
+
+-- Random Stats Saving
+PlayerStats = {}
+
+AICar1 = {}
+AICar2 = {}
+AICar3 = {}
+AiCar4 = {}

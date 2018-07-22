@@ -20,6 +20,31 @@ local function randomStats(data)
 	local burnoutRange = round(math.random() / 2, 2)
 	local maxSpeedBurstTime = round(math.random() + math.random(1, 5), 2)
 	local donutTorque = round(math.random() + math.random(1, 20), 2)
+	
+	if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCarName) then
+		if PlayerStats == nil then
+			PlayerStats = {}
+			PlayerStats["HP"] = hitPoints
+			PlayerStats["SlipSteering"] = slipSteering
+			PlayerStats["Grip"] = tireGrip
+			PlayerStats["TurnAngle"] = maxWheelTurnAngle
+			PlayerStats["Speed"] = topSpeedKmh
+			PlayerStats["BreakGasScale"] = breakGasScale
+			PlayerStats["SlipGas"] = slipGasScale
+			PlayerStats["Gas"] = gasScale
+		end
+		hitPoints = PlayerStats["HP"]
+		slipSteering = PlayerStats["SlipSteering"]
+		tireGrip = PlayerStats["Grip"]
+		maxWheelTurnAngle = PlayerStats["TurnAngle"]
+		topSpeedKmh = PlayerStats["Speed"]
+		breakGasScale = PlayerStats["BreakGasScale"]
+		slipGasScale = PlayerStats["SlipGas"]
+		gasScale = PlayerStats["Gas"]
+	end
+	
+	
+	
 	data = string.gsub(data, "SetMass%(.-%);", "SetMass(" .. mass .. ");", 1)
 	data = string.gsub(data, "SetGasScale%(.-%);", "SetGasScale(" .. gasScale .. ");", 1)
 	data = string.gsub(data, "SetSlipGasScale%(.-%);", "SetSlipGasScale(" .. slipGasScale .. ");", 1)
@@ -56,7 +81,7 @@ if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCa
 		HP = string.match(File, "SetHitPoints%((.-)%);")
 		if HP and tonumber(HP) < 0.8 then
 			File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.8);", 1)
-			print("Boosting HP up from " .. HP .. " to 0.8 for " .. Path)
+			DebugPrint("Boosting HP up from " .. HP .. " to 0.8 for " .. Path)
 		end
 	end
 end
@@ -70,7 +95,7 @@ if SettingRandomMissionVehicles and MissionVehicles then
 				HP = string.match(File, "SetHitPoints%((.-)%);")
 				if HP and tonumber(HP) < 0.6 then
 					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
-					print("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+					DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
 				end
 			end
 		end
@@ -92,7 +117,7 @@ if SettingRandomPedestrians then
 			if SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
 				for i = 1, #TrafficCars do
 					if string.match(Path, TrafficCars[i]) then
-						print("Setting driver for traffic car " .. TrafficCars[i])
+						DebugPrint("Setting driver for traffic car " .. TrafficCars[i])
 						return "SetDriver(\"" .. driverName .. "\");"
 					end
 				end

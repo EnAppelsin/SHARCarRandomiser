@@ -16,14 +16,28 @@ local SDInit = Path:match("m%dsdi%.mfk")
 local NewFile = File:gsub("//.-\r\n", "\r\n")
 
 if Midx ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	local bmission = tonumber(Path:match("bm(%d)i"))
+    local mission = tonumber(Path:match("m(%d%)i"))
+    local sr = tonumber(Path:match("sr(%d%)i"))
+    local gr = tonumber(Path:match("gr(%d%)i"))
+    if bmission then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Bonus Mission " .. bmission)
+    elseif mission then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Mission " .. mission)
+    elseif sr then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Street Race " .. sr)
+    elseif gr then
+        DebugPrint("NEW MISSION INIT: Level " .. level .. ", Gambling Race " .. gr)
+    end
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
+		local found = "Found mission characters: "
 		for npc in NewFile:gmatch("AddNPC%s*%(%s*\"(.-)\"") do
 			table.insert(MissionCharacters, npc)
+			found = found .. npc .. ", "
 		end
-		for i=1,#MissionCharacters do
-			print(MissionCharacters[i])
-		end
+		DebugPrint(found)
 	end
 	-- The random car should have been predecided by the mission load script
 	if SettingRandomPlayerVehicles then
@@ -56,15 +70,15 @@ if Midx ~= nil then
 					FakeStage = ""
 					if Match ~= nil then
 						FakeStage = "AddStage();\r\n" .. Match .. "\r\nAddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();\r\nCloseStage();\r\n"
-						print("Creating a fake add vehicle stage")
+						DebugPrint("Creating a fake add vehicle stage")
 					end
 					NewFile = NewFile:gsub("\r\nAddStage%s*%(.-%s*%);.*AddStage%s*%((.-)%s*%);%s*\r\n%s*RESET_TO_HERE%s*%(%s*%);", "\r\n" .. FakeStage .. "AddStage(%1);\r\nRESET_TO_HERE();", 1)
-					print("Deleting an early stage")
+					DebugPrint("Deleting an early stage")
 				end
 			end
 		end
 		-- Debugging
-		print("Randomising car for mission " ..  Midx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
+		DebugPrint("Randomising car for mission " ..  Midx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
 	end
 	if SettingSkipFMVs then
 		NewFile = NewFile:gsub("AddObjective%s*%(\"fmv\"%s*%);.-CloseObjective%s*%(%s*%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
@@ -74,7 +88,7 @@ if Midx ~= nil then
 		NewFile = NewFile:gsub("\"cHears\"", "\"" .. RandomChase .. "\"")
 	end
 	if SettingRandomMissionVehicles then
-		if SettingDifferentCellouts and Path:match("level02\\m7i.mfk") then
+		if SettingDifferentCellouts and level == 2 and mission == 7 then
 			NewFile = NewFile:gsub("AddStageVehicle%s*%(\"cCellA\",\"m7_cellstart(%d)", "AddStageVehicle(\"cCellA%1\",\"m7_cellstart%1")
 			NewFile = NewFile:gsub("ActivateVehicle%s*%(\"cCellA\"(.-)\r\n", "ActivateVehicle(\"cCellA1\"%1\r\nSetHitNRun();\r\n")
 			local i = 0
@@ -94,7 +108,7 @@ if Midx ~= nil then
 			end)
 		end
 		for k,v in pairs(MissionVehicles) do
-			print("Replacing " .. k .. " with " .. v)
+			DebugPrint("Replacing " .. k .. " with " .. v)
 			if SettingRandomMissionVehiclesStats or SettingRandomStats then
 				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
 			else
@@ -111,7 +125,7 @@ if Midx ~= nil then
 		for i = 1, #RemovedTrafficCars do
 			local k = RemovedTrafficCars[i]
 			local v = GetRandomFromTbl(TrafficCars, false)
-			print("Replacing " .. k .. " with " .. v)
+			DebugPrint("Replacing " .. k .. " with " .. v)
 			if SettingRandomMissionVehiclesStats or SettingRandomStats then
 				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
 			else
@@ -139,16 +153,31 @@ if Midx ~= nil then
 	
 	Output(NewFile)
 elseif Lidx ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	local bmission = tonumber(Path:match("bm(%d)l"))
+    local mission = tonumber(Path:match("m(%d%)l"))
+    local sr = tonumber(Path:match("sr(%d%)l"))
+    local gr = tonumber(Path:match("gr(%d%)l"))
+    if bmission then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Bonus Mission " .. bmission)
+    elseif mission then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Mission " .. mission)
+    elseif sr then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Street Race " .. sr)
+    elseif gr then
+        DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Gambling Race " .. gr)
+    end
+        
 	if SettingRandomPlayerVehicles then
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
-				RandomCar = math.random(RandomCarPoolN)
+				RandomCar = math.random(#RandomCarPoolPlayer)
 			end
 			LastLevel = Path
 		else
-			RandomCar = math.random(RandomCarPoolN)
+			RandomCar = math.random(#RandomCarPoolPlayer)
 		end
-		RandomCarName = RandomCarPool[RandomCar]
+		RandomCarName = RandomCarPoolPlayer[RandomCar]
 
 		local ForcedMission = false
 		local Match
@@ -168,18 +197,15 @@ elseif Lidx ~= nil then
 			NewFile = NewFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\", \"" .. RandomCarName .. "\", \"OTHER\");"
 		end
 		-- Debugging
-		print("Randomising car for mission (load) " ..  Lidx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
+		DebugPrint("Randomising car for mission (load) " ..  Lidx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
 	end
 	if SettingRandomMissionVehicles then
-		print("Checking for sub level cars in " .. Lidx)
+		DebugPrint("Checking for sub level cars in " .. Lidx)
 		if SettingSaveChoiceMV then
 			if LastLevelMV == nil or LastLevelMV ~= Path then			
 				MissionVehicles = {}
-				local TmpCarPool = {table.unpack(RandomCarPool)}
-				if not SettingNoHusk then
-					table.remove(TmpCarPool, #TmpCarPool)
-				end
-				if SettingDifferentCellouts and Path:match("level02\\m7l.mfk") then
+				local TmpCarPool = {table.unpack(RandomCarPoolMission)}
+				if SettingDifferentCellouts and level == 2 and mission == 7 then
 					NewFile = NewFile:gsub("cCellA", "cCellA1")
 					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
 					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
@@ -188,13 +214,13 @@ elseif Lidx ~= nil then
 				for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 					local carName = GetRandomFromTbl(TmpCarPool, true)
 					MissionVehicles[orig] = carName
-					print("Randomising " .. orig .. " to " .. carName)
+					DebugPrint("Randomising " .. orig .. " to " .. carName)
 				end
 				for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
 					if carType == "AI" then
 						local carName = GetRandomFromTbl(TmpCarPool, true)
 						MissionVehicles[orig] = carName
-						print("Randomising " .. orig .. " to " .. carName)
+						DebugPrint("Randomising " .. orig .. " to " .. carName)
 					end
 				end
 			elseif SettingDifferentCellouts and Path:match("level02\\m7l.mfk") then
@@ -206,10 +232,7 @@ elseif Lidx ~= nil then
 			LastLevelMV = Path
 		else
 			MissionVehicles = {}
-			local TmpCarPool = {table.unpack(RandomCarPool)}
-			if not SettingNoHusk then
-				table.remove(TmpCarPool, #TmpCarPool)
-			end
+			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
 			if Path:match("level02\\m7l.mfk") then
 				NewFile = NewFile:gsub("cCellA", "cCellA1")
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
@@ -219,13 +242,13 @@ elseif Lidx ~= nil then
 			for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 				local carName = GetRandomFromTbl(TmpCarPool, true)
 				MissionVehicles[orig] = carName
-				print("Randomising " .. orig .. " to " .. carName)
+				DebugPrint("Randomising " .. orig .. " to " .. carName)
 			end
 			for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
 				if carType == "AI" then
 					local carName = GetRandomFromTbl(TmpCarPool, true)
 					MissionVehicles[orig] = carName
-					print("Randomising " .. orig .. " to " .. carName)
+					DebugPrint("Randomising " .. orig .. " to " .. carName)
 				end
 			end
 		end
@@ -237,22 +260,73 @@ elseif Lidx ~= nil then
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	DebugPrint("NEW LEVEL LOAD: Level " .. level)
+	if SettingRandomInteriors then
+		if level == 1 then
+			DebugPrint("Setting up random interiors for level 1")
+			interiorReplace = {}
+			local tmpl1interiors = {table.unpack(l1interiors)}
+			for i = 1, #l1interiors do
+				interiorReplace[l1interiors[i]] = GetRandomFromTbl(tmpl1interiors, true)
+			end
+		elseif level == 2 then
+			DebugPrint("Setting up random interiors for level 2")
+			interiorReplace = {}
+			local tmpl2interiors = {table.unpack(l2interiors)}
+			for i = 1, #l2interiors do
+				interiorReplace[l2interiors[i]] = GetRandomFromTbl(tmpl2interiors, true)
+			end
+		elseif level == 3 then
+			DebugPrint("Setting up random interiors for level 3")
+			interiorReplace = {}
+			local tmpl3interiors = {table.unpack(l3interiors)}
+			for i = 1, #l3interiors do
+				interiorReplace[l3interiors[i]] = GetRandomFromTbl(tmpl3interiors, true)
+			end
+		elseif level == 4 then
+			DebugPrint("Setting up random interiors for level 4")
+			interiorReplace = {}
+			local tmpl4interiors = {table.unpack(l4interiors)}
+			for i = 1, #l4interiors do
+				interiorReplace[l4interiors[i]] = GetRandomFromTbl(tmpl4interiors, true)
+			end
+		elseif level == 5 then
+			DebugPrint("Setting up random interiors for level 5")
+			interiorReplace = {}
+			local tmpl5interiors = {table.unpack(l5interiors)}
+			for i = 1, #l5interiors do
+				interiorReplace[l5interiors[i]] = GetRandomFromTbl(tmpl5interiors, true)
+			end
+		elseif level == 6 then
+			DebugPrint("Setting up random interiors for level 6")
+			interiorReplace = {}
+			local tmpl6interiors = {table.unpack(l6interiors)}
+			for i = 1, #l6interiors do
+				interiorReplace[l6interiors[i]] = GetRandomFromTbl(tmpl6interiors, true)
+			end
+		elseif level == 7 then
+			DebugPrint("Setting up random interiors for level 7")
+			interiorReplace = {}
+			local tmpl7interiors = {table.unpack(l7interiors)}
+			for i = 1, #l7interiors do
+				interiorReplace[l7interiors[i]] = GetRandomFromTbl(tmpl7interiors, true)
+			end
+		end
+	end
 	if SettingRandomPlayerVehicles then
 		LastLevel = nil
-		RandomCar = math.random(RandomCarPoolN)
-		RandomCarName = RandomCarPool[RandomCar]
+		RandomCar = math.random(#RandomCarPoolPlayer)
+		RandomCarName = RandomCarPoolPlayer[RandomCar]
 		NewFile = NewFile:gsub("(.*)LoadDisposableCar%s*%(%s*\".-\"%s*,%s*\".-\"%s*,%s*\"DEFAULT\"%s*%);", "%1LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"DEFAULT\");", 1)
-		print("Randomising car for level (load) -> " .. RandomCarName)
+		DebugPrint("Randomising car for level (load) -> " .. RandomCarName)
 	end
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
 	if SettingRandomTraffic then
 		TrafficCars = {}
-		local TmpCarPool = {table.unpack(RandomCarPool)}
-		if not SettingNoHusk then
-			table.remove(TmpCarPool, #TmpCarPool)
-		end
+		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
 		for i = 1, 5 do
 			local carName = GetRandomFromTbl(TmpCarPool, true)
@@ -264,25 +338,27 @@ elseif LevelLoad ~= nil then
 			NewFile = NewFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. carName .. ".p3d\");"
 		end
 		NewFile = NewFile:gsub("SuppressDriver%s*%(\"(.-)\"%s*%);", "//SuppressDriver(\"%1\");")
-		print("Random traffic cars for level -> " .. Cars)
+		DebugPrint("Random traffic cars for level -> " .. Cars)
 	end
 	if SettingRandomChase then
-		RandomChase = GetRandomFromTbl(RandomCarPool, false)
+		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
 		NewFile = NewFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. RandomChase .. ".p3d\");"
-		print("Random chase cars for level -> " .. RandomChase)
+		DebugPrint("Random chase cars for level -> " .. RandomChase)
 	end
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
 	Output(NewFile)
 elseif LevelInit ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	DebugPrint("NEW LEVEL INIT: Level " .. level)
 	if SettingRandomCharacter then
 		OrigChar = NewFile:match("AddCharacter%s*%(%s*\"(.-)\"")
 		--RandomChar = GetRandomFromTbl(RandomCharP3DPool, false)
 	end
 	if SettingRandomPlayerVehicles then
 		NewFile = NewFile:gsub("InitLevelPlayerVehicle%s*%(%s*\".-\"%s*,%s*\"(.-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
-		print("Randomising car for level -> " .. RandomCarName)
+		DebugPrint("Randomising car for level -> " .. RandomCarName)
 	end
 	if SettingRandomPedestrians then
 		local Peds = ""
@@ -294,7 +370,7 @@ elseif LevelInit ~= nil then
 		local ret = ""
 		for i = 1, #groups do
 			local group = groups[i]
-			print("Randomising group " .. group)
+			DebugPrint("Randomising group " .. group)
 			ret = ret .. "CreatePedGroup( " .. group .. " );\r\n"
 			for i = 1, 7 do
 				local pedName = GetRandomFromTbl(TmpPedPool, true)
@@ -313,7 +389,7 @@ elseif LevelInit ~= nil then
 		for npc in NewFile:gmatch("AddAmbientCharacter%s*%(%s*\"(.-)\"") do
 			table.insert(LevelCharacters, npc)
 		end
-		print("Random pedestrians for level -> " .. Peds)
+		DebugPrint("Random pedestrians for level -> " .. Peds)
 	end
 	if SettingRandomMissionCharacters then
 		BonusCharacters = {}
@@ -343,11 +419,14 @@ elseif LevelInit ~= nil then
 			NewFile = NewFile:gsub("CreateChaseManager%s*%(%s*\".-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
 		end
 		if SettingRandomChaseAmount then
-			NewFile = NewFile:gsub("SetNumChaseCars%s*%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 5) .."\"", 1)
+			NewFile = NewFile:gsub("SetNumChaseCars%s*%(%s*\".-\"", "SetNumChaseCars(\"" .. math.random(1, 4) .."\"", 1)
 		end
 	end
 	Output(NewFile)
 elseif SDInit ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)sdi"))
+	DebugPrint("NEW SD INIT: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
 		for npc in NewFile:gmatch("AddNPC%s*%(%s*\"(.-)\"") do
@@ -364,9 +443,13 @@ elseif SDInit ~= nil then
 	end
 	Output(NewFile)
 elseif SDLoad ~= nil then
+	local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)sdl"))
+	DebugPrint("NEW SD LOAD: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
 else
 	LastLevel = nil
+	PlayerStats = nil
 end
