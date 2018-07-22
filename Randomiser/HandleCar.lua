@@ -1,6 +1,21 @@
 -- Load the file
-local Path = "/GameData/" .. GetPath();
-local File = ReadFile(Path);
+local Path = "/GameData/" .. GetPath()
+local File = nil
+
+if SettingCustomCars then
+	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
+	for i = 1, #CustomCarPool do
+		if CustomCarPool[i]:lower() == carName:lower() then
+			File = ReadFile("/GameData/CustomCars/" .. CustomCarPool[i] .. "/" .. CustomCarPool[i] .. ".con")
+			break
+		end
+	end
+	if File == nil then
+		File = ReadFile(Path)
+	end
+else
+	File = ReadFile(Path)
+end
 
 local function randomStats(data)
 	local mass = round(math.random() + math.random(MinMass, MaxMass), 2)

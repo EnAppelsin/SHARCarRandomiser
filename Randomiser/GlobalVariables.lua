@@ -12,7 +12,7 @@ COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
 OLD_FRAME_CONTROLLER_CHUNK = "\000\018\018\000"
 MOTION_ROOT_LABEL = "Motion_Root\000"
 
-ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)\r\n")
+ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)[\r\n]")
 
 OrigChar = nil
 RandomChar = nil
@@ -33,7 +33,8 @@ RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
 RandomDialoguePoolN = 0
 
-cartunespt = nil
+cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt")
+carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt")
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
@@ -45,6 +46,7 @@ SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
 SettingSaveChoice = GetSetting("SaveChoice")
 SettingRandomCarScale = GetSetting("RandomCarScale")
 SettingRandomCarSounds = GetSetting("RandomCarSounds")
+SettingCustomCars = GetSetting("CustomCars")
 SettingRandomPedestrians = GetSetting("RandomPedestrians")
 SettingRandomTraffic = GetSetting("RandomTraffic")
 SettingRandomChase = GetSetting("RandomChase")
