@@ -1,2 +1,2 @@
-DebugPrint("Using randomised car_tune.spt")
+DebugPrint("Using custom car_tune.spt")
 Output(cartunespt)

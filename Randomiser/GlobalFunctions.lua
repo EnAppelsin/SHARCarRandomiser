@@ -225,6 +225,15 @@ function GetFiles(tbl, dir, extension, count)
 	end)
 end
 
+function GetDirs(tbl, dir)
+	DirectoryGetEntries(dir, function(name, directory)
+		if directory then
+			table.insert(tbl, name)
+		end
+		return true
+	end)
+end
+
 function DebugPrint(msg, level)
 	if level == nil then
 		level = 0

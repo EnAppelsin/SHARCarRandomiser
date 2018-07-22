@@ -1,0 +1,129 @@
+create daSoundResourceData named fire
+{
+    AddFilename ( "sound/carsound/damagedcar.rsd" 1.000000 )
+    SetTrim ( 0.800000 )
+    SetLooping ( true )
+}
+create daSoundResourceData named ferrari
+{
+    AddFilename ( "sound/carsound/cellcar.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.680000 ) option PS2
+    SetTrim ( 0.490000 ) option XBOX
+    SetTrim ( 0.490000 ) option PC
+    SetTrim ( 0.660000 ) option GCN
+}
+create daSoundResourceData named gearshift
+{
+    AddFilename ( "sound/carsound/common/gearshft.rsd" 1.000000 )
+}
+create daSoundResourceData named skid
+{
+    AddFilename ( "sound/carsound/common/skid.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.600000 )
+}
+create daSoundResourceData named horn
+{
+    AddFilename ( "sound/carsound/common/horn.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.790000 )
+}
+create daSoundResourceData named siren
+{
+    AddFilename ( "sound/carsound/siren.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.830000 )
+}
+create daSoundResourceData named rocket
+{
+    AddFilename ( "sound/carsound/rocket_car_04.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.870000 )
+}
+create daSoundResourceData named car_jump
+{
+    AddFilename ( "sound/carsound/car_jump_02.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+}
+create daSoundResourceData named vote_quimby
+{
+    AddFilename ( "sound/carsound/vote_quimby_02.rsd" 1.000000 )
+    AddFilename ( "sound/carsound/silent.rsd" 1.000000 )
+    AddFilename ( "sound/carsound/silent.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.760000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named nuke_truck
+{
+    AddFilename ( "sound/carsound/nuke_truck_02.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named i_and_s_truck
+{
+    AddFilename ( "sound/carsound/i_and_s_loop.rsd" 1.000000 )
+    AddFilename ( "sound/carsound/silent.rsd" 1.000000 )
+    AddFilename ( "sound/carsound/silent.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.780000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named ice_cream_truck
+{
+    AddFilename ( "sound/carsound/ice_cream_truck.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named amb_siren
+{
+    AddFilename ( "sound/carsound/amb_siren.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named fire_siren
+{
+    AddFilename ( "sound/carsound/fire_siren.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named klaxon
+{
+    AddFilename ( "sound/carsound/fire_siren.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 1.000000 )
+    SetStreaming ( true )
+}
+create daSoundResourceData named nuctruck_glow
+{
+    AddFilename ( "sound/carsound/nuctruck_glow2.rsd" 1.000000 )
+    SetTrim ( 0.670000 )
+    SetLooping ( true )
+    SetStreaming ( true )
+}
+create daSoundResourceData named blank
+{
+    AddFilename ( "sound/carsound/blank.rsd" 1.000000 )
+    SetLooping ( true )
+}
+create daSoundResourceData named dirt_skid
+{
+    AddFilename ( "sound/carsound/common/dirt_skid.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.680000 )
+}
+create daSoundResourceData named mission_ai_vehicle
+{
+    AddFilename ( "sound/carsound/sportscarB.rsd" 1.000000 )
+    SetLooping ( true )
+    SetTrim ( 0.850000 ) option PS2
+    SetTrim ( 0.610000 ) option XBOX
+    SetTrim ( 0.610000 ) option PC
+    SetTrim ( 0.780000 ) option GCN
+}
