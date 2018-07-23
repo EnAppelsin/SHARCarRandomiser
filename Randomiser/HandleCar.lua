@@ -1,6 +1,21 @@
 -- Load the file
-local Path = "/GameData/" .. GetPath();
-local File = ReadFile(Path);
+local Path = "/GameData/" .. GetPath()
+local File = nil
+
+if SettingCustomCars then
+	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
+	for i = 1, #CustomCarPool do
+		if CustomCarPool[i]:lower() == carName:lower() then
+			File = ReadFile("/GameData/CustomCars/" .. CustomCarPool[i] .. "/" .. CustomCarPool[i] .. ".con")
+			break
+		end
+	end
+	if File == nil then
+		File = ReadFile(Path)
+	end
+else
+	File = ReadFile(Path)
+end
 
 local function randomStats(data)
 	local mass = round(math.random() + math.random(MinMass, MaxMass), 2)
@@ -21,7 +36,9 @@ local function randomStats(data)
 	local maxSpeedBurstTime = round(math.random() + math.random(1, 5), 2)
 	local donutTorque = round(math.random() + math.random(1, 20), 2)
 	
-	if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCarName) then
+	
+	if SettingRandomPlayerVehicles and RandomCarName and Path:match(RandomCarName) then
+		-- Takes the stats that were assigned to the player vehicle when the mission is originally loaded.
 		if PlayerStats == nil then
 			PlayerStats = {}
 			PlayerStats["HP"] = hitPoints
@@ -32,17 +49,18 @@ local function randomStats(data)
 			PlayerStats["BreakGasScale"] = breakGasScale
 			PlayerStats["SlipGas"] = slipGasScale
 			PlayerStats["Gas"] = gasScale
+		else
+		-- Applies the same stats that were assigned in the first instance.
+			hitPoints = PlayerStats["HP"]
+			slipSteering = PlayerStats["SlipSteering"]
+			tireGrip = PlayerStats["Grip"]
+			maxWheelTurnAngle = PlayerStats["TurnAngle"]
+			topSpeedKmh = PlayerStats["Speed"]
+			breakGasScale = PlayerStats["BreakGasScale"]
+			slipGasScale = PlayerStats["SlipGas"]
+			gasScale = PlayerStats["Gas"]
 		end
-		hitPoints = PlayerStats["HP"]
-		slipSteering = PlayerStats["SlipSteering"]
-		tireGrip = PlayerStats["Grip"]
-		maxWheelTurnAngle = PlayerStats["TurnAngle"]
-		topSpeedKmh = PlayerStats["Speed"]
-		breakGasScale = PlayerStats["BreakGasScale"]
-		slipGasScale = PlayerStats["SlipGas"]
-		gasScale = PlayerStats["Gas"]
 	end
-	
 	
 	
 	data = string.gsub(data, "SetMass%(.-%);", "SetMass(" .. mass .. ");", 1)

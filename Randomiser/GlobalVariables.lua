@@ -33,7 +33,8 @@ RandomCarPoolN = #RandomCarPool
 RandomPedPoolN = #RandomPedPool
 RandomDialoguePoolN = 0
 
-cartunespt = nil
+cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
@@ -45,6 +46,7 @@ SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
 SettingSaveChoice = GetSetting("SaveChoice")
 SettingRandomCarScale = GetSetting("RandomCarScale")
 SettingRandomCarSounds = GetSetting("RandomCarSounds")
+SettingCustomCars = GetSetting("CustomCars")
 SettingRandomPedestrians = GetSetting("RandomPedestrians")
 SettingRandomTraffic = GetSetting("RandomTraffic")
 SettingRandomChase = GetSetting("RandomChase")
@@ -127,8 +129,8 @@ if SettingRandomStats then
 	end
 end
 
--- Random Car Scale
 if SettingRandomCarScale then
+	-- Random Car Scale
 	MinCarScale = GetSetting("StatMinScale")
 	MaxCarScale = GetSetting("StatMaxScale")
 	if MaxCarScale < MinCarScale then

@@ -1,24 +1,13 @@
-local hasFolder = false
-
-DirectoryGetEntries("/GameDir", function(name, directory)
-	if directory and name == "RandomDialogue" then
-		hasFolder = true
-	end
-	return true
-end)
-
 if IsModEnabled("RandomiserDialogue") then
-	local hasFolder = false
-
-	DirectoryGetEntries("/GameData", function(name, directory)
-		if directory and name == "RandomDialogue" then
-			hasFolder = true
+	if Exists("/GameData/RandomDialogue", false, true) then
+		local extensions = {".rsd"}
+		if IsHackLoaded("OggVorbisSupport") then
+			table.insert(extensions, ".ogg")
 		end
-		return true
-	end)
-	
-	if hasFolder then
-		GetFiles(RandomDialoguePool, "/GameData/RandomDialogue/", ".rsd", 1)
+		if IsHackLoaded("FLACSupport") then
+			table.insert(extensions, ".flac")
+		end
+		GetFiles(RandomDialoguePool, "/GameData/RandomDialogue/", extensions, 1)
 		RandomDialoguePoolN = #RandomDialoguePool
 		if RandomDialoguePoolN == 0 then
 			if not Confirm("RandomiserDialogue was enabled, but no dialogue files were loaded.\n\nTo continue loading the game press OK, to close press Cancel.") then

@@ -18,9 +18,9 @@ local NewFile = File:gsub("//.-\r\n", "\r\n")
 if Midx ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
 	local bmission = tonumber(Path:match("bm(%d)i"))
-    local mission = tonumber(Path:match("m(%d%)i"))
-    local sr = tonumber(Path:match("sr(%d%)i"))
-    local gr = tonumber(Path:match("gr(%d%)i"))
+    local mission = tonumber(Path:match("m(%d)i"))
+    local sr = tonumber(Path:match("sr(%d)i"))
+    local gr = tonumber(Path:match("gr(%d)i"))
     if bmission then
         DebugPrint("NEW MISSION INIT: Level " .. level .. ", Bonus Mission " .. bmission)
     elseif mission then
@@ -155,9 +155,9 @@ if Midx ~= nil then
 elseif Lidx ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
 	local bmission = tonumber(Path:match("bm(%d)l"))
-    local mission = tonumber(Path:match("m(%d%)l"))
-    local sr = tonumber(Path:match("sr(%d%)l"))
-    local gr = tonumber(Path:match("gr(%d%)l"))
+    local mission = tonumber(Path:match("m(%d)l"))
+    local sr = tonumber(Path:match("sr(%d)l"))
+    local gr = tonumber(Path:match("gr(%d)l"))
     if bmission then
         DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Bonus Mission " .. bmission)
     elseif mission then
@@ -449,7 +449,6 @@ elseif SDLoad ~= nil then
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
-else
 	LastLevel = nil
 	PlayerStats = nil
 end

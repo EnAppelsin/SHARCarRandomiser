@@ -90,6 +90,9 @@ RandomCarPool = {
 	"huskA"
 }
 
+CustomCarPool = {}
+CustomCarSounds = {}
+
 RandomCarPoolPlayer = {table.unpack(RandomCarPool)}
 for i = #RandomCarPoolPlayer, 1, -1 do
 	if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then
@@ -406,8 +409,3 @@ interiorReplace = {}
 
 -- Random Stats Saving
 PlayerStats = {}
-
-AICar1 = {}
-AICar2 = {}
-AICar3 = {}
-AiCar4 = {}
