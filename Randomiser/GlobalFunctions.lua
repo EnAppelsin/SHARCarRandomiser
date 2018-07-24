@@ -233,6 +233,9 @@ function endsWith(String,End)
 end
 
 function GetFiles(tbl, dir, extensions, count)
+    if count == nil then
+        count = 1
+    end
 	DirectoryGetEntries(dir, function(name, directory)
 		if directory then
 			GetFiles(tbl, dir .. name, extensions, count)
