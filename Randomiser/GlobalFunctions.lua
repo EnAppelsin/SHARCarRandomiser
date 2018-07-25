@@ -276,3 +276,15 @@ function DebugPrint(msg, level)
 	print(currTimeStr .. prefix .. msg)
 	return true
 end
+
+function SetCarCameraIndex(CarModel, Index)
+    for pos, length in FindSubchunks(CarModel, CAR_CAMERA_DATA_CHUNK) do
+        local cameraID = GetP3DInt4(CarModel, pos + 12)
+        if cameraID > 256 then
+            Index = Index + 256
+        end
+        CarModel = SetP3DInt4(CarModel, pos + 12, Index)
+    end
+    return CarModel
+end
+    
