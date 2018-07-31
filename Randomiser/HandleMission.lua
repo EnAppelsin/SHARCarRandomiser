@@ -449,6 +449,6 @@ elseif SDLoad ~= nil then
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
 	end
-else
 	LastLevel = nil
+	PlayerStats = nil
 end

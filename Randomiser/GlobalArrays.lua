@@ -406,3 +406,6 @@ l7interiors = {
 }
 
 interiorReplace = {}
+
+-- Random Stats Saving
+PlayerStats = {}

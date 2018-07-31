@@ -35,6 +35,34 @@ local function randomStats(data)
 	local burnoutRange = round(math.random() / 2, 2)
 	local maxSpeedBurstTime = round(math.random() + math.random(1, 5), 2)
 	local donutTorque = round(math.random() + math.random(1, 20), 2)
+	
+	
+	if SettingRandomPlayerVehicles and RandomCarName and Path:match(RandomCarName) then
+		-- Takes the stats that were assigned to the player vehicle when the mission is originally loaded.
+		if PlayerStats == nil then
+			PlayerStats = {}
+			PlayerStats["HP"] = hitPoints
+			PlayerStats["SlipSteering"] = slipSteering
+			PlayerStats["Grip"] = tireGrip
+			PlayerStats["TurnAngle"] = maxWheelTurnAngle
+			PlayerStats["Speed"] = topSpeedKmh
+			PlayerStats["BreakGasScale"] = breakGasScale
+			PlayerStats["SlipGas"] = slipGasScale
+			PlayerStats["Gas"] = gasScale
+		else
+		-- Applies the same stats that were assigned in the first instance.
+			hitPoints = PlayerStats["HP"]
+			slipSteering = PlayerStats["SlipSteering"]
+			tireGrip = PlayerStats["Grip"]
+			maxWheelTurnAngle = PlayerStats["TurnAngle"]
+			topSpeedKmh = PlayerStats["Speed"]
+			breakGasScale = PlayerStats["BreakGasScale"]
+			slipGasScale = PlayerStats["SlipGas"]
+			gasScale = PlayerStats["Gas"]
+		end
+	end
+	
+	
 	data = string.gsub(data, "SetMass%(.-%);", "SetMass(" .. mass .. ");", 1)
 	data = string.gsub(data, "SetGasScale%(.-%);", "SetGasScale(" .. gasScale .. ");", 1)
 	data = string.gsub(data, "SetSlipGasScale%(.-%);", "SetSlipGasScale(" .. slipGasScale .. ");", 1)
