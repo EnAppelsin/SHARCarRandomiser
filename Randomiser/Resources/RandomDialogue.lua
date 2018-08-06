@@ -13,6 +13,7 @@ if IsModEnabled("RandomiserDialogue") then
 			if not Confirm("RandomiserDialogue was enabled, but no dialogue files were loaded.\n\nTo continue loading the game press OK, to close press Cancel.") then
 				os.exit()
 			end
+			SettingRandomDialogue = false
 		else
 			DebugPrint("Loaded " .. RandomDialoguePoolN .. " dialogue files.")
 		end
@@ -20,9 +21,11 @@ if IsModEnabled("RandomiserDialogue") then
 		if not Confirm("RandomiserDialogue was enabled, but no RandomDialogue folder was found.\n\nTo continue loading the game press OK, to close press Cancel.") then
 			os.exit()
 		end
+		SettingRandomDialogue = false
 	end
 else
 	if not Confirm("You have Random Dialogue enabled without the RandomiserDialogue framework. Random Dialogue will not work without this.\n\nTo continue loading the game press OK, to close press Cancel.") then
 		os.exit()
 	end
+	SettingRandomDialogue = false
 end
