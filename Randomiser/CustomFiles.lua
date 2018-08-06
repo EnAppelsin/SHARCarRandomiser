@@ -1,7 +1,7 @@
 ModPath = GetModPath()
-dofile(ModPath .. "/GlobalArrays.lua")
-dofile(ModPath .. "/GlobalVariables.lua")
-dofile(ModPath .. "/GlobalFunctions.lua")
+dofile(ModPath .. "/Resources/GlobalArrays.lua")
+dofile(ModPath .. "/Resources/GlobalVariables.lua")
+dofile(ModPath .. "/Resources/GlobalFunctions.lua")
 
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
 DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
@@ -16,10 +16,10 @@ if SettingRandomInteriors then
 end
 
 if SettingCustomCars then
-	dofile(ModPath .. "/CustomCars.lua")
+	dofile(ModPath .. "/Resources/CustomCars.lua")
 end
 
-dofile(ModPath .. "/RandomCarTune.lua")
+dofile(ModPath .. "/Resources/RandomCarTune.lua")
 if SettingRandomDialogue then
-	dofile(ModPath .. "/RandomDialogue.lua")
+	dofile(ModPath .. "/Resources/RandomDialogue.lua")
 end
