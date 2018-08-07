@@ -51,6 +51,10 @@ If this is checked, the model scale for any character in a car will be randomise
 Off by default.  
 If this is checked, car sounds (horns, engine, etc) will be randomised.  
 If the car has an overlay (phone ringing, ice cream, etc) these are randomised too.
+#### Enable custom cars
+Off by default.  
+If this is checked, include additional custom cars in the randomiser.  
+*Adding additional cars requires extra work, detailed in [this documentation](CustomCars.md)*
 #### Random pedestrians
 On by default.  
 If this is checked, pedestrians, drivers and ambient characters will be randomised per level load.  
