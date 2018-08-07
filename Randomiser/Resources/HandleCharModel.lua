@@ -1,6 +1,6 @@
 local Path = GetPath()
 
-if SettingRandomCharacter and OrigChar and (Path:match("art\\chars\\" .. OrigChar .. "_m%.p3d") or Path:match("art\\chars\\" .. OrigChar:sub(1,1) .. ".-_m%.p3d")) then
+if SettingRandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar .. "_m%.p3d") or Path:match("art/chars/" .. OrigChar:sub(1,1) .. ".-_m%.p3d")) then
 	local Original = ReadFile("GameData/" .. Path)
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 	local Replace = ReadFile(ReplacePath)
@@ -18,7 +18,7 @@ else
 				if model:len() > 6 then
 					model = model:sub(1, 6)
 				end
-				if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
+				if Path:match("art/chars/" .. model .. "_m%.p3d") then
 					local Original = ReadFile("GameData/" .. Path)
 					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 					local Replace = ReadFile(ReplacePath)
@@ -38,7 +38,7 @@ else
 				if model:len() > 6 then
 					model = model:sub(1, 6)
 				end
-				if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
+				if Path:match("art/chars/" .. model .. "_m%.p3d") then
 					local Original = ReadFile("GameData/" .. Path)
 					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 					local Replace = ReadFile(ReplacePath)
@@ -59,7 +59,7 @@ else
 			if model:len() > 6 then
 				model = model:sub(1, 6)
 			end
-			if Path:match("art\\chars\\" .. model .. "_m%.p3d") then
+			if Path:match("art/chars/" .. model .. "_m%.p3d") then
 				local Original = ReadFile("GameData/" .. Path)
 				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 				local Replace = ReadFile(ReplacePath)

@@ -1,3 +1,9 @@
+-- Override GetPath to fix slashes for us
+OriginalGetPath = GetPath
+GetPath = function ()
+    return FixSlashes(OriginalGetPath(), false, true)
+end
+
 function GetRandomFromTbl(tbl, remove)
     local i = math.random(#tbl)
     local result = tbl[i]

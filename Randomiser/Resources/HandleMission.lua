@@ -223,7 +223,7 @@ elseif Lidx ~= nil then
 						DebugPrint("Randomising " .. orig .. " to " .. carName)
 					end
 				end
-			elseif SettingDifferentCellouts and Path:match("level02\\m7l.mfk") then
+			elseif SettingDifferentCellouts and Path:match("level02/m7l.mfk") then
 				NewFile = NewFile:gsub("cCellA", "cCellA1")
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
@@ -233,7 +233,7 @@ elseif Lidx ~= nil then
 		else
 			MissionVehicles = {}
 			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
-			if Path:match("level02\\m7l.mfk") then
+			if Path:match("level02/m7l.mfk") then
 				NewFile = NewFile:gsub("cCellA", "cCellA1")
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
 				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
