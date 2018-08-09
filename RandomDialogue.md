@@ -11,7 +11,7 @@ Extract the RandomiserDialogue.zip to the same Mods folder you placed the Random
 ![Step 2](Screenshots/Dialogue/Step2a.png)
 ## Step 3
 Next, if you do not already have the RFC Explorer, download [Lucas RCF Explorer](https://donutteam.com/downloads/RCFExplorer/).  
-This is a tool written by the mod launcher to browse and extract from RCF archives.
+This is a tool written by the same guy who wrote the mod launcher, in order to browse and extract from RCF archives.
 ## Step 4
 Once downloaded (if needed), open the executable, and then open the file named "dialog.rcf" in the root of your SHAR install:  
 ![Step 4](Screenshots/Dialogue/Step4a.png)  
