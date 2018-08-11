@@ -35,6 +35,11 @@ function ExistsInTbl(tbl, needle, caseSensitive)
 	return false
 end
 
+function findLast(haystack, needle)
+	local i=haystack:match(".*"..needle.."()")
+	if i==nil then return nil else return i-1 end
+end
+
 function round(num, numDecimalPlaces)
   local mult = 10^(numDecimalPlaces or 0)
   return math.floor(num * mult + 0.5) / mult

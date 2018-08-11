@@ -68,6 +68,7 @@ SettingDebugLevel = GetSetting("DebugLevel")
 
 --Chaos settings
 SettingRandomInteriors = GetSetting("RandomInteriors")
+SettingRandomDirectives = GetSetting("RandomDirectives")
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then

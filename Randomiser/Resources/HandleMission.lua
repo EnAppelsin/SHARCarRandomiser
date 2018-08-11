@@ -39,6 +39,17 @@ if Midx ~= nil then
 		end
 		DebugPrint(found)
 	end
+	if SettingRandomDirectives then
+		NewFile = NewFile:gsub("SetStageMessageIndex%s*%(%s*[+-]?%d+%s*%)", function()
+			return "SetStageMessageIndex(" .. math.random(1, 273) .. ")"
+		end)
+		NewFile = NewFile:gsub("SetPresentationBitmap%s*%(%s*\"art/frontend/dynaload/images/.-%.p3d\"%s*%)", function()
+			return "SetPresentationBitmap(\"art/frontend/dynaload/images/" .. GetRandomFromTbl(PresentationP3DPool, false) .. ".p3d\")"
+		end)
+		for orig,rand in pairs(iconReplace) do
+			NewFile = NewFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
+		end
+	end
 	-- The random car should have been predecided by the mission load script
 	if SettingRandomPlayerVehicles then
 		local ForcedMission = false
@@ -167,7 +178,17 @@ elseif Lidx ~= nil then
     elseif gr then
         DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Gambling Race " .. gr)
     end
-        
+    if SettingRandomDirectives then
+		iconReplace = {}
+		NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\frontend\\dynaload\\images\\msnicons(.-)%.p3d\"%s*", function(orig)
+			local rand = GetRandomFromTbl(IconP3DPool, false)
+			local origName = orig:sub(findLast(orig, "\\") + 1)
+			local randName = rand:sub(findLast(rand, "\\") + 1)
+			iconReplace[origName] = randName
+			DebugPrint("Replacing directive icon " .. origName .. " with " .. randName)
+			return "LoadP3DFile(\"art\\frontend\\dynaload\\images\\msnicons" .. rand .. ".p3d\""
+		end)
+	end
 	if SettingRandomPlayerVehicles then
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
@@ -441,6 +462,17 @@ elseif SDInit ~= nil then
 	if SettingSkipFMVs then
 		NewFile = NewFile:gsub("AddObjective%s*%(\"fmv\"%s*%);.-CloseObjective%s*%(%s*%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
 	end
+	if SettingRandomDirectives then
+		NewFile = NewFile:gsub("SetStageMessageIndex%s*%(%s*[+-]?%d+%s*%)", function()
+			return "SetStageMessageIndex(" .. math.random(1, 273) .. ")"
+		end)
+		NewFile = NewFile:gsub("SetPresentationBitmap%s*%(%s*\"art/frontend/dynaload/images/.-%.p3d\"%s*%)", function()
+			return "SetPresentationBitmap(\"art/frontend/dynaload/images/" .. GetRandomFromTbl(PresentationP3DPool, false) .. ".p3d\")"
+		end)
+		for orig,rand in pairs(iconReplace) do
+			NewFile = NewFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
+		end
+	end
 	Output(NewFile)
 elseif SDLoad ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
@@ -448,6 +480,18 @@ elseif SDLoad ~= nil then
 	DebugPrint("NEW SD LOAD: Level " .. level .. ", Mission " .. mission)
 	if SettingRandomMissionVehicles then
 		LastLevelMV = nil
+	end
+    if SettingRandomDirectives then
+		iconReplace = {}
+		NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\frontend\\dynaload\\images\\msnicons(.-)%.p3d\"%s*", function(orig)
+			local rand = GetRandomFromTbl(IconP3DPool, false)
+			local origName = orig:sub(findLast(orig, "\\") + 1)
+			local randName = rand:sub(findLast(rand, "\\") + 1)
+			iconReplace[origName] = randName
+			DebugPrint("Replacing directive icon " .. origName .. " with " .. randName)
+			return "LoadP3DFile(\"art\\frontend\\dynaload\\images\\msnicons" .. rand .. ".p3d\""
+		end)
+		Output(NewFile)
 	end
 	LastLevel = nil
 	PlayerStats = nil
