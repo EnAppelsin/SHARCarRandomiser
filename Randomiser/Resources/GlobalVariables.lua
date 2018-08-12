@@ -39,6 +39,7 @@ RandomDialoguePoolN = 0
 
 cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+dialogspt = ReadFile(ModPath .. "/Resources/dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 
 SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
@@ -69,6 +70,7 @@ SettingDebugLevel = GetSetting("DebugLevel")
 --Chaos settings
 SettingRandomInteriors = GetSetting("RandomInteriors")
 SettingRandomDirectives = GetSetting("RandomDirectives")
+SettingRandomMissions = GetSetting("RandomMissions")
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then

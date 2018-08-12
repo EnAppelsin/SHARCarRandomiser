@@ -283,6 +283,13 @@ elseif Lidx ~= nil then
 elseif LevelLoad ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
+	if SettingRandomMissions then
+		local mission = 0
+		NewFile = NewFile:gsub("AddMission%s*%(%s*\"m%d\"", function()
+			mission = mission + 1
+			return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
+		end)
+	end
 	if SettingRandomInteriors then
 		if level == 1 then
 			DebugPrint("Setting up random interiors for level 1")

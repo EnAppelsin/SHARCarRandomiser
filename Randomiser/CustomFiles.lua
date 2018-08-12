@@ -23,3 +23,7 @@ dofile(ModPath .. "/Resources/RandomCarTune.lua")
 if SettingRandomDialogue then
 	dofile(ModPath .. "/Resources/RandomDialogue.lua")
 end
+
+if SettingRandomMissions then
+	dofile(ModPath .. "/Resources/RandomMissions.lua")
+end

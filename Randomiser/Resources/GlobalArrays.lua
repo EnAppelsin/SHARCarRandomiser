@@ -628,6 +628,7 @@ l7interiors = {
 
 interiorReplace = {}
 iconReplace = {}
+missionOrder = {}
 
 -- Random Stats Saving
 PlayerStats = {}
