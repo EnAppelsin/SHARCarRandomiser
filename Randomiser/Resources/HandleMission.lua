@@ -285,9 +285,13 @@ elseif LevelLoad ~= nil then
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
 	if SettingRandomMissions then
 		local mission = 0
-		NewFile = NewFile:gsub("AddMission%s*%(%s*\"m%d\"", function()
+		NewFile = NewFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
 			mission = mission + 1
-			return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
+			if tonumber(orig) >= 8 then
+				return "AddMission(\"m" .. orig .. "\""
+			else
+				return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
+			end
 		end)
 	end
 	if SettingRandomInteriors then
