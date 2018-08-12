@@ -16,7 +16,6 @@ elseif SettingRandomMissions and Path:match("L%d") then
 			local redirected = false
 				for i = 1, 7 do
 					local tmp = RedirectPath:gsub("L(%d)", "L%1M" .. i)
-					print(tmp)
 					if Exists(tmp, true, false) then
 						DebugPrint("Redirecting " .. Path .. " to " .. tmp)
 						Redirect(tmp)
