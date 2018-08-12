@@ -153,6 +153,9 @@ if Midx ~= nil then
 		local TmpDriverPool = {table.unpack(RandomPedPool)}
 		NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);", function(car, position, action, config, orig)
 			local driverName = GetRandomFromTbl(TmpDriverPool, true)
+			if #TmpDriverPool == 0 then
+				TmpDriverPool = {table.unpack(RandomPedPool)}
+			end
 			for k in pairs(CarDrivers) do
 				if k == orig then
 					return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. driverName .. "\");"
@@ -234,12 +237,18 @@ elseif Lidx ~= nil then
 				end
 				for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 					local carName = GetRandomFromTbl(TmpCarPool, true)
+					if #TmpCarPool == 0 then
+						TmpCarPool = {table.unpack(RandomCarPoolMission)}
+					end
 					MissionVehicles[orig] = carName
 					DebugPrint("Randomising " .. orig .. " to " .. carName)
 				end
 				for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
 					if carType == "AI" then
 						local carName = GetRandomFromTbl(TmpCarPool, true)
+						if #TmpCarPool == 0 then
+							TmpCarPool = {table.unpack(RandomCarPoolMission)}
+						end
 						MissionVehicles[orig] = carName
 						DebugPrint("Randomising " .. orig .. " to " .. carName)
 					end
@@ -262,12 +271,18 @@ elseif Lidx ~= nil then
 			end
 			for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 				local carName = GetRandomFromTbl(TmpCarPool, true)
+				if #TmpCarPool == 0 then
+					TmpCarPool = {table.unpack(RandomCarPoolMission)}
+				end
 				MissionVehicles[orig] = carName
 				DebugPrint("Randomising " .. orig .. " to " .. carName)
 			end
 			for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
 				if carType == "AI" then
 					local carName = GetRandomFromTbl(TmpCarPool, true)
+					if #TmpCarPool == 0 then
+						TmpCarPool = {table.unpack(RandomCarPoolMission)}
+					end
 					MissionVehicles[orig] = carName
 					DebugPrint("Randomising " .. orig .. " to " .. carName)
 				end
@@ -360,7 +375,7 @@ elseif LevelLoad ~= nil then
 		TrafficCars = {}
 		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
-		for i = 1, 5 do
+		for i = 1, math.min(5, #TmpCarPool) do
 			local carName = GetRandomFromTbl(TmpCarPool, true)
 			table.insert(TrafficCars, carName)
 			Cars = Cars .. carName .. ", "
@@ -440,7 +455,19 @@ elseif LevelInit ~= nil then
 		NewFile = NewFile .. "\r\nCreateTrafficGroup( 0 );"
 		for i = 1, #TrafficCars do
 			local carName = TrafficCars[i]
-			NewFile = NewFile .. "\r\nAddTrafficModel( \"" .. carName .. "\",1 );"
+			local amount = 1
+			if i == 1 then
+				if #TrafficCars == 4 then
+					amount = 2
+				elseif #TrafficCars == 3 then
+					amount = 3
+				elseif #TrafficCars == 2 then
+					amount = 4
+				elseif #TrafficCars == 1 then
+					amount = 5
+				end
+			end
+			NewFile = NewFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. " );"
 		end
 		NewFile = NewFile .. "\r\nCloseTrafficGroup( );"
 	end
