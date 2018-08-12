@@ -18,6 +18,11 @@ if SettingRandomMissions then
 		end
 	end
 	
+	dialogspt = dialogspt:gsub("L(%d)M(%d)", function(level,mission)
+		local l = tonumber(level)
+		return "L" .. l
+	end)
+	
 	for i = 1, #missionOrder do
 		for j = 1, #missionOrder[i] do
 			DebugPrint("Level " .. i .. " Mission " .. j .. " = " .. missionOrder[i][j], 2)
