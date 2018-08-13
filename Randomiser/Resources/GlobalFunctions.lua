@@ -4,13 +4,32 @@ GetPath = function ()
     return FixSlashes(OriginalGetPath(), false, true)
 end
 
-function GetRandomFromTbl(tbl, remove)
+function GetRandomFromTbl(tbl, rmv)
+	if rmv == nil then
+		rmv = false
+	end
     local i = math.random(#tbl)
     local result = tbl[i]
-    if remove then
+    if rmv then
         table.remove(tbl, i)
     end
     return result
+end
+
+function GetRandomFromKVTbl(tbl, rmv)
+	if rmv == nil then
+		rmv = false
+	end
+	local keyset = {}
+	for k in pairs(tbl) do
+		table.insert(keyset, k)
+	end
+    local k = keyset[math.random(#keyset)]
+	local v = tbl[k]
+    if rmv then
+        tbl[k] = nil
+    end
+    return k, v
 end
 
 function ExistsInTbl(tbl, needle, caseSensitive)

@@ -71,6 +71,7 @@ SettingDebugLevel = GetSetting("DebugLevel")
 SettingRandomInteriors = GetSetting("RandomInteriors")
 SettingRandomDirectives = GetSetting("RandomDirectives")
 SettingRandomMissions = GetSetting("RandomMissions")
+SettingRandomItems = GetSetting("RandomItems")
 
 --Random Stat Min/Max Variables
 if SettingRandomStats then

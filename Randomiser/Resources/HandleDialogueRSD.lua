@@ -1,5 +1,5 @@
 local Path = "/GameData/" .. GetPath()
-print(Path)
+
 if SettingRandomDialogue and RandomDialoguePoolN > 0 then
 	local RedirectPath = RandomDialoguePool[math.random(RandomDialoguePoolN)]
 

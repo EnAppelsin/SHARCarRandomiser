@@ -50,6 +50,12 @@ if Midx ~= nil then
 			NewFile = NewFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
 		end
 	end
+	if SettingRandomItems then
+		for k,v in pairs(itemReplace) do
+			NewFile = NewFile:gsub("AddCollectible%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddCollectible(\"%1\",\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetDestination%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "SetDestination(\"%1\",\"" .. v .. "\"")
+		end
+	end
 	-- The random car should have been predecided by the mission load script
 	if SettingRandomPlayerVehicles then
 		local ForcedMission = false
@@ -181,6 +187,26 @@ elseif Lidx ~= nil then
     elseif gr then
         DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Gambling Race " .. gr)
     end
+	if SettingRandomItems then
+		itemReplace = {}
+		NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions(.-)%.p3d\"", function(orig)
+			local origName = nil
+			for k,v in pairs(RandomItemPool) do
+				if v == orig then
+					origName = k
+					break
+				end
+			end
+			if origName ~= nil then
+				local randName, rand = GetRandomFromKVTbl(RandomItemPool, false)
+				DebugPrint("Replacing item " .. orig .. " with " .. rand .. " (" .. randName .. ")")
+				itemReplace[origName] = randName
+				return "LoadP3DFile(\"art\\missions" .. rand .. ".p3d\""
+			else
+				return "LoadP3DFile(\"art\\missions" .. orig .. ".p3d\""
+			end
+		end)
+	end
     if SettingRandomDirectives then
 		iconReplace = {}
 		NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\frontend\\dynaload\\images\\msnicons(.-)%.p3d\"%s*", function(orig)
@@ -299,13 +325,37 @@ elseif LevelLoad ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
 	if SettingRandomMissions then
-		local mission = 0
+		--local mission = 0
+		--NewFile = NewFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
+		--	mission = mission + 1
+		--	if tonumber(orig) >= 8 then
+		--		return "AddMission(\"m" .. orig .. "\""
+		--	else
+		--		return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
+		--	end
+		--end)
+		local missions = {}
+		for mission in NewFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do
+			if tonumber(mission) < 8 then
+				table.insert(missions, mission)
+			end
+		end
 		NewFile = NewFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
-			mission = mission + 1
-			if tonumber(orig) >= 8 then
-				return "AddMission(\"m" .. orig .. "\""
+			local mission = tonumber(orig)
+			if mission < 8 then
+				local tmp = {table.unpack(missions)}
+				for i = #tmp, 1, -1 do
+					if tmp[i] == orig then
+						table.remove(tmp, i)
+						break
+					end
+				end
+				local newMission = GetRandomFromTbl(tmp, true)
+				table.insert(tmp, orig)
+				mission = tmp
+				return "AddMission(\"m" .. newMission .. "\""
 			else
-				return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
+				return "AddMission(\"m" .. orig .. "\""
 			end
 		end)
 	end
