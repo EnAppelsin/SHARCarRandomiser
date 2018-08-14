@@ -4,6 +4,16 @@ GetPath = function ()
     return FixSlashes(OriginalGetPath(), false, true)
 end
 
+function ShuffleTbl(tbl)
+	local tblN = #tbl
+	local j
+	
+	for i = tblN, 1, -1 do
+		j = math.random(i)
+		tbl[i], tbl[j] = tbl[j], tbl[i]
+	end
+end
+
 function GetRandomFromTbl(tbl, rmv)
 	if rmv == nil then
 		rmv = false

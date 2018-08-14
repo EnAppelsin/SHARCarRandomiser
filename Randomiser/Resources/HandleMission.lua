@@ -347,10 +347,12 @@ elseif LevelLoad ~= nil then
 				local tmp = {table.unpack(missions)}
 				local exists = ExistsInTbl(tmp, orig, false)
 				if exists then
-					for i = #tmp, 1, -1 do
-						if tmp[i] == orig then
-							table.remove(tmp, i)
-							break
+					if #tmp > 1 then
+						for i = #tmp, 1, -1 do
+							if tmp[i] == orig then
+								table.remove(tmp, i)
+								break
+							end
 						end
 					end
 				end
