@@ -325,6 +325,7 @@ elseif LevelLoad ~= nil then
 	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
 	if SettingRandomMissions then
+		DebugPrint("Randomising mission order")
 		--local mission = 0
 		--NewFile = NewFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
 		--	mission = mission + 1
@@ -344,15 +345,21 @@ elseif LevelLoad ~= nil then
 			local mission = tonumber(orig)
 			if mission < 8 then
 				local tmp = {table.unpack(missions)}
-				for i = #tmp, 1, -1 do
-					if tmp[i] == orig then
-						table.remove(tmp, i)
-						break
+				local exists = ExistsInTbl(tmp, orig, false)
+				if exists then
+					for i = #tmp, 1, -1 do
+						if tmp[i] == orig then
+							table.remove(tmp, i)
+							break
+						end
 					end
 				end
 				local newMission = GetRandomFromTbl(tmp, true)
-				table.insert(tmp, orig)
-				mission = tmp
+				if exists then
+					table.insert(tmp, orig)
+				end
+				missions = {table.unpack(tmp)}
+				DebugPrint("Randomised mission " .. orig .. " to " .. newMission, 1)
 				return "AddMission(\"m" .. newMission .. "\""
 			else
 				return "AddMission(\"m" .. orig .. "\""
