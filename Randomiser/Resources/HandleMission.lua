@@ -30,6 +30,73 @@ if Midx ~= nil then
     elseif gr then
         DebugPrint("NEW MISSION INIT: Level " .. level .. ", Gambling Race " .. gr)
     end
+	if SettingRandomMissionVehicles then
+		if SettingDifferentCellouts and level == 2 and mission == 7 then
+			NewFile = ReadFile(ModPath .. "/Resources/l2m7i.mfk")
+			--[[NewFile:gsub("AddStageVehicle%s*%(\"cCellA\",\"m7_cellstart(%d)", "AddStageVehicle(\"cCellA%1\",\"m7_cellstart%1")
+			NewFile = NewFile:gsub("ActivateVehicle%s*%(\"cCellA\"(.-)\r\n", "ActivateVehicle(\"cCellA1\"%1\r\nSetHitNRun();\r\n")
+			local i = 0
+			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"cCellA\"", function()
+				i = i + 1
+				return "SetHitNRun();\r\n\tSetVehicleAIParams( \"cCellA" .. i .. "\""
+			end)
+			i = 0
+			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(\"cCellA\"", function()
+				i = i + 1
+				return "SetObjTargetVehicle(\"cCellA" .. i .. "\""
+			end)
+			i = 1
+			NewFile = NewFile:gsub("AddStageVehicle%s*%(\"cCellA\"", function()
+				i = i + 1
+				return "AddStageVehicle(\"cCellA" .. i .. "\""
+			end)]]
+		end
+		for k,v in pairs(MissionVehicles) do
+			DebugPrint("Replacing " .. k .. " with " .. v)
+			if SettingRandomMissionVehiclesStats or SettingRandomStats then
+				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
+			else
+				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
+			end
+			NewFile = NewFile:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetStageAIRaceCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetStageAITargetCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetCondTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("AddDriver%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
+		end
+		for i = 1, #RemovedTrafficCars do
+			local k = RemovedTrafficCars[i]
+			local v = GetRandomFromTbl(TrafficCars, false)
+			DebugPrint("Replacing " .. k .. " with " .. v)
+			if SettingRandomMissionVehiclesStats or SettingRandomStats then
+				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
+			else
+				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
+			end
+			NewFile = NewFile:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetStageAIRaceCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetStageAITargetCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetCondTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
+			NewFile = NewFile:gsub("AddDriver%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
+		end
+		local TmpDriverPool = {table.unpack(RandomPedPool)}
+		NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);", function(car, position, action, config, orig)
+			local driverName = GetRandomFromTbl(TmpDriverPool, true)
+			if #TmpDriverPool == 0 then
+				TmpDriverPool = {table.unpack(RandomPedPool)}
+			end
+			for k in pairs(CarDrivers) do
+				if k == orig then
+					return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. driverName .. "\");"
+				end
+			end
+			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
+		end)
+	end
 	if SettingRandomMissionCharacters then
 		MissionCharacters = {}
 		local found = "Found mission characters: "
@@ -104,72 +171,6 @@ if Midx ~= nil then
 		NewFile = NewFile:gsub("\"cPolice\"", "\"" .. RandomChase .. "\"")
 		NewFile = NewFile:gsub("\"cHears\"", "\"" .. RandomChase .. "\"")
 	end
-	if SettingRandomMissionVehicles then
-		if SettingDifferentCellouts and level == 2 and mission == 7 then
-			NewFile = NewFile:gsub("AddStageVehicle%s*%(\"cCellA\",\"m7_cellstart(%d)", "AddStageVehicle(\"cCellA%1\",\"m7_cellstart%1")
-			NewFile = NewFile:gsub("ActivateVehicle%s*%(\"cCellA\"(.-)\r\n", "ActivateVehicle(\"cCellA1\"%1\r\nSetHitNRun();\r\n")
-			local i = 0
-			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"cCellA\"", function()
-				i = i + 1
-				return "SetHitNRun();\r\n\tSetVehicleAIParams( \"cCellA" .. i .. "\""
-			end)
-			i = 0
-			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(\"cCellA\"", function()
-				i = i + 1
-				return "SetObjTargetVehicle(\"cCellA" .. i .. "\""
-			end)
-			i = 1
-			NewFile = NewFile:gsub("AddStageVehicle%s*%(\"cCellA\"", function()
-				i = i + 1
-				return "AddStageVehicle(\"cCellA" .. i .. "\""
-			end)
-		end
-		for k,v in pairs(MissionVehicles) do
-			DebugPrint("Replacing " .. k .. " with " .. v)
-			if SettingRandomMissionVehiclesStats or SettingRandomStats then
-				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
-			else
-				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
-			end
-			NewFile = NewFile:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetStageAIRaceCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetStageAITargetCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetCondTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("AddDriver%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
-		end
-		for i = 1, #RemovedTrafficCars do
-			local k = RemovedTrafficCars[i]
-			local v = GetRandomFromTbl(TrafficCars, false)
-			DebugPrint("Replacing " .. k .. " with " .. v)
-			if SettingRandomMissionVehiclesStats or SettingRandomStats then
-				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\".-\"", "AddStageVehicle(\"" .. v .. "\",\"%1\",\"%2\",\"" .. v .. ".con\"")
-			else
-				NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. v .. "\"")
-			end
-			NewFile = NewFile:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetStageAIRaceCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetStageAITargetCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetCondTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. v .. "\"")
-			NewFile = NewFile:gsub("AddDriver%s*%(%s*\"(.-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. v .. "\"")
-		end
-		local TmpDriverPool = {table.unpack(RandomPedPool)}
-		NewFile = NewFile:gsub("AddStageVehicle%s*%(%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);", function(car, position, action, config, orig)
-			local driverName = GetRandomFromTbl(TmpDriverPool, true)
-			if #TmpDriverPool == 0 then
-				TmpDriverPool = {table.unpack(RandomPedPool)}
-			end
-			for k in pairs(CarDrivers) do
-				if k == orig then
-					return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. driverName .. "\");"
-				end
-			end
-			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
-		end)
-	end
 	
 	Output(NewFile)
 elseif Lidx ~= nil then
@@ -187,6 +188,80 @@ elseif Lidx ~= nil then
     elseif gr then
         DebugPrint("NEW MISSION LOAD: Level " .. level .. ", Gambling Race " .. gr)
     end
+	if SettingRandomMissionVehicles then
+		DebugPrint("Checking for sub level cars in " .. Lidx)
+		if SettingSaveChoiceMV then
+			if LastLevelMV == nil or LastLevelMV ~= Path then			
+				MissionVehicles = {}
+				local TmpCarPool = {table.unpack(RandomCarPoolMission)}
+				if SettingDifferentCellouts and level == 2 and mission == 7 then
+					NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
+					--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]
+				end
+				for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
+					local carName = GetRandomFromTbl(TmpCarPool, true)
+					if #TmpCarPool == 0 then
+						TmpCarPool = {table.unpack(RandomCarPoolMission)}
+					end
+					MissionVehicles[orig] = carName
+					DebugPrint("Randomising " .. orig .. " to " .. carName)
+				end
+				for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
+					if carType == "AI" then
+						local carName = GetRandomFromTbl(TmpCarPool, true)
+						if #TmpCarPool == 0 then
+							TmpCarPool = {table.unpack(RandomCarPoolMission)}
+						end
+						MissionVehicles[orig] = carName
+						DebugPrint("Randomising " .. orig .. " to " .. carName)
+					end
+				end
+			elseif SettingDifferentCellouts and level == 2 and mission == 7 then
+				NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
+				--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]--
+			end
+			LastLevelMV = Path
+		else
+			MissionVehicles = {}
+			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
+			if SettingDifferentCellouts and level == 2 and mission == 7 then
+				NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
+				--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
+				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]--
+			end
+			for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
+				local carName = GetRandomFromTbl(TmpCarPool, true)
+				if #TmpCarPool == 0 then
+					TmpCarPool = {table.unpack(RandomCarPoolMission)}
+				end
+				MissionVehicles[orig] = carName
+				DebugPrint("Randomising " .. orig .. " to " .. carName)
+			end
+			for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
+				if carType == "AI" then
+					local carName = GetRandomFromTbl(TmpCarPool, true)
+					if #TmpCarPool == 0 then
+						TmpCarPool = {table.unpack(RandomCarPoolMission)}
+					end
+					MissionVehicles[orig] = carName
+					DebugPrint("Randomising " .. orig .. " to " .. carName)
+				end
+			end
+		end
+		for k,v in pairs(MissionVehicles) do
+			NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\cars\\" .. k .. "%.p3d\"%s*%);", "LoadP3DFile(\"art\\cars\\" .. v .. ".p3d\");")
+			NewFile = NewFile:gsub("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"" .. k .. "\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
+			NewFile = NewFile:gsub("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"cvan\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
+		end
+	end
 	if SettingRandomItems then
 		itemReplace = {}
 		NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions(.-)%.p3d\"", function(orig)
@@ -248,77 +323,6 @@ elseif Lidx ~= nil then
 		end
 		-- Debugging
 		DebugPrint("Randomising car for mission (load) " ..  Lidx .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
-	end
-	if SettingRandomMissionVehicles then
-		DebugPrint("Checking for sub level cars in " .. Lidx)
-		if SettingSaveChoiceMV then
-			if LastLevelMV == nil or LastLevelMV ~= Path then			
-				MissionVehicles = {}
-				local TmpCarPool = {table.unpack(RandomCarPoolMission)}
-				if SettingDifferentCellouts and level == 2 and mission == 7 then
-					NewFile = NewFile:gsub("cCellA", "cCellA1")
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
-				end
-				for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-					local carName = GetRandomFromTbl(TmpCarPool, true)
-					if #TmpCarPool == 0 then
-						TmpCarPool = {table.unpack(RandomCarPoolMission)}
-					end
-					MissionVehicles[orig] = carName
-					DebugPrint("Randomising " .. orig .. " to " .. carName)
-				end
-				for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-					if carType == "AI" then
-						local carName = GetRandomFromTbl(TmpCarPool, true)
-						if #TmpCarPool == 0 then
-							TmpCarPool = {table.unpack(RandomCarPoolMission)}
-						end
-						MissionVehicles[orig] = carName
-						DebugPrint("Randomising " .. orig .. " to " .. carName)
-					end
-				end
-			elseif SettingDifferentCellouts and Path:match("level02/m7l.mfk") then
-				NewFile = NewFile:gsub("cCellA", "cCellA1")
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
-			end
-			LastLevelMV = Path
-		else
-			MissionVehicles = {}
-			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
-			if Path:match("level02/m7l.mfk") then
-				NewFile = NewFile:gsub("cCellA", "cCellA1")
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"
-			end
-			for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
-				local carName = GetRandomFromTbl(TmpCarPool, true)
-				if #TmpCarPool == 0 then
-					TmpCarPool = {table.unpack(RandomCarPoolMission)}
-				end
-				MissionVehicles[orig] = carName
-				DebugPrint("Randomising " .. orig .. " to " .. carName)
-			end
-			for orig,var2,carType in NewFile:gmatch("LoadDisposableCar%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*,%s*\"(.-)\"%s*,%s*\"(.-)\"%s*%);") do
-				if carType == "AI" then
-					local carName = GetRandomFromTbl(TmpCarPool, true)
-					if #TmpCarPool == 0 then
-						TmpCarPool = {table.unpack(RandomCarPoolMission)}
-					end
-					MissionVehicles[orig] = carName
-					DebugPrint("Randomising " .. orig .. " to " .. carName)
-				end
-			end
-		end
-		for k,v in pairs(MissionVehicles) do
-			NewFile = NewFile:gsub("LoadP3DFile%s*%(%s*\"art\\cars\\" .. k .. "%.p3d\"%s*%);", "LoadP3DFile(\"art\\cars\\" .. v .. ".p3d\");")
-			NewFile = NewFile:gsub("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"" .. k .. "\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
-			NewFile = NewFile:gsub("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. k .."%.p3d\"%s*,%s*\"cvan\"%s*,%s*\"AI\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. v .. ".p3d\",\"" .. v .. "\",\"AI\");")
-		end
 	end
 	Output(NewFile)
 elseif LevelLoad ~= nil then

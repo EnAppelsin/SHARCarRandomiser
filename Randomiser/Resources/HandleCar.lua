@@ -87,7 +87,8 @@ end
 if string.match(Path, "tt%.con") then
 	File = File .. [[SetCharactersVisible(1);
 			SetDriver("none");
-			SetHasDoors(0);]]
+			SetHasDoors(0);
+			SetIrisTransition(1);]]
 end
 
 -- Only update the randomly spawned car
@@ -124,6 +125,7 @@ if SettingRandomStats and SettingRandomTraffic and TrafficCars and #TrafficCars 
 	for i = 1, #TrafficCars do
 		if string.match(Path, TrafficCars[i]) then
 			File = randomStats(File)
+			break
 		end
 	end
 end
