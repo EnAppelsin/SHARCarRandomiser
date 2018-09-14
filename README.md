@@ -94,7 +94,9 @@ If this is disabled you'll get random mission vehicles each time you restart.
 #### Random stats
 On by default.  
 If this is checked, all randomised vehicles will have random stats. To customise, use the Random Stat Variables page.
-### Random Stat Variables
+### Variables
+#### Min/Max Scale
+These two options define the lower and upper bounds for the random vehicle scale option.
 #### Vehicle Mass
 The mass of the vehicle can effect how it interacts with the ground, the lower the mass value of the vehicle is; the less friction will act upon it making the world an ice rink.  
 Notice: It is believed that mass affects the toughness of a vehicle.
@@ -125,6 +127,16 @@ This controls which vehicles are in the random pool for the mission random vehic
 This controls which vehicles are in the random pool for the traffic random vehicles.
 #### Random Car Pool - Chase
 This controls which vehicles are in the random pool for the chase car random vehicles.
+### Chaos Randomisations
+The randomisations in this tab involve substantial changes in gameplay, and can completely affect strategies used in speedruns. In additon they are currently a work in progress and may cause crashes or the game to become unbeatable!
+#### Random interiors
+Randomise which interior you enter when entering a building.
+#### Random directives
+All mission directive texts are changed to a completely random directive text.
+#### Random missions.
+The order in which the missions in the level are played is randomised.
+#### Random items
+The type of item dropped by vehicles in mission is randomised.
 ### Misc
 #### Remove car/costume requirements
 Off by default.  
