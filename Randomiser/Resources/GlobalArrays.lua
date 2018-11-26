@@ -652,6 +652,16 @@ PresentationP3DPool = {
 RandomDialoguePool = {}
 
 --Level interiors
+interiorNames = {}
+interiorNames["00"] = "SpringfieldElementary"
+interiorNames["01"] = "KwikEMart"
+interiorNames["02"] = "SimpsonsHouse"
+interiorNames["03"] = "dmv"
+interiorNames["04"] = "moe1"
+interiorNames["05"] = "Android"
+interiorNames["06"] = "Observatory"
+interiorNames["07"] = "bartroom"
+
 l1interiors = {
 	"00",
 	"01",
@@ -671,6 +681,7 @@ l3interiors = {
 l4interiors = {
 	"00",
 	"01",
+	"02",
 	"07"
 }
 
@@ -687,6 +698,7 @@ l6interiors = {
 l7interiors = {
 	"00",
 	"01",
+	"02",
 	"07"
 }
 

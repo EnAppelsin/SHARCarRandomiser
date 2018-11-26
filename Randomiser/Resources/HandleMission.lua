@@ -33,23 +33,6 @@ if Midx ~= nil then
 	if SettingRandomMissionVehicles then
 		if SettingDifferentCellouts and level == 2 and mission == 7 then
 			NewFile = ReadFile(ModPath .. "/Resources/l2m7i.mfk")
-			--[[NewFile:gsub("AddStageVehicle%s*%(\"cCellA\",\"m7_cellstart(%d)", "AddStageVehicle(\"cCellA%1\",\"m7_cellstart%1")
-			NewFile = NewFile:gsub("ActivateVehicle%s*%(\"cCellA\"(.-)\r\n", "ActivateVehicle(\"cCellA1\"%1\r\nSetHitNRun();\r\n")
-			local i = 0
-			NewFile = NewFile:gsub("SetVehicleAIParams%s*%(%s*\"cCellA\"", function()
-				i = i + 1
-				return "SetHitNRun();\r\n\tSetVehicleAIParams( \"cCellA" .. i .. "\""
-			end)
-			i = 0
-			NewFile = NewFile:gsub("SetObjTargetVehicle%s*%(\"cCellA\"", function()
-				i = i + 1
-				return "SetObjTargetVehicle(\"cCellA" .. i .. "\""
-			end)
-			i = 1
-			NewFile = NewFile:gsub("AddStageVehicle%s*%(\"cCellA\"", function()
-				i = i + 1
-				return "AddStageVehicle(\"cCellA" .. i .. "\""
-			end)]]
 		end
 		for k,v in pairs(MissionVehicles) do
 			DebugPrint("Replacing " .. k .. " with " .. v)
@@ -171,6 +154,18 @@ if Midx ~= nil then
 		NewFile = NewFile:gsub("\"cPolice\"", "\"" .. RandomChase .. "\"")
 		NewFile = NewFile:gsub("\"cHears\"", "\"" .. RandomChase .. "\"")
 	end
+	if SettingRandomInteriors then
+		NewFile = NewFile:gsub("SetDynaLoadData%s*%(%s*\"(.-)i(.-).p3d@\"", function(data, interior)
+			local newInterior = nil
+			for k,v in pairs(interiorReplace) do
+				if v == interior then
+					newInterior = k
+					break
+				end
+			end
+			return "SetDynaLoadData(\"" .. data .. "i" .. newInterior .. ".p3d@\""
+		end)
+	end
 	
 	Output(NewFile)
 elseif Lidx ~= nil then
@@ -196,10 +191,6 @@ elseif Lidx ~= nil then
 				local TmpCarPool = {table.unpack(RandomCarPoolMission)}
 				if SettingDifferentCellouts and level == 2 and mission == 7 then
 					NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
-					--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-					NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]
 				end
 				for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 					local carName = GetRandomFromTbl(TmpCarPool, true)
@@ -221,10 +212,6 @@ elseif Lidx ~= nil then
 				end
 			elseif SettingDifferentCellouts and level == 2 and mission == 7 then
 				NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
-				--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]--
 			end
 			LastLevelMV = Path
 		else
@@ -232,10 +219,6 @@ elseif Lidx ~= nil then
 			local TmpCarPool = {table.unpack(RandomCarPoolMission)}
 			if SettingDifferentCellouts and level == 2 and mission == 7 then
 				NewFile = ReadFile(ModPath .. "/Resources/l2m7l.mfk")
-				--[[NewFile = NewFile:gsub("cCellA", "cCellA1")
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA2.p3d\",\"cCellA2\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA3.p3d\",\"cCellA3\",\"AI\");\r\n"
-				NewFile = NewFile .. "LoadDisposableCar(\"art\\cars\\cCellA4.p3d\",\"cCellA4\",\"AI\");\r\n"]]--
 			end
 			for orig in NewFile:gmatch("LoadP3DFile%s*%(%s*\"art\\cars\\(.-)%.p3d\"%s*%);") do
 				local carName = GetRandomFromTbl(TmpCarPool, true)
@@ -330,15 +313,6 @@ elseif LevelLoad ~= nil then
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
 	if SettingRandomMissions then
 		DebugPrint("Randomising mission order")
-		--local mission = 0
-		--NewFile = NewFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
-		--	mission = mission + 1
-		--	if tonumber(orig) >= 8 then
-		--		return "AddMission(\"m" .. orig .. "\""
-		--	else
-		--		return "AddMission(\"m" .. missionOrder[level][mission] .. "\""
-		--	end
-		--end)
 		local missions = {}
 		for mission in NewFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do
 			if tonumber(mission) < 8 then
@@ -422,6 +396,14 @@ elseif LevelLoad ~= nil then
 			for i = 1, #l7interiors do
 				interiorReplace[l7interiors[i]] = GetRandomFromTbl(tmpl7interiors, true)
 			end
+		end
+		local oldName
+		local newName
+		for k,v in pairs(interiorReplace) do
+			oldName = interiorNames[k]
+			newName = interiorNames[v]
+			DebugPrint("Replacing " .. oldName .. " with " .. newName .. " for random interiors")
+			NewFile = NewFile:gsub("GagSetInterior%s*%(%s*\"" .. oldName .. "\"", "GagSetInterior(\"" .. newName .. "\"")
 		end
 	end
 	if SettingRandomPlayerVehicles then
@@ -573,6 +555,18 @@ elseif SDInit ~= nil then
 		for orig,rand in pairs(iconReplace) do
 			NewFile = NewFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
 		end
+	end
+	if SettingRandomInteriors then
+		NewFile = NewFile:gsub("SetDynaLoadData%s*%(%s*\"(.-)i(.-).p3d@\"", function(data, interior)
+			local newInterior = nil
+			for k,v in pairs(interiorReplace) do
+				if v == interior then
+					newInterior = k
+					break
+				end
+			end
+			return "SetDynaLoadData(\"" .. data .. "i" .. newInterior .. ".p3d@\""
+		end)
 	end
 	Output(NewFile)
 elseif SDLoad ~= nil then

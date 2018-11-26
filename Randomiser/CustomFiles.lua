@@ -3,17 +3,17 @@ dofile(ModPath .. "/Resources/GlobalArrays.lua")
 dofile(ModPath .. "/Resources/GlobalVariables.lua")
 dofile(ModPath .. "/Resources/GlobalFunctions.lua")
 
-if #RandomCarPoolPlayer == 0 and SettingRandomPlayerVehicles then
-	Alert("You have chosen no cars for the random player pool. You must choose at least one car.")
+if #RandomCarPoolPlayer < 5 and SettingRandomPlayerVehicles then
+	Alert("You have chosen less than 5 cars for the random player pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolTraffic == 0 and SettingRandomTraffic then
-	Alert("You have chosen no cars for the random traffic pool. You must choose at least one car.")
+elseif #RandomCarPoolTraffic < 5 and SettingRandomTraffic then
+	Alert("You have chosen less than 5 cars for the random traffic pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolMission == 0 and SettingRandomMissionVehicles then
-	Alert("You have chosen no cars for the random mission pool. You must choose at least one car.")
+elseif #RandomCarPoolMission < 5 and SettingRandomMissionVehicles then
+	Alert("You have chosen less than 5 cars for the random mission pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolChase == 0 and SettingRandomChase then
-	Alert("You have chosen no cars for the random chase pool. You must choose at least one car.")
+elseif #RandomCarPoolChase < 5 and SettingRandomChase then
+	Alert("You have chosen less than 5 cars for the random chase pool. You must choose at least 5 cars.")
 	os.exit()
 end
 
