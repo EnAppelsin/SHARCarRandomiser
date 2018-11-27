@@ -17,6 +17,11 @@ elseif #RandomCarPoolChase < 5 and SettingRandomChase then
 	os.exit()
 end
 
+DebugPrint("Randomiser Settings", 2)
+for settingName, settingValue in pairs(GetSettings()) do
+	DebugPrint("- " .. settingName .. " = " .. tostring(settingValue), 2)
+end
+
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
 DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
 DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission pool")
