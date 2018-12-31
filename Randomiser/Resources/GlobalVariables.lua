@@ -15,6 +15,8 @@ IMAGE_CHUNK = "\001\144\001\000"
 IMAGE_DATA_CHUNK = "\002\144\001\000"
 CAR_CAMERA_DATA_CHUNK = "\000\001\000\003"
 MOTION_ROOT_LABEL = "Motion_Root\000"
+TEXT_BIBLE_CHUNK = "\x0D\x80\x01\x00"
+LANGUAGE_CHUNK = "\x0E\x80\x01\x00"
 
 ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)[\r\n]")
 

@@ -151,6 +151,15 @@ function RemoveString(Str, Start, End)
     return Str:sub(1, Start - 1) .. Str:sub(End)
 end
 
+-- Transforms an ASCII string to "UTF-16" kinda
+function AsciiToUTF16(String)
+	local Out = ""
+	for i = 1, #String do
+		Out = Out .. String:sub(i,i) .. "\0"
+	end
+	return Out
+end
+
 -- Uncomment to print more debug messages about the P3D file patching process
 function p3d_debug(message)
     -- print(message)
