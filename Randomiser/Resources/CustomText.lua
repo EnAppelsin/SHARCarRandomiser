@@ -71,12 +71,13 @@ local English = Bible:sub(EnglishPos, EnglishPos + EnglishLen - 1)
 
 local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
 
+-- Increment number of entires by 1
 English = AddP3DInt4(English, 71, 1)
 -- Hash for String ID "-" (yes it's "-" itself)
 local STRING_ID = "\x2D\x00\x00\x00"
 English = English:sub(1, 82) .. STRING_ID .. English:sub(83)
--- 1712 default entries and our new - entry
-local N_ENTRIES = 1713
+-- New number entries with our new '-' entry
+local N_ENTRIES = GetP3DInt4(English, 71)
 
 -- Set the location of the "-" string to the end of the buffer
 English = English:sub(1, 82 + 4*N_ENTRIES) .. IntToString4(GetP3DInt4(English, 79)) .. English:sub(83 + 4*N_ENTRIES)
