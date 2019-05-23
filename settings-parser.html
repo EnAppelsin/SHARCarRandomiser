@@ -1,0 +1,116 @@
+---
+title: Settings Decoder
+layout: page
+---
+
+<script type="text/javascript">
+var gameplay = {
+0x1:"Random Player Vehicles",
+0x2:"Save Choice",
+0x4:"Custom Cars",
+0x8:"Random Traffic",
+0x10:"Random Chase",
+0x20:"Random Chase Amount",
+0x40:"Random Chase Stats",
+0x80:"Random Mission Vehicles",
+0x100:"Random Mission Vehicles Stats",
+0x200:"Different Cellouts",
+0x400:"Save Choice MV",
+0x800:"Random Stats",
+0x1000:"Skip Locks",
+0x2000:"Skip FMVs",
+0x4000:"Boost HP",
+};
+
+var graphics =
+{
+0x1:"Random Couch",
+0x2:"Random Music",
+0x4:"Random Music Cues",
+0x8:"Random Dialogue",
+0x10:"Random Character",
+0x20:"Random Mission Characters",
+0x40:"Random Car Scale",
+0x80:"Random Car Sounds",
+0x100:"Random Pedestrians",
+}
+
+var chaos = 
+{
+0x1:"Random Interiors",
+0x2:"Random Directives",
+0x4:"Random Missions",
+0x8:"Random Items",
+}
+
+function parseSettings(settingList, value) {
+    var strings = [];
+    var val = $(value).val();
+    var intval = parseInt(val, 16);
+    var string = "";
+    if (!isNaN(intval)) {
+        for (var key in settingList) {
+            if ((key & intval) != 0) {
+                strings.push(settingList[key]);
+            }
+        }        
+    }
+    if (strings.length) {
+        return strings.join(", ");
+    }
+    else {
+        return "None";
+    }
+}
+
+
+$(function() {
+    $("#gameplay").on("input", function() {
+        $("#gameplay-settings").text(parseSettings(gameplay, this));
+    });
+    $("#graphics").on("input", function() {
+        $("#graphics-settings").text(parseSettings(graphics, this));
+    });
+    $("#chaos").on("input", function() {
+        $("#chaos-settings").text(parseSettings(chaos, this));
+    });
+});
+</script>
+
+<style type="text/css">
+div.settings {
+    display:grid;
+    grid-template-columns: max-content max-content;
+    grid-gap:5px;
+}
+div.settings label       { text-align:right; }
+div.settings label:after { content: ":"; }
+</style>
+
+<p>
+On the title screen of the Randomiser v2.0 and later versions the settings are
+compactly printed as hexadecimal numbers, for purposes such as comparing settings 
+with others (and for developers). This simple page will decode the numbers into 
+the appropriate settings.
+</p>
+<p>
+Note: Random stat limits &amp; debug level are not included in the settings
+</p>
+
+<h2>Setting Numbers</h2>
+<p>
+<div class="settings">
+<label for="gameplay">Gameplay</label>
+<input type="text" name="gameplay" id="gameplay" />
+
+<label for="graphics">Graphics</label>
+<input type="text" name="graphics" id="graphics" />
+
+<label for="chaos">Chaos</label>
+<input type="text" name="chaos" id="chaos" />
+</div></p>
+
+<h2>Settings Enabled</h2>
+<p>Gameplay Settings: <span id="gameplay-settings">None</span></p>
+<p>Graphical Settings: <span id="graphics-settings">None</span></p>
+<p>Chaos Settings: <span id="chaos-settings">None</span></p>
