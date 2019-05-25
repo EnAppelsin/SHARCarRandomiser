@@ -117,7 +117,7 @@ if SettingRandomMissionVehicles and MissionVehicles then
 					DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
 				end
 				if HP and tonumber(HP) > 15 then
-					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
+					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(15);", 1)
 					DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
 				end
 			end
