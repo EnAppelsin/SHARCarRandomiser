@@ -17,7 +17,7 @@ title: Simpsons Hit & Run Randomiser
 email: 
 description: >- # this means to ignore newlines until "baseurl:"
   The Randomiser mod allows for randomising vehicles, characters and almost everything else in Simpsons Hit & Run!
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/SHARCarRandomiser" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: enappelsin
 github_username:  enappelsin
