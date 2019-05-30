@@ -5,6 +5,9 @@ This mod allows for randomising vehicles, characters and more throughout the gam
 Each randomisation has its own option, detailed below.  
 
 ## Installation
+Download the mod from [the releases page](https://github.com/EnAppelsin/SHARCarRandomiser/releases).
+*Don't download the repository by clicking Clone or download*
+
 Copy the mod file (.lmlm) to your Mods folder (usually Documents\My Games\Lucas' Simpsons Hit & Run Mod Launcher\Mods).  
 Run the Mod Launcher and change the settings to match your needs, then play the game.  
 All possible randomisations are available in separate settings.
