@@ -1,7 +1,12 @@
 ModPath = GetModPath()
-dofile(ModPath .. "/Resources/GlobalArrays.lua")
-dofile(ModPath .. "/Resources/GlobalVariables.lua")
-dofile(ModPath .. "/Resources/GlobalFunctions.lua")
+Paths = {}
+Paths.ModPath = GetModPath()
+Paths.Resources = Paths.ModPath .. "/Resources/"
+Paths.MissionModules = Paths.Resources .. "MissionModules/"
+dofile(Paths.Resources .. "GlobalArrays.lua")
+dofile(Paths.Resources .. "GlobalVariables.lua")
+dofile(Paths.Resources .. "GlobalFunctions.lua")
+dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
 
 if #RandomCarPoolPlayer < 5 and SettingRandomPlayerVehicles then
 	Alert("You have chosen less than 5 cars for the random player pool. You must choose at least 5 cars.")

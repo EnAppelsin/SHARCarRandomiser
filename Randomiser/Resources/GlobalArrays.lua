@@ -1,3 +1,5 @@
+Settings = GetSettings()
+
 -- CAR LIST
 RandomCarPool = {
 	"ambul",
@@ -651,58 +653,6 @@ PresentationP3DPool = {
 
 RandomDialoguePool = {}
 
---Level interiors
-interiorNames = {}
-interiorNames["00"] = "SpringfieldElementary"
-interiorNames["01"] = "KwikEMart"
-interiorNames["02"] = "SimpsonsHouse"
-interiorNames["03"] = "dmv"
-interiorNames["04"] = "moe1"
-interiorNames["05"] = "Android"
-interiorNames["06"] = "Observatory"
-interiorNames["07"] = "bartroom"
-
-l1interiors = {
-	"00",
-	"01",
-	"02",
-}
-
-l2interiors = {
-	"03",
-	"04"
-}
-
-l3interiors = {
-	"05",
-	"06"
-}
-
-l4interiors = {
-	"00",
-	"01",
-	"02",
-	"07"
-}
-
-l5interiors = {
-	"03",
-	"04"
-}
-
-l6interiors = {
-	"05",
-	"06"
-}
-
-l7interiors = {
-	"00",
-	"01",
-	"02",
-	"07"
-}
-
-interiorReplace = {}
 iconReplace = {}
 missionOrder = {}
 itemReplace = {}
