@@ -1,46 +1,40 @@
 local args = {...}
-if #args > 0 then
-	local tbl = args[1]
-	if tbl.Level == nil then
-		tbl.Level = {}
-	end
-	
-	if Settings.RandomMissions then
-		function tbl.Level.RandomMissions(LoadFile, InitFile, Level)
-			DebugPrint("Randomising mission order")
-			local missions = {}
-			for mission in LoadFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do
-				if tonumber(mission) < 8 then
-					table.insert(missions, mission)
-				end
+local tbl = args[1]
+if Settings.RandomMissions then
+	function tbl.Level.RandomMissions(LoadFile, InitFile, Level)
+		DebugPrint("Randomising mission order")
+		local missions = {}
+		for mission in LoadFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do
+			if tonumber(mission) < 8 then
+				table.insert(missions, mission)
 			end
-			LoadFile = LoadFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
-				local mission = tonumber(orig)
-				if mission < 8 then
-					local tmp = {table.unpack(missions)}
-					local exists = ExistsInTbl(tmp, orig, false)
-					if exists then
-						if #tmp > 1 then
-							for i = #tmp, 1, -1 do
-								if tmp[i] == orig then
-									table.remove(tmp, i)
-									break
-								end
+		end
+		LoadFile = LoadFile:gsub("AddMission%s*%(%s*\"m(%d)\"", function(orig)
+			local mission = tonumber(orig)
+			if mission < 8 then
+				local tmp = {table.unpack(missions)}
+				local exists = ExistsInTbl(tmp, orig, false)
+				if exists then
+					if #tmp > 1 then
+						for i = #tmp, 1, -1 do
+							if tmp[i] == orig then
+								table.remove(tmp, i)
+								break
 							end
 						end
 					end
-					local newMission = GetRandomFromTbl(tmp, true)
-					if exists then
-						table.insert(tmp, orig)
-					end
-					missions = {table.unpack(tmp)}
-					DebugPrint("Randomised mission " .. orig .. " to " .. newMission, 1)
-					return "AddMission(\"m" .. newMission .. "\""
-				else
-					return "AddMission(\"m" .. orig .. "\""
 				end
-			end)
-			return LoadFile, InitFile
-		end
+				local newMission = GetRandomFromTbl(tmp, true)
+				if exists then
+					table.insert(tmp, orig)
+				end
+				missions = {table.unpack(tmp)}
+				DebugPrint("Randomised mission " .. orig .. " to " .. newMission, 1)
+				return "AddMission(\"m" .. newMission .. "\""
+			else
+				return "AddMission(\"m" .. orig .. "\""
+			end
+		end)
+		return LoadFile, InitFile
 	end
 end
