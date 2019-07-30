@@ -126,4 +126,5 @@ if Settings.RandomInteriors then
 		end)
 		return LoadFile, InitFile
 	end
+	tbl.Mission.RandomInteriors = tbl.SundayDrive.RandomInteriors
 end

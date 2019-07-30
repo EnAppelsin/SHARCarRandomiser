@@ -5,4 +5,9 @@ if Settings.SkipFMVs then
 		InitFile = InitFile:gsub("AddObjective%s*%(\"fmv\"%s*%);.-CloseObjective%s*%(%s*%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
 		return LoadFile, InitFile
 	end
+	
+	function tbl.Mission.SkipFMVs(LoadFile, InitFile, Level, Mission)
+		InitFile = InitFile:gsub("AddObjective%s*%(\"fmv\"%s*%);.-CloseObjective%s*%(%s*%);", "AddObjective(\"timer\");\r\nSetDurationTime(1);\r\nCloseObjective();", 1)
+		return LoadFile, InitFile
+	end
 end

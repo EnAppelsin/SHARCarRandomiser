@@ -18,4 +18,10 @@ if Settings.RandomChase then
 		end
 		return LoadFile, InitFile
 	end
+	
+	function tbl.Mission.RandomChase(LoadFile, InitFile, Level, Mission)
+		InitFile = InitFile:gsub("\"cPolice\"", "\"" .. RandomChase .. "\"")
+		InitFile = InitFile:gsub("\"cHears\"", "\"" .. RandomChase .. "\"")
+		return LoadFile, InitFile
+	end
 end

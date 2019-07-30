@@ -242,4 +242,28 @@ if Settings.RandomDirectives then
 		end
 		return LoadFile, InitFile
 	end
+	tbl.Mission.RandomDirectives = tbl.SundayDrive.RandomDirectives
+
+	--[[function tbl.Mission.RandomDirectives(LoadFile, InitFile, Level, Mission)
+		iconReplace = {}
+		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\frontend\\dynaload\\images\\msnicons([^\n]-)%.p3d\"%s*", function(orig)
+			local rand = GetRandomFromTbl(IconP3DPool, false)
+			local origName = orig:sub(findLast(orig, "\\") + 1)
+			local randName = rand:sub(findLast(rand, "\\") + 1)
+			iconReplace[origName] = randName
+			DebugPrint("Replacing directive icon " .. origName .. " with " .. randName)
+			return "LoadP3DFile(\"art\\frontend\\dynaload\\images\\msnicons" .. rand .. ".p3d\""
+		end)
+		
+		InitFile = InitFile:gsub("SetStageMessageIndex%s*%(%s*[+-]?%d+%s*%)", function()
+			return "SetStageMessageIndex(" .. math.random(1, 273) .. ")"
+		end)
+		InitFile = InitFile:gsub("SetPresentationBitmap%s*%(%s*\"art/frontend/dynaload/images/.-%.p3d\"%s*%)", function()
+			return "SetPresentationBitmap(\"art/frontend/dynaload/images/" .. GetRandomFromTbl(PresentationP3DPool, false) .. ".p3d\")"
+		end)
+		for orig,rand in pairs(iconReplace) do
+			InitFile = InitFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
+		end
+		return LoadFile, InitFile
+	end]]--
 end
