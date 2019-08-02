@@ -65,24 +65,68 @@ if Settings.RandomItems then
 	RandomItemPool["wplanks"] = "\\level07\\wplanks"
 
 	function tbl.Mission.RandomItems(LoadFile, InitFile, Level, Mission)
-		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions([^\n]-)%.p3d\"", function(orig)
-			local origName = nil
-			for k,v in pairs(RandomItemPool) do
-				if v == orig then
-					origName = k
-					break
+		local items = {}
+		local randomisedPaths = {}
+		local TmpItemPool = CloneKVTable(RandomItemPool)
+		InitFile = InitFile:gsub("AddCollectible%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(locator, itemName)
+			local origPath = RandomItemPool[itemName]
+			if origPath ~= nil then
+				if CountTable(TmpItemPool) == 0 then
+					TmpItemPool = CloneKVTable(RandomItemPool)
 				end
-			end
-			if origName ~= nil then
-				local randName, rand = GetRandomFromKVTbl(RandomItemPool, false)
-				DebugPrint("Replacing item " .. orig .. " with " .. rand .. " (" .. randName .. ")")
-				InitFile = File:gsub("AddCollectible%s*%(%s*\"([^\n]-)\"%s*,%s*\"" .. origName .. "\"", "AddCollectible(\"%1\",\"" .. randName .. "\"")
-				InitFile = File:gsub("SetDestination%s*%(%s*\"([^\n]-)\"%s*,%s*\"" .. origName .. "\"", "SetDestination(\"%1\",\"" .. randName .. "\"")
-				return "LoadP3DFile(\"art\\missions" .. rand .. ".p3d\""
+				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
+				if not ExistsInTbl(items, randPath, false) then
+					table.insert(items, randPath)
+				end
+				if not ExistsInTbl(randomisedPaths, origPath, false) then
+					table.insert(randomisedPaths, origPath)
+				end
+				DebugPrint("Randomising item \"" .. itemName .. "\" to \"" .. randName .. "\".")
+				return "AddCollectible(\"" .. locator .. "\",\"" .. randName .. "\""
 			else
-				return "LoadP3DFile(\"art\\missions" .. orig .. ".p3d\""
+				DebugPrint("Not randomising item \"" .. itemName .. "\".", 2)
+				return "AddCollectible(\"" .. locator .. "\",\"" .. itemName .. "\""
 			end
 		end)
+		
+		InitFile = InitFile:gsub("SetDestination%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(locator, itemName)
+			local origPath = RandomItemPool[itemName]
+			if origPath ~= nil then
+				if CountTable(TmpItemPool) == 0 then
+					TmpItemPool = CloneKVTable(RandomItemPool)
+				end
+				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
+				if not ExistsInTbl(items, randPath, false) then
+					table.insert(items, randPath)
+				end
+				if not ExistsInTbl(randomisedPaths, origPath, false) then
+					table.insert(randomisedPaths, origPath)
+				end
+				DebugPrint("Randomising item \"" .. itemName .. "\" to \"" .. randName .. "\".")
+				return "SetDestination(\"" .. locator .. "\",\"" .. randName .. "\""
+			else
+				DebugPrint("Not randomising item \"" .. itemName .. "\".", 2)
+				return "SetDestination(\"" .. locator .. "\",\"" .. itemName .. "\""
+			end
+		end)
+		
+		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions([^\n]-)%.p3d\"%s*%);", function(orig)
+			if not ExistsInTbl(randomisedPaths, orig) then
+				DebugPrint("Not replacing item load: " .. orig .. ".", 2)
+				return "LoadP3DFile(\"art\\missions" .. orig .. ".p3d\");"
+			elseif #items == 0 then
+				DebugPrint("Removing item load: " .. orig .. ".")
+				return ""
+			else
+				local item = items[1]
+				table.remove(items, 1)
+				DebugPrint("Replacing item load \"" .. orig .. "\" with \"" .. item .. "\".")
+				return "LoadP3DFile(\"art\\missions" .. item .. ".p3d\");"
+			end
+		end)
+		for i=1,#items do
+			LoadFile = LoadFile .. "\r\nLoadP3DFile(\"art\\missions" .. items[i] .. ".p3d\");"
+		end
 		return LoadFile, InitFile
 	end
 end

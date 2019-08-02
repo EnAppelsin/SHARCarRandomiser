@@ -64,6 +64,22 @@ function ExistsInTbl(tbl, needle, caseSensitive)
 	return false
 end
 
+function CloneKVTable(tbl)
+	local clone = {}
+	for k,v in pairs(tbl) do
+		clone[k] = v
+	end
+	return clone
+end
+
+function CountTable(tbl)
+	local count = 0
+	for _ in pairs(tbl) do
+		count = count + 1
+	end
+	return count
+end
+
 function findLast(haystack, needle)
 	local i=haystack:match(".*"..needle.."()")
 	if i==nil then return nil else return i-1 end
