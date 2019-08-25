@@ -8,7 +8,7 @@ if Settings.RandomPlayerVehicles then
 		LoadFile = LoadFile:gsub("LoadDisposableCar%s*%(%s*\"[^\n]-\"%s*,%s*\".-\"%s*,%s*\"DEFAULT\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"DEFAULT\");", 1)
 		DebugPrint("Randomising car for level (load) -> " .. RandomCarName)
 		
-		InitFile = InitFile:gsub("InitLevelPlayerVehicle%s*%(%s*\".-\"%s*,%s*\"([^\n]-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
+		InitFile = InitFile:gsub("InitLevelPlayerVehicle%s*%(%s*\"[^\n]-\"%s*,%s*\"([^\n]-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
 		DebugPrint("Randomising car for level -> " .. RandomCarName)
 		return LoadFile, InitFile
 	end
@@ -28,15 +28,10 @@ if Settings.RandomPlayerVehicles then
 		local Match
 		
 		-- Try to find a forced vehicle spawn
-		Match = LoadFile:match("LoadDisposableCar%s*%(%s*\".-\"%s*,%s*\".-\"%s*,%s*\"OTHER\"%s*%)")
+		Match = LoadFile:match("LoadDisposableCar%s*%(%s*\"[^\n]-\"%s*,%s*\"[^\n]- \"%s*,%s*\"OTHER\"%s*%)")
 		if Match ~= nil then
 			ForcedMission = true
-			-- Replace it with the random vehicle
-			-- The (.*) at the start is weird but tries to capture as much outside the LoadDisposableCar function
-			-- Otherwise if an AI LoadDisposableCar appears first the .- captures two LoadDisposableCar calls,
-			-- So one of the LoadDisposableCar calls gets deleted, and the game crashes because something isn't loaded
-			-- There's probably a smarter way than this...?
-			LoadFile = LoadFile:gsub("(.*)LoadDisposableCar%s*%(%s*\".-\"%s*,%s*\".-\"%s*,%s*\"OTHER\"%s*%);", "%1LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"OTHER\");", 1)
+			LoadFile = LoadFile:gsub("LoadDisposableCar%s*%(%s*\"[^\n]-\"%s*,%s*\"[^\n]-\"%s*,%s*\"OTHER\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"OTHER\");", 1)
 		else
 			-- Add a new command to the end to load the random vehicle
 			LoadFile = LoadFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\", \"" .. RandomCarName .. "\", \"OTHER\");"
@@ -82,6 +77,17 @@ if Settings.RandomPlayerVehicles then
 		end
 		-- Debugging
 		DebugPrint("Randomising car for mission " ..  Level .. "|" .. Mission .. " -> " .. RandomCarName .. (ForcedMission and " (forced)" or ""))
+		
+		if Settings.RemoveOutOfCar then
+			DebugPrint("Removing outofvehicle")
+			InitFile = InitFile:gsub("AddCondition%s*%(%s*\"outofvehicle\"%s*%);.-CloseCondition%s*%(%s*%);", "")
+			DebugPrint("Removing damage")
+			InitFile = InitFile:gsub("AddCondition%s*%(%s*\"damage\"%s*%);.-CloseCondition%s*%(%s*%);", function(condition)
+				if condition:match("SetCondTargetVehicle%s*%(%s*\"" .. RandomCarName .. "\"%s*%);") then -- or condition:match("SetCondTargetVehicle%s*%(%s*\"current\"%s*%);") then
+					return ""
+				end
+			end)
+		end
 		
 		return LoadFile, InitFile
 	end

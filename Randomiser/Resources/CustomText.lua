@@ -6,42 +6,43 @@ local Original = ReadFile(Path)
 
 local GameplaySettings = 
 {
-[0x1]=SettingRandomPlayerVehicles,
-[0x2]=SettingSaveChoice,
-[0x4]=SettingCustomCars,
-[0x8]=SettingRandomTraffic,
-[0x10]=SettingRandomChase,
-[0x20]=SettingRandomChaseAmount,
-[0x40]=SettingRandomChaseStats,
-[0x80]=SettingRandomMissionVehicles,
-[0x100]=SettingRandomMissionVehiclesStats,
-[0x200]=SettingDifferentCellouts,
-[0x400]=SettingSaveChoiceMV,
-[0x800]=SettingRandomStats,
-[0x1000]=SettingSkipLocks,
-[0x2000]=SettingSkipFMVs,
-[0x4000]=SettingBoostHP,
+[0x1]=Settings.RandomPlayerVehicles,
+[0x2]=Settings.SaveChoice,
+[0x4]=Settings.CustomCars,
+[0x8]=Settings.RandomTraffic,
+[0x10]=Settings.RandomChase,
+[0x20]=Settings.RandomChaseAmount,
+[0x40]=Settings.RandomChaseStats,
+[0x80]=Settings.RandomMissionVehicles,
+[0x100]=Settings.RandomMissionVehiclesStats,
+[0x200]=Settings.DifferentCellouts,
+[0x400]=Settings.SaveChoiceMV,
+[0x800]=Settings.RandomStats,
+[0x1000]=Settings.SkipLocks,
+[0x2000]=Settings.SkipFMVs,
+[0x4000]=Settings.BoostHP,
+[0x8000]=Settings.RemoveOutOfCar
 }
 
 local GraphicalSettings =
 {
-[0x1]=SettingRandomCouch,
-[0x2]=SettingRandomMusic,
-[0x4]=SettingRandomMusicCues,
-[0x8]=SettingRandomDialogue,
-[0x10]=SettingRandomCharacter,
-[0x20]=SettingRandomMissionCharacters,
-[0x40]=SettingRandomCarScale,
-[0x80]=SettingRandomCarSounds,
-[0x100]=SettingRandomPedestrians
+[0x1]=Settings.RandomCouch,
+[0x2]=Settings.RandomMusic,
+[0x4]=Settings.RandomMusicCues,
+[0x8]=Settings.RandomDialogue,
+[0x10]=Settings.RandomCharacter,
+[0x20]=Settings.RandomMissionCharacters,
+[0x40]=Settings.RandomCarScale,
+[0x80]=Settings.RandomCarSounds,
+[0x100]=Settings.RandomPedestrians
 }
 
 local ChaosSettings = 
 {
-[0x1]=SettingRandomInteriors,
-[0x2]=SettingRandomDirectives,
-[0x4]=SettingRandomMissions,
-[0x8]=SettingRandomItems,
+[0x1]=Settings.RandomInteriors,
+[0x2]=Settings.RandomDirectives,
+[0x4]=Settings.RandomMissions,
+[0x8]=Settings.RandomItems
 }
 
 local GameplayN = 0

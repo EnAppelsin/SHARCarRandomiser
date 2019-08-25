@@ -107,18 +107,20 @@ end
 
 if SettingRandomMissionVehicles and MissionVehicles then
 	for k,v in pairs(MissionVehicles) do
-		if string.match(Path, v) then
-			if SettingRandomStats then
-				File = randomStats(File)
-			else
-				HP = string.match(File, "SetHitPoints%((.-)%);")
-				if HP and tonumber(HP) < 0.6 then
-					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
-					DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
-				end
-				if HP and tonumber(HP) > 15 then
-					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(15);", 1)
-					DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
+		for i=1,#v do
+			if string.match(Path, v[i]) then
+				if SettingRandomStats then
+					File = randomStats(File)
+				else
+					HP = string.match(File, "SetHitPoints%((.-)%);")
+					if HP and tonumber(HP) < 0.6 then
+						File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
+						DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+					end
+					if HP and tonumber(HP) > 15 then
+						File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(15);", 1)
+						DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
+					end
 				end
 			end
 		end
