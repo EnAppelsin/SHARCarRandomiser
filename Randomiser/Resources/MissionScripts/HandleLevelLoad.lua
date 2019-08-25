@@ -9,5 +9,9 @@ if MissionModules.Level then
 		LoadFile, InitFile = v(LoadFile, InitFile, level)
 	end
 	LevelInit = InitFile
+	if DebugLevel >= 5 then
+		DebugPrint("Level Load File:\r\n" .. LoadFile)
+		DebugPrint("Level Init File:\r\n" .. InitFile)
+	end
 	Output(LoadFile)
 end

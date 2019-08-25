@@ -20,8 +20,22 @@ if Settings.RandomChase then
 	end
 	
 	function tbl.Mission.RandomChase(LoadFile, InitFile, Level, Mission)
-		InitFile = InitFile:gsub("\"cPolice\"", "\"" .. RandomChase .. "\"")
-		InitFile = InitFile:gsub("\"cHears\"", "\"" .. RandomChase .. "\"")
+		if not Settings.RandomMissionVehicles then
+			local police = {}
+			table.insert(police, "cPolice")
+			table.insert(police, "cHears")
+			for i=1,#police do
+				local k = police[i]
+				InitFile = InitFile:gsub("AddStageVehicle%s*%(%s*\"" .. k .. "\"", "AddStageVehicle(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("SetVehicleAIParams%s*%(%s*\"" .. k .. "\"", "SetVehicleAIParams(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("SetStageAIRaceCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAIRaceCatchupParams(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("SetStageAITargetCatchupParams%s*%(%s*\"" .. k .. "\"", "SetStageAITargetCatchupParams(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("SetCondTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetCondTargetVehicle(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("SetObjTargetVehicle%s*%(%s*\"" .. k .. "\"", "SetObjTargetVehicle(\"" .. RandomChase .. "\"")
+				InitFile = InitFile:gsub("AddDriver%s*%(%s*\"([^\n]-)\"%s*,%s*\"" .. k .. "\"", "AddDriver(\"%1\",\"" .. RandomChase .. "\"")
+			end
+		end
 		return LoadFile, InitFile
 	end
 end
