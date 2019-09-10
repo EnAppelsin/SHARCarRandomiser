@@ -2,67 +2,95 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomItems then
 	RandomItemPool = {}
-	RandomItemPool["bonestorm"] = "\\level01\\bonebox"
-	RandomItemPool["coolr"] = "\\level01\\coolr"
-	RandomItemPool["flanpic"] = "\\level01\\flanpic"
-	RandomItemPool["h_soda"] = "\\level01\\h_soda"
-	RandomItemPool["i_soda"] = "\\level01\\i_soda"
-	RandomItemPool["icebuck"] = "\\level01\\ibucket"
-	RandomItemPool["inhaler"] = "\\level01\\inhaler"
-	RandomItemPool["lwnchair"] = "\\level01\\lwnchair"
-	RandomItemPool["mower"] = "\\level01\\mower"
-	RandomItemPool["poster_t"] = "\\level01\\poster_t"
-	RandomItemPool["scien"] = "\\level01\\scien"
-	RandomItemPool["tomat"] = "\\level01\\tomat"
-	RandomItemPool["tux"] = "\\level01\\tux"
-	RandomItemPool["blend"] = "\\level02\\blend"
-	RandomItemPool["bloodbag"] = "\\level02\\bloodbag"
-	RandomItemPool["firewrks"] = "\\level02\\firewrks"
-	RandomItemPool["i_bldbag"] = "\\level02\\i_bldbag"
-	RandomItemPool["i_firewk"] = "\\level02\\i_firewk"
-	RandomItemPool["monkey"] = "\\level02\\monkey"
-	RandomItemPool["radio"] = "\\level02\\radio"
-	RandomItemPool["roadkill"] = "\\level02\\roadkill"
-	RandomItemPool["s_dish"] = "\\level02\\satellite"
-	RandomItemPool["cream"] = "\\level03\\cream"
-	RandomItemPool["diaper"] = "\\level03\\diaper"
-	RandomItemPool["fish"] = "\\level03\\fish"
-	RandomItemPool["h_soda"] = "\\level03\\h_soda"
-	RandomItemPool["is_comic"] = "\\level03\\is_comic"
-	RandomItemPool["jeans"] = "\\level03\\jeans"
-	RandomItemPool["kmeal"] = "\\level03\\kmeal"
-	RandomItemPool["laundry"] = "\\level03\\laundry"
-	RandomItemPool["molemanr"] = "\\level03\\molemanr"
-	RandomItemPool["rhat"] = "\\level03\\rhat"
-	RandomItemPool["cola"] = "\\level04\\cola"
-	RandomItemPool["cpill"] = "\\level04\\cpill"
-	RandomItemPool["donut"] = "\\level04\\donut"
-	RandomItemPool["i_cpill"] = "\\level04\\i_cpill"
-	RandomItemPool["ketchup"] = "\\level04\\ketchup"
-	RandomItemPool["pills"] = "\\level04\\pills"
-	RandomItemPool["r_choco"] = "\\level04\\r_choco"
-	RandomItemPool["r_dent"] = "\\level04\\r_dent"
-	RandomItemPool["r_diaper"] = "\\level04\\r_diaper"
-	RandomItemPool["r_onions"] = "\\level04\\r_onions"
-	RandomItemPool["r_tomb"] = "\\level04\\r_tomb"
-	RandomItemPool["folder"] = "\\level05\\folder"
-	RandomItemPool["i_folder"] = "\\level05\\i_folder"
-	RandomItemPool["key"] = "\\level05\\key"
-	RandomItemPool["litter"] = "\\level05\\litter"
-	RandomItemPool["laserbox_crate"] = "\\level06\\laserbox"
-	RandomItemPool["lasergun"] = "\\level06\\lasergun"
-	RandomItemPool["lasrstnd"] = "\\level06\\lasrstnd"
-	RandomItemPool["s_boy1"] = "\\level06\\s_boy1"
-	RandomItemPool["s_boy2"] = "\\level06\\s_boy2"
-	RandomItemPool["s_girl1"] = "\\level06\\s_girl1"
-	RandomItemPool["s_girl2"] = "\\level06\\s_girl2"
-	RandomItemPool["map"] = "\\level07\\map"
-	RandomItemPool["medkit"] = "\\level07\\medkit"
-	RandomItemPool["record"] = "\\level07\\record"
-	RandomItemPool["saw"] = "\\level07\\saw"
-	RandomItemPool["sockg"] = "\\level07\\sockg"
-	RandomItemPool["tooth"] = "\\level07\\tooth"
-	RandomItemPool["wplanks"] = "\\level07\\wplanks"
+	RandomItemPool["bonestorm"] = "art\\missions\\level01\\bonebox"
+	RandomItemPool["coolr"] = "art\\missions\\level01\\coolr"
+	RandomItemPool["flanpic"] = "art\\missions\\level01\\flanpic"
+	RandomItemPool["h_soda"] = "art\\missions\\level01\\h_soda"
+	RandomItemPool["i_soda"] = "art\\missions\\level01\\i_soda"
+	RandomItemPool["icebuck"] = "art\\missions\\level01\\ibucket"
+	RandomItemPool["inhaler"] = "art\\missions\\level01\\inhaler"
+	RandomItemPool["lwnchair"] = "art\\missions\\level01\\lwnchair"
+	RandomItemPool["mower"] = "art\\missions\\level01\\mower"
+	RandomItemPool["poster_t"] = "art\\missions\\level01\\poster_t"
+	RandomItemPool["scien"] = "art\\missions\\level01\\scien"
+	RandomItemPool["tomat"] = "art\\missions\\level01\\tomat"
+	RandomItemPool["tux"] = "art\\missions\\level01\\tux"
+	RandomItemPool["blend"] = "art\\missions\\level02\\blend"
+	RandomItemPool["bloodbag"] = "art\\missions\\level02\\bloodbag"
+	RandomItemPool["firewrks"] = "art\\missions\\level02\\firewrks"
+	RandomItemPool["i_bldbag"] = "art\\missions\\level02\\i_bldbag"
+	RandomItemPool["i_firewk"] = "art\\missions\\level02\\i_firewk"
+	RandomItemPool["monkey"] = "art\\missions\\level02\\monkey"
+	RandomItemPool["radio"] = "art\\missions\\level02\\radio"
+	RandomItemPool["roadkill"] = "art\\missions\\level02\\roadkill"
+	RandomItemPool["s_dish"] = "art\\missions\\level02\\satellite"
+	RandomItemPool["cream"] = "art\\missions\\level03\\cream"
+	RandomItemPool["diaper"] = "art\\missions\\level03\\diaper"
+	RandomItemPool["fish"] = "art\\missions\\level03\\fish"
+	RandomItemPool["h_soda"] = "art\\missions\\level03\\h_soda"
+	RandomItemPool["is_comic"] = "art\\missions\\level03\\is_comic"
+	RandomItemPool["jeans"] = "art\\missions\\level03\\jeans"
+	RandomItemPool["kmeal"] = "art\\missions\\level03\\kmeal"
+	RandomItemPool["laundry"] = "art\\missions\\level03\\laundry"
+	RandomItemPool["molemanr"] = "art\\missions\\level03\\molemanr"
+	RandomItemPool["rhat"] = "art\\missions\\level03\\rhat"
+	RandomItemPool["cola"] = "art\\missions\\level04\\cola"
+	RandomItemPool["cpill"] = "art\\missions\\level04\\cpill"
+	RandomItemPool["donut"] = "art\\missions\\level04\\donut"
+	RandomItemPool["i_cpill"] = "art\\missions\\level04\\i_cpill"
+	RandomItemPool["ketchup"] = "art\\missions\\level04\\ketchup"
+	RandomItemPool["pills"] = "art\\missions\\level04\\pills"
+	RandomItemPool["r_choco"] = "art\\missions\\level04\\r_choco"
+	RandomItemPool["r_dent"] = "art\\missions\\level04\\r_dent"
+	RandomItemPool["r_diaper"] = "art\\missions\\level04\\r_diaper"
+	RandomItemPool["r_onions"] = "art\\missions\\level04\\r_onions"
+	RandomItemPool["r_tomb"] = "art\\missions\\level04\\r_tomb"
+	RandomItemPool["folder"] = "art\\missions\\level05\\folder"
+	RandomItemPool["i_folder"] = "art\\missions\\level05\\i_folder"
+	RandomItemPool["key"] = "art\\missions\\level05\\key"
+	RandomItemPool["litter"] = "art\\missions\\level05\\litter"
+	RandomItemPool["laserbox_crate"] = "art\\missions\\level06\\laserbox"
+	RandomItemPool["lasergun"] = "art\\missions\\level06\\lasergun"
+	RandomItemPool["lasrstnd"] = "art\\missions\\level06\\lasrstnd"
+	RandomItemPool["s_boy1"] = "art\\missions\\level06\\s_boy1"
+	RandomItemPool["s_boy2"] = "art\\missions\\level06\\s_boy2"
+	RandomItemPool["s_girl1"] = "art\\missions\\level06\\s_girl1"
+	RandomItemPool["s_girl2"] = "art\\missions\\level06\\s_girl2"
+	RandomItemPool["map"] = "art\\missions\\level07\\map"
+	RandomItemPool["medkit"] = "art\\missions\\level07\\medkit"
+	RandomItemPool["record"] = "art\\missions\\level07\\record"
+	RandomItemPool["saw"] = "art\\missions\\level07\\saw"
+	RandomItemPool["sockg"] = "art\\missions\\level07\\sockg"
+	RandomItemPool["tooth"] = "art\\missions\\level07\\tooth"
+	RandomItemPool["wplanks"] = "art\\missions\\level07\\wplanks"
+	
+	RandomItemPool["finish_line"] = "art\\missions\\generic\\fline"
+	RandomItemPool["nitro"] = "art\\missions\\generic\\nitro"
+	RandomItemPool["wrench"] = ""
+	RandomItemPool["carsphere"] = ""
+	RandomItemPool["triggersphere"] = ""
+	RandomItemPool["arrow_destroy"] = ""
+	RandomItemPool["exclamation"] = ""
+	RandomItemPool["dollar"] = ""
+	RandomItemPool["arrow_race"] = ""
+	RandomItemPool["checkered"] = ""
+	RandomItemPool["checkeredfinish"] = ""
+	RandomItemPool["arrow_evade"] = ""
+	RandomItemPool["arrow_chase"] = ""
+	RandomItemPool["mission_col"] = ""
+	RandomItemPool["arrow"] = ""
+	RandomItemPool["dice"] = ""
+	RandomItemPool["shirtdollar"] = ""
+	RandomItemPool["phone_icon"] = ""
+	RandomItemPool["card_idle"] = ""
+	RandomItemPool["beecamera"] = ""
+	RandomItemPool["huskA"] = ""
+	
+	if Settings.RandomItemsIncludeChars then
+		for i=1,#RandomPedPool do
+			RandomItemPool[RandomPedPool[i] .. "_h"] = "art\\chars\\" .. RandomPedPool[i]:sub(1, 6) .. "_m"
+		end
+	end
 
 	function tbl.Mission.RandomItems(LoadFile, InitFile, Level, Mission)
 		local items = {}
@@ -75,11 +103,15 @@ if Settings.RandomItems then
 					TmpItemPool = CloneKVTable(RandomItemPool)
 				end
 				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
-				if not ExistsInTbl(items, randPath, false) then
-					table.insert(items, randPath)
+				if string.len(randPath) > 0 then
+					if not ExistsInTbl(items, randPath, false) then
+						table.insert(items, randPath)
+					end
 				end
-				if not ExistsInTbl(randomisedPaths, origPath, false) then
-					table.insert(randomisedPaths, origPath)
+				if string.len(origPath) > 0 then
+					if not ExistsInTbl(randomisedPaths, origPath, false) then
+						table.insert(randomisedPaths, origPath)
+					end				
 				end
 				DebugPrint("Randomising item \"" .. itemName .. "\" to \"" .. randName .. "\".")
 				return "AddCollectible(\"" .. locator .. "\",\"" .. randName .. "\""
@@ -96,11 +128,15 @@ if Settings.RandomItems then
 					TmpItemPool = CloneKVTable(RandomItemPool)
 				end
 				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
-				if not ExistsInTbl(items, randPath, false) then
-					table.insert(items, randPath)
+				if string.len(randPath) > 0 then
+					if not ExistsInTbl(items, randPath, false) then
+						table.insert(items, randPath)
+					end
 				end
-				if not ExistsInTbl(randomisedPaths, origPath, false) then
-					table.insert(randomisedPaths, origPath)
+				if string.len(origPath) > 0 then
+					if not ExistsInTbl(randomisedPaths, origPath, false) then
+						table.insert(randomisedPaths, origPath)
+					end				
 				end
 				DebugPrint("Randomising item \"" .. itemName .. "\" to \"" .. randName .. "\".")
 				return "SetDestination(\"" .. locator .. "\",\"" .. randName .. "\""
@@ -111,7 +147,7 @@ if Settings.RandomItems then
 		end)
 		
 		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions([^\n]-)%.p3d\"%s*%);", function(orig)
-			if not ExistsInTbl(randomisedPaths, orig) then
+			if not ExistsInTbl(randomisedPaths, "art\\missions" .. orig) then
 				DebugPrint("Not replacing item load: " .. orig .. ".", 2)
 				return "LoadP3DFile(\"art\\missions" .. orig .. ".p3d\");"
 			elseif #items == 0 then
@@ -121,11 +157,11 @@ if Settings.RandomItems then
 				local item = items[1]
 				table.remove(items, 1)
 				DebugPrint("Replacing item load \"" .. orig .. "\" with \"" .. item .. "\".")
-				return "LoadP3DFile(\"art\\missions" .. item .. ".p3d\");"
+				return "LoadP3DFile(\"" .. item .. ".p3d\");"
 			end
 		end)
 		for i=1,#items do
-			LoadFile = LoadFile .. "\r\nLoadP3DFile(\"art\\missions" .. items[i] .. ".p3d\");"
+			LoadFile = LoadFile .. "\r\nLoadP3DFile(\"" .. items[i] .. ".p3d\");"
 		end
 		return LoadFile, InitFile
 	end
