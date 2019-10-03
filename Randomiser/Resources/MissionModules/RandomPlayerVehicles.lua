@@ -1,7 +1,7 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomPlayerVehicles then
-	function tbl.Level.RandomPlayerVehicles(LoadFile, InitFile, Level)
+	function tbl.Level.RandomPlayerVehicles(LoadFile, InitFile, Level, Path)
 		LastLevel = nil
 		RandomCar = math.random(#RandomCarPoolPlayer)
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
@@ -13,12 +13,12 @@ if Settings.RandomPlayerVehicles then
 		return LoadFile, InitFile
 	end
 	
-	function tbl.Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission)
+	function tbl.Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path)
 		if SettingSaveChoice then
-			if LastLevel ~= Level .. "|" .. Mission then
+			if LastLevel ~= Path then
 				RandomCar = math.random(#RandomCarPoolPlayer)
 			end
-			LastLevel = Level .. "|" .. Mission
+			LastLevel = Path
 		else
 			RandomCar = math.random(#RandomCarPoolPlayer)
 		end

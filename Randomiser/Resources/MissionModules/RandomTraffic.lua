@@ -1,7 +1,7 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomTraffic then
-	function tbl.Level.RandomTraffic(LoadFile, InitFile, Level)
+	function tbl.Level.RandomTraffic(LoadFile, InitFile, Level, Path)
 		TrafficCars = {}
 		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
@@ -39,7 +39,11 @@ if Settings.RandomTraffic then
 					amount = 5
 				end
 			end
-			InitFile = InitFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. " );"
+			local parked = ""
+			if math.random(3) == 1 then
+				parked = ",1"
+			end
+			InitFile = InitFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. parked .. " );"
 		end
 		InitFile = InitFile .. "\r\nCloseTrafficGroup( );"
 		return LoadFile, InitFile

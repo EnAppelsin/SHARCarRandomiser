@@ -1,7 +1,7 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomMissionCharacters then
-	function tbl.Level.RandomMissionCharacters(LoadFile, InitFile, Level)
+	function tbl.Level.RandomMissionCharacters(LoadFile, InitFile, Level, Path)
 		BonusCharacters = {}
 		for npc in InitFile:gmatch("AddNPCCharacterBonusMission%s*%(%s*\"([^\n]-)\"") do
 			table.insert(BonusCharacters, npc)
@@ -9,7 +9,7 @@ if Settings.RandomMissionCharacters then
 		return LoadFile, InitFile
 	end
 	
-	function tbl.SundayDrive.RandomMissionCharacters(LoadFile, InitFile, Level, Mission)
+	function tbl.SundayDrive.RandomMissionCharacters(LoadFile, InitFile, Level, Mission, Path)
 		MissionCharacters = {}
 		local found = "Found mission characters: "
 		for npc in InitFile:gmatch("AddNPC%s*%(%s*\"([^\n]-)\"") do
@@ -20,14 +20,4 @@ if Settings.RandomMissionCharacters then
 		return LoadFile, InitFile
 	end
 	tbl.Mission.RandomMissionCharacters = tbl.SundayDrive.RandomMissionCharacters
-	--[[function tbl.Mission.RandomMissionsCharacters(LoadFile, InitFile, Level, Mission)
-		MissionCharacters = {}
-		local found = "Found mission characters: "
-		for npc in InitFile:gmatch("AddNPC%s*%(%s*\"([^\n]-)\"") do
-			table.insert(MissionCharacters, npc)
-			found = found .. npc .. ", "
-		end
-		DebugPrint(found)
-		return LoadFile, InitFile
-	end]]--
 end

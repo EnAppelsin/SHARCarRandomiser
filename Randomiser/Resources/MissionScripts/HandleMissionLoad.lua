@@ -7,7 +7,7 @@ if MissionModules.Mission then
 	local InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
 	for k,v in pairs(MissionModules.Mission) do
 		DebugPrint("Running module: " .. k, 2)
-		LoadFile, InitFile = v(LoadFile, InitFile, level, mission)
+		LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
 	end
 	MissionInit = InitFile
 	if Settings.DebugLevel >= 5 then

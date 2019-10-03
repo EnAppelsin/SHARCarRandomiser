@@ -92,7 +92,7 @@ if Settings.RandomItems then
 		end
 	end
 
-	function tbl.Mission.RandomItems(LoadFile, InitFile, Level, Mission)
+	function tbl.Mission.RandomItems(LoadFile, InitFile, Level, Mission, Path)
 		local items = {}
 		local randomisedPaths = {}
 		local TmpItemPool = CloneKVTable(RandomItemPool)

@@ -1,20 +1,20 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomMissionVehicles then
-	function tbl.Level.RandomMissionVehicles(LoadFile, InitFile, Level)
+	function tbl.Level.RandomMissionVehicles(LoadFile, InitFile, Level, Path)
 		LastLevelMV = nil
 		return LoadFile, InitFile
 	end
 	
-	function tbl.SundayDrive.RandomMissionVehicles(LoadFile, InitFile, Level, Mission)
+	function tbl.SundayDrive.RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
 		LastLevelMV = nil
 		return LoadFile, InitFile
 	end
 	
-	function tbl.Mission.RandomMissionVehicldes(LoadFile, InitFile, Level, Mission)
+	function tbl.Mission.RandomMissionVehicldes(LoadFile, InitFile, Level, Mission, Path)
 		DebugPrint("Checking for sub level cars in " .. Level .. "|" .. Mission)
-		local randomise = not Settings.SaveChoiceMV or LastLevelMV == nil or LastLevelMV ~= Level .. "|" .. Mission
-		LastLevelMV = Level .. "|" .. Mission
+		local randomise = not Settings.SaveChoiceMV or LastLevelMV == nil or LastLevelMV ~= Path
+		LastLevelMV = Path
 		if randomise then
 			MissionVehicles = {}
 		end
@@ -39,15 +39,22 @@ if Settings.RandomMissionVehicles then
 				else
 					carName = MissionVehicles[car][spawn]
 				end
-				if Settings.RandomMissionVehiclesStats or Settings.RandomStats then
-					con = carName
+				if carName then
+					if Settings.RandomMissionVehiclesStats or Settings.RandomStats then
+						con = carName
+					end
+					RandomCars[car] = carName
+					if not LoadFile:match("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. carName .. ".p3d\"%s*,%s*\"" .. carName .. "\"%s*,%s*\"AI\"%s*%);") then
+						LoadFile = LoadFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. carName .. ".p3d\",\"" .. carName .. "\",\"AI\");"
+					end
+					DebugPrint("Randomising " .. car .. " to " .. carName)
+					return "AddStageVehicle(\"" .. carName .. "\",\"" .. spawn .. "\",\"" .. ai .. "\",\"" .. con .. ".con\""
+				else
+					DebugPrint("Not randomising \"" .. car .. "\" at \"" .. spawn .. "\" because nil value (randomise: " .. randomise .. ")")
+					if not LoadFile:match("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. car .. ".p3d\"%s*,%s*\"" .. car .. "\"%s*,%s*\"AI\"%s*%);") then
+						LoadFile = LoadFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. car .. ".p3d\",\"" .. car .. "\",\"AI\");"
+					end
 				end
-				RandomCars[car] = carName
-				if not LoadFile:match("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. carName .. ".p3d\"%s*,%s*\"" .. carName .. "\"%s*,%s*\"AI\"%s*%);") then
-					LoadFile = LoadFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. carName .. ".p3d\",\"" .. carName .. "\",\"AI\");"
-				end
-				DebugPrint("Randomising " .. car .. " to " .. carName)
-				return "AddStageVehicle(\"" .. carName .. "\",\"" .. spawn .. "\",\"" .. ai .. "\",\"" .. con .. ".con\""
 			end)
 			for k,v in pairs(RandomCars) do
 			    original = original:gsub("ActivateVehicle%s*%(%s*\"" .. k .. "\"", "ActivateVehicle(\"" .. v .. "\"")

@@ -7,7 +7,7 @@ if MissionModules.SundayDrive then
 	local InitFile = ReadFile(Path:gsub("sdl%.mfk", "sdi.mfk")):gsub("//.-([\r\n])", "%1");
 	for k,v in pairs(MissionModules.SundayDrive) do
 		DebugPrint("Running module: " .. k, 2)
-		LoadFile, InitFile = v(LoadFile, InitFile, level, mission)
+		LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
 	end
 	LastLevel = nil
 	PlayerStats = nil

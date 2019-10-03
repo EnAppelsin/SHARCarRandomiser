@@ -6,7 +6,7 @@ if MissionModules.Level then
 	local InitFile = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
 	for k,v in pairs(MissionModules.Level) do
 		DebugPrint("Running module: " .. k, 2)
-		LoadFile, InitFile = v(LoadFile, InitFile, level)
+		LoadFile, InitFile = v(LoadFile, InitFile, level, Path)
 	end
 	LevelInit = InitFile
 	if Settings.DebugLevel >= 5 then
