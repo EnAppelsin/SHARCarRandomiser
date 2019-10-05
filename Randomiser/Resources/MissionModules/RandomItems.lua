@@ -101,7 +101,7 @@ if Settings.RandomItems then
 	end
 	
 	function GetTmpTable()
-		local tmp = {} --CloneKVTable(RandomItemPool)		
+		local tmp = CloneKVTable(RandomItemPool)		
 		if Settings.RandomItemsIncludeCars then
 			if Settings.RandomMissionVehicles and MissionVehicles then
 				for k,v in pairs(MissionVehicles) do
@@ -115,6 +115,11 @@ if Settings.RandomItems then
 			end
 			if Settings.RandomChase and RandomChase then
 				tmp[RandomChase] = ""
+			end
+			if Settings.RandomTraffic and TrafficCars then
+				for i=1,#TrafficCars do
+					tmp[TrafficCars[i]] = ""
+				end
 			end
 		end
 		return tmp
