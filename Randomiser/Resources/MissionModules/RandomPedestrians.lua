@@ -1,7 +1,15 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomPedestrians then
-	function tbl.Level.RandomPedestrians(LoadFile, InitFile, Level, Path)
+	local sort = 5
+	Level = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	
+	function Level.RandomPedestrians(LoadFile, InitFile, Level, Path)
 		local Peds = ""
 		local TmpPedPool = {table.unpack(RandomPedPool)}
 		local groups = {}

@@ -219,8 +219,22 @@ if Settings.RandomDirectives then
 		"misXX_PS",
 		"misXX_TT"
 	}
-
-	function tbl.SundayDrive.RandomDirectives(LoadFile, InitFile, Level, Mission, Path)
+	
+	local sort = 5
+	Mission = {}
+	SundayDrive = {}
+	if not tbl.Mission[sort] then
+		tbl.Mission[sort] = Mission
+	else
+		Mission = tbl.Mission[sort]
+	end
+	if not tbl.SundayDrive[sort] then
+		tbl.SundayDrive[sort] = SundayDrive
+	else
+		SundayDrive = tbl.SundayDrive[sort]
+	end
+	
+	function SundayDrive.RandomDirectives(LoadFile, InitFile, Level, Mission, Path)
 		iconReplace = {}
 		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\frontend\\dynaload\\images\\msnicons([^\n]-)%.p3d\"%s*", function(orig)
 			local rand = GetRandomFromTbl(IconP3DPool, false)
@@ -242,5 +256,5 @@ if Settings.RandomDirectives then
 		end
 		return LoadFile, InitFile
 	end
-	tbl.Mission.RandomDirectives = tbl.SundayDrive.RandomDirectives
+	Mission.RandomDirectives = SundayDrive.RandomDirectives
 end

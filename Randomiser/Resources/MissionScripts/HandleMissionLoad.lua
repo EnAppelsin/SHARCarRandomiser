@@ -5,9 +5,13 @@ if MissionModules.Mission then
 	DebugPrint("NEW MISSION/RACE LOAD: Level " .. level .. ", Mission/Race " .. mission)
 	local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
 	local InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
-	for k,v in pairs(MissionModules.Mission) do
-		DebugPrint("Running module: " .. k, 2)
-		LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
+	for i = MissionMin,MissionMax do
+		if MissionModules.Mission[i] then
+			for k,v in pairs(MissionModules.Mission[i]) do
+				DebugPrint("Running module: " .. k, 2)
+				LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
+			end
+		end
 	end
 	MissionInit = InitFile
 	if Settings.DebugLevel >= 5 then

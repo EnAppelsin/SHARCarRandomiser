@@ -1,7 +1,15 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomTraffic then
-	function tbl.Level.RandomTraffic(LoadFile, InitFile, Level, Path)
+	local sort = 5
+	Level = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	
+	function Level.RandomTraffic(LoadFile, InitFile, Level, Path)
 		TrafficCars = {}
 		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""

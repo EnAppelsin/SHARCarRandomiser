@@ -1,17 +1,37 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomMissionVehicles then
-	function tbl.Level.RandomMissionVehicles(LoadFile, InitFile, Level, Path)
+	local sort = 4
+	Level = {}
+	Mission = {}
+	SundayDrive = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	if not tbl.Mission[sort] then
+		tbl.Mission[sort] = Mission
+	else
+		Mission = tbl.Mission[sort]
+	end
+	if not tbl.SundayDrive[sort] then
+		tbl.SundayDrive[sort] = SundayDrive
+	else
+		SundayDrive = tbl.SundayDrive[sort]
+	end
+	
+	function Level.RandomMissionVehicles(LoadFile, InitFile, Level, Path)
 		LastLevelMV = nil
 		return LoadFile, InitFile
 	end
 	
-	function tbl.SundayDrive.RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
+	function SundayDrive.RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
 		LastLevelMV = nil
 		return LoadFile, InitFile
 	end
 	
-	function tbl.Mission.RandomMissionVehicldes(LoadFile, InitFile, Level, Mission, Path)
+	function Mission.RandomMissionVehicldes(LoadFile, InitFile, Level, Mission, Path)
 		DebugPrint("Checking for sub level cars in " .. Level .. "|" .. Mission)
 		local randomise = not Settings.SaveChoiceMV or LastLevelMV == nil or LastLevelMV ~= Path
 		LastLevelMV = Path
@@ -29,8 +49,10 @@ if Settings.RandomMissionVehicles then
 					if #TmpCarPool == 0 then
 						TmpCarPool = {table.unpack(RandomCarPoolMission)}
 					end
-					if MissionVehicles[car] == nil or MissionVehicles[car][spawn] == nil then
+					if not MissionVehicles[car] then
 						MissionVehicles[car] = {}
+					end
+					if not MissionVehicles[car][spawn] then
 						carName = GetRandomFromTbl(TmpCarPool, true)
 						MissionVehicles[car][spawn] = carName
 					else
@@ -50,7 +72,7 @@ if Settings.RandomMissionVehicles then
 					DebugPrint("Randomising " .. car .. " to " .. carName)
 					return "AddStageVehicle(\"" .. carName .. "\",\"" .. spawn .. "\",\"" .. ai .. "\",\"" .. con .. ".con\""
 				else
-					DebugPrint("Not randomising \"" .. car .. "\" at \"" .. spawn .. "\" because nil value (randomise: " .. randomise .. ")")
+					DebugPrint("Not randomising \"" .. car .. "\" at \"" .. spawn .. "\" because nil value" .. (ForcedMission and " (randomise)" or ""))
 					if not LoadFile:match("LoadDisposableCar%s*%(%s*\"art\\cars\\" .. car .. ".p3d\"%s*,%s*\"" .. car .. "\"%s*,%s*\"AI\"%s*%);") then
 						LoadFile = LoadFile .. "\r\nLoadDisposableCar(\"art\\cars\\" .. car .. ".p3d\",\"" .. car .. "\",\"AI\");"
 					end

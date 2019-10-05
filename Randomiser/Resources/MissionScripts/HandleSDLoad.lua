@@ -5,9 +5,13 @@ if MissionModules.SundayDrive then
 	DebugPrint("NEW SD LOAD: Level " .. level .. ", Mission " .. mission)
 	local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
 	local InitFile = ReadFile(Path:gsub("sdl%.mfk", "sdi.mfk")):gsub("//.-([\r\n])", "%1");
-	for k,v in pairs(MissionModules.SundayDrive) do
-		DebugPrint("Running module: " .. k, 2)
-		LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
+	for i = SundayMin,SundayMax do
+		if MissionModules.Mission[i] then
+			for k,v in pairs(MissionModules.SundayDrive[i]) do
+				DebugPrint("Running module: " .. k, 2)
+				LoadFile, InitFile = v(LoadFile, InitFile, level, mission, Path)
+			end
+		end
 	end
 	LastLevel = nil
 	PlayerStats = nil

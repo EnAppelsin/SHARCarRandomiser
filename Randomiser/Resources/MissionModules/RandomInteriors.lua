@@ -51,7 +51,27 @@ if Settings.RandomInteriors then
 		"07"
 	}
 	
-	function tbl.Level.RandomInteriors(LoadFile, InitFile, Level, Path)
+	local sort = 5
+	Level = {}
+	Mission = {}
+	SundayDrive = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	if not tbl.Mission[sort] then
+		tbl.Mission[sort] = Mission
+	else
+		Mission = tbl.Mission[sort]
+	end
+	if not tbl.SundayDrive[sort] then
+		tbl.SundayDrive[sort] = SundayDrive
+	else
+		SundayDrive = tbl.SundayDrive[sort]
+	end
+	
+	function Level.RandomInteriors(LoadFile, InitFile, Level, Path)
 		if Level == 1 then
 			DebugPrint("Setting up random interiors for level 1")
 			interiorReplace = {}
@@ -113,7 +133,7 @@ if Settings.RandomInteriors then
 		return LoadFile, InitFile
 	end
 	
-	function tbl.SundayDrive.RandomInteriors(LoadFile, InitFile, Level, Mission, Path)
+	function SundayDrive.RandomInteriors(LoadFile, InitFile, Level, Mission, Path)
 		InitFile = InitFile:gsub("SetDynaLoadData%s*%(%s*\"([^\n]-)i([^\n]-).p3d@\"", function(data, interior)
 			local newInterior = nil
 			for k,v in pairs(interiorReplace) do
@@ -126,5 +146,5 @@ if Settings.RandomInteriors then
 		end)
 		return LoadFile, InitFile
 	end
-	tbl.Mission.RandomInteriors = tbl.SundayDrive.RandomInteriors
+	Mission.RandomInteriors = SundayDrive.RandomInteriors
 end

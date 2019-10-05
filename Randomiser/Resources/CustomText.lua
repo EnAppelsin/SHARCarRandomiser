@@ -43,7 +43,8 @@ local ChaosSettings =
 [0x2]=Settings.RandomDirectives,
 [0x4]=Settings.RandomMissions,
 [0x8]=Settings.RandomItems,
-[0x10]=Settings.RandomItemsIncludeChars
+[0x10]=Settings.RandomItemsIncludeChars,
+[0x20]=Settings.RandomItemsIncludeCars
 }
 
 local GameplayN = 0

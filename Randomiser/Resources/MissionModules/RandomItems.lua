@@ -92,15 +92,43 @@ if Settings.RandomItems then
 		end
 	end
 
-	function tbl.Mission.RandomItems(LoadFile, InitFile, Level, Mission, Path)
+	local sort = 5
+	Mission = {}
+	if not tbl.Mission[sort] then
+		tbl.Mission[sort] = Mission
+	else
+		Mission = tbl.Mission[sort]
+	end
+	
+	function GetTmpTable()
+		local tmp = {} --CloneKVTable(RandomItemPool)		
+		if Settings.RandomItemsIncludeCars then
+			if Settings.RandomMissionVehicles and MissionVehicles then
+				for k,v in pairs(MissionVehicles) do
+					for k2,v2 in pairs(v) do
+						tmp[v2] = ""
+					end
+				end
+			end
+			if Settings.RandomPlayerVehicles and RandomCarName then
+				tmp[RandomCarName] = ""
+			end
+			if Settings.RandomChase and RandomChase then
+				tmp[RandomChase] = ""
+			end
+		end
+		return tmp
+	end
+	
+	function Mission.RandomItems(LoadFile, InitFile, Level, Mission, Path)
 		local items = {}
 		local randomisedPaths = {}
-		local TmpItemPool = CloneKVTable(RandomItemPool)
+		local TmpItemPool = GetTmpTable()
 		InitFile = InitFile:gsub("AddCollectible%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(locator, itemName)
 			local origPath = RandomItemPool[itemName]
 			if origPath ~= nil then
 				if CountTable(TmpItemPool) == 0 then
-					TmpItemPool = CloneKVTable(RandomItemPool)
+					TmpItemPool = GetTmpTable()
 				end
 				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
 				if string.len(randPath) > 0 then
@@ -125,7 +153,7 @@ if Settings.RandomItems then
 			local origPath = RandomItemPool[itemName]
 			if origPath ~= nil then
 				if CountTable(TmpItemPool) == 0 then
-					TmpItemPool = CloneKVTable(RandomItemPool)
+					TmpItemPool = GetTmpTable()
 				end
 				local randName, randPath = GetRandomFromKVTbl(TmpItemPool, true)
 				if string.len(randPath) > 0 then

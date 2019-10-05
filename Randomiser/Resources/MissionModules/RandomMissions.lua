@@ -1,7 +1,15 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomMissions then
-	function tbl.Level.RandomMissions(LoadFile, InitFile, Level, Path)
+	local sort = 5
+	Level = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	
+	function Level.RandomMissions(LoadFile, InitFile, Level, Path)
 		DebugPrint("Randomising mission order")
 		local missions = {}
 		for mission in LoadFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do

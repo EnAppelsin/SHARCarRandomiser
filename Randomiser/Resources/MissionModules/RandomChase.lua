@@ -1,7 +1,21 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomChase then
-	function tbl.Level.RandomChase(LoadFile, InitFile, Level, Path)
+	local sort = 3
+	Level = {}
+	Mission = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
+	if not tbl.Mission[sort] then
+		tbl.Mission[sort] = Mission
+	else
+		Mission = tbl.Mission[sort]
+	end
+	
+	function Level.RandomChase(LoadFile, InitFile, Level, Path)
 		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
 		LoadFile = LoadFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. RandomChase .. ".p3d\");"
 		DebugPrint("Random chase cars for level -> " .. RandomChase)
@@ -19,7 +33,7 @@ if Settings.RandomChase then
 		return LoadFile, InitFile
 	end
 	
-	function tbl.Mission.RandomChase(LoadFile, InitFile, Level, Mission, Path)
+	function Mission.RandomChase(LoadFile, InitFile, Level, Mission, Path)
 		if not Settings.RandomMissionVehicles then
 			local police = {}
 			table.insert(police, "cPolice")
