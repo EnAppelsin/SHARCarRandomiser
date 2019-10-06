@@ -332,7 +332,7 @@ function DebugPrint(msg, level)
 	if level == nil then
 		level = 0
 	end
-	if SettingDebugLevel < level then
+	if Settings.DebugLevel < level then
 		return false
 	end
 	local currTime = os.date("*t")

@@ -13,7 +13,7 @@
 -- After this is data specific to the chunk type, and then the subchunks with the same structure
 -- The file itself seems to be a "chunk" with type P3D\255, and no chunk specific data
 
-if SettingRandomCouch then
+if Settings.RandomCouch then
 	local PedN = math.random(#RandomCharP3DPool)
 	local Ped = RandomCharP3DPool[PedN]
 

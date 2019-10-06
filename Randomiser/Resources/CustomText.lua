@@ -21,7 +21,8 @@ local GameplaySettings =
 [0x1000]=Settings.SkipLocks,
 [0x2000]=Settings.SkipFMVs,
 [0x4000]=Settings.BoostHP,
-[0x8000]=Settings.RemoveOutOfCar
+[0x8000]=Settings.RemoveOutOfCar,
+[0x10000]=Settings.RandomStaticCars
 }
 
 local GraphicalSettings =

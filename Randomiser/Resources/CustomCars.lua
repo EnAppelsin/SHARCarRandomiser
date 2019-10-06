@@ -152,11 +152,11 @@ if IsModEnabled("RandomiserCars") then
 		if not Confirm("You have Custom Cars enabled without the RandomiserCars folder. Custom Cars will not work without this.\n\nTo continue loading the game press OK, to close press Cancel.") then
 			os.exit()
 		end
-		SettingCustomCars = false
+		Settings.CustomCars = false
 	end
 else
 	if not Confirm("You have Custom Cars enabled without the RandomiserCars framework. Custom Cars will not work without this.\n\nTo continue loading the game press OK, to close press Cancel.") then
 		os.exit()
 	end
-	SettingCustomCars = false
+	Settings.CustomCars = false
 end

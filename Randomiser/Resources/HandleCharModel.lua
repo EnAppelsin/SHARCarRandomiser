@@ -1,6 +1,6 @@
 local Path = GetPath()
 
-if SettingRandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar .. "_m%.p3d") or Path:match("art/chars/" .. OrigChar:sub(1,1) .. "_.-_m%.p3d")) then
+if Settings.RandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar .. "_m%.p3d") or Path:match("art/chars/" .. OrigChar:sub(1,1) .. "_.-_m%.p3d")) then
 	local Original = ReadFile("/GameData/" .. Path)
 	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
 	local Replace = ReadFile(ReplacePath)
@@ -11,7 +11,7 @@ if SettingRandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar 
 	Output(Original)
 else
 	local updated = false
-	if SettingRandomMissionCharacters then
+	if Settings.RandomMissionCharacters then
 		if MissionCharacters and updated ~= true then
 			for i = 1, #MissionCharacters do
 				local model = MissionCharacters[i]
@@ -53,7 +53,7 @@ else
 			end
 		end
 	end
-	if SettingRandomPedestrians and LevelCharacters and updated ~= true then
+	if Settings.RandomPedestrians and LevelCharacters and updated ~= true then
 		for i = 1, #LevelCharacters do
 			local model = LevelCharacters[i]
 			if model:len() > 6 then

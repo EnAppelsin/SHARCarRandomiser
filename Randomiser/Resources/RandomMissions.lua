@@ -1,4 +1,4 @@
-if SettingRandomMissions then
+if Settings.RandomMissions then
 	--DebugPrint("Randomising mission order")
 	--local rootPath = "/GameData/scripts/missions/level0"
 	--for i = 1, 7 do

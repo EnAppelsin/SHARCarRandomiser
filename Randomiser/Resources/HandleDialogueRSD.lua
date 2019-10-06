@@ -1,12 +1,12 @@
 local Path = "/GameData/" .. GetPath()
 
-if SettingRandomDialogue and RandomDialoguePoolN > 0 then
+if Settings.RandomDialogue and RandomDialoguePoolN > 0 then
 	local RedirectPath = RandomDialoguePool[math.random(RandomDialoguePoolN)]
 
 	DebugPrint("Redirecting " .. Path .. " to " .. RedirectPath)
 
 	Redirect(RedirectPath)
-elseif SettingRandomMissions and Path:match("L%d") then
+elseif Settings.RandomMissions and Path:match("L%d") then
 	if IsModEnabled("RandomiserDialogue") then
 		local RedirectPath = Path:gsub("/GameData/", "/GameData/RandomDialogue/")
 		if Exists(RedirectPath, true, false) then

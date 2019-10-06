@@ -125,10 +125,14 @@ if Settings.RandomInteriors then
 		local oldName
 		local newName
 		for k,v in pairs(interiorReplace) do
-			oldName = interiorNames[k]
 			newName = interiorNames[v]
-			DebugPrint("Replacing " .. oldName .. " with " .. newName .. " for random interiors")
-			LoadFile = LoadFile:gsub("GagSetInterior%s*%(%s*\"" .. oldName .. "\"", "GagSetInterior(\"" .. newName .. "\"")
+			DebugPrint("Replacing " .. newName .. " with " .. k .. " for random interiors")
+			LoadFile = LoadFile:gsub("GagSetInterior%s*%(%s*\"" .. newName .. "\"", "GagSetInterior(\"" .. k .. "\"")
+		end
+		for k,v in pairs(interiorReplace) do
+			oldName = interiorNames[k]
+			DebugPrint("Replacing " .. k .. " with " .. oldName .. " for random interiors")
+			LoadFile = LoadFile:gsub("GagSetInterior%s*%(%s*\"" .. k .. "\"", "GagSetInterior(\"" .. oldName .. "\"")
 		end
 		return LoadFile, InitFile
 	end

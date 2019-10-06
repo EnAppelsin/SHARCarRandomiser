@@ -1,4 +1,5 @@
 local Path = "/GameData/" .. GetPath();
+loading = true
 if MissionModules.Mission then
 	local level = tonumber(Path:match("level0(%d)"))
 	local mission = tonumber(Path:match("[rm](%d)l"))

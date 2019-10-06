@@ -131,7 +131,7 @@ if Settings.RandomItems then
 		local TmpItemPool = GetTmpTable()
 		InitFile = InitFile:gsub("AddCollectible%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(locator, itemName)
 			local origPath = RandomItemPool[itemName]
-			if origPath ~= nil then
+			if origPath and not itemName:match("finish_line") then
 				if CountTable(TmpItemPool) == 0 then
 					TmpItemPool = GetTmpTable()
 				end
@@ -156,7 +156,7 @@ if Settings.RandomItems then
 		
 		InitFile = InitFile:gsub("SetDestination%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(locator, itemName)
 			local origPath = RandomItemPool[itemName]
-			if origPath ~= nil then
+			if origPath	then
 				if CountTable(TmpItemPool) == 0 then
 					TmpItemPool = GetTmpTable()
 				end
@@ -180,7 +180,7 @@ if Settings.RandomItems then
 		end)
 		
 		LoadFile = LoadFile:gsub("LoadP3DFile%s*%(%s*\"art\\missions([^\n]-)%.p3d\"%s*%);", function(orig)
-			if not ExistsInTbl(randomisedPaths, "art\\missions" .. orig) then
+			if not ExistsInTbl(randomisedPaths, "art\\missions" .. orig) or orig:match("generic\\fline") then
 				DebugPrint("Not replacing item load: " .. orig .. ".", 2)
 				return "LoadP3DFile(\"art\\missions" .. orig .. ".p3d\");"
 			elseif #items == 0 then

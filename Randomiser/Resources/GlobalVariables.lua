@@ -43,7 +43,7 @@ cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt"):gsub("\r\n", "\n"):g
 carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 dialogspt = ReadFile(ModPath .. "/Resources/dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
 
-SettingRandomCouch = GetSetting("RandomCouch")
+--[[SettingRandomCouch = GetSetting("RandomCouch")
 SettingRandomMusic = GetSetting("RandomMusic")
 SettingRandomMusicCues = GetSetting("RandomMusicCues")
 SettingRandomDialogue = GetSetting("RandomDialogue")
@@ -73,67 +73,67 @@ SettingDebugLevel = GetSetting("DebugLevel")
 SettingRandomInteriors = GetSetting("RandomInteriors")
 SettingRandomDirectives = GetSetting("RandomDirectives")
 SettingRandomMissions = GetSetting("RandomMissions")
-SettingRandomItems = GetSetting("RandomItems")
+SettingRandomItems = GetSetting("RandomItems")]]--
 
 --Random Stat Min/Max Variables
-if SettingRandomStats then
+if Settings.RandomStats then
 --Mass Variables
-	MinMass = GetSetting("StatMinMass")
-	MaxMass = GetSetting("StatMaxMass")
+	MinMass = Settings.StatMinMass
+	MaxMass = Settings.StatMaxMass
 	if MaxMass < MinMass then
 		MaxMass = MinMass
 	end
 --Gas Scale Variables
-	MinGas = GetSetting("StatMinGas")
-	MaxGas = GetSetting("StatMaxGas")
+	MinGas = Settings.StatMinGas
+	MaxGas = Settings.StatMaxGas
 	if MaxGas < MinGas then
 		MaxGas = MinGas
 	end
 --Slip Gas Scale Variables
-	MinSlipGas = GetSetting("StatMinSlipGasScale")
-	MaxSlipGas = GetSetting("StatMaxSlipGasScale")
+	MinSlipGas = Settings.StatMinSlipGasScale
+	MaxSlipGas = Settings.StatMaxSlipGasScale
 	if MaxSlipGas < MinSlipGas then
 		MaxSlipGas = MinSlipGas
 	end
 -- Break Gas Scale Variables
-	MinBreakGasScale = GetSetting("StatMinBreakGasScale")
-	MaxBreakGasScale = GetSetting("StatMaxBreakGasScale")
+	MinBreakGasScale = Settings.StatMinBreakGasScale
+	MaxBreakGasScale = Settings.StatMaxBreakGasScale
 	if MaxBreakGasScale < MinBreakGasScale then
 		MaxBreakGasScale = MinBreakGasScale
 	end
 -- Top Speed Variables
-	MinSpeed = GetSetting("StatMinSpeed")
-	MaxSpeed = GetSetting("StatMaxSpeed")
+	MinSpeed = Settings.StatMinSpeed
+	MaxSpeed = Settings.StatMaxSpeed
 	if MaxSpeed < MinSpeed then
 		MaxSpeed = MinSpeed
 	end
 -- Wheel Turn Angle
-	MinTurnAngle = GetSetting("StatMinAngle")
-	MaxTurnAngle = GetSetting("StatMaxAngle")
+	MinTurnAngle = Settings.StatMinAngle
+	MaxTurnAngle = Settings.StatMaxAngle
 	if MaxTurnAngle < MinTurnAngle then
 		MaxTurnAngle = MinTurnAngle
 	end
 -- Wheel Grip Variables
-	MinGrip = GetSetting("StatMinGrip")
-	MaxGrip = GetSetting("StatMaxGrip")
+	MinGrip = Settings.StatMinGrip
+	MaxGrip = Settings.StatMaxGrip
 	if MaxGrip < MinGrip then
 		MaxGrip = MinGrip
 	end
 -- Steering Variables
-	MinSteering = GetSetting("StatMinSteering")
-	MaxSteering = GetSetting("StatMaxSteering")
+	MinSteering = Settings.StatMinSteering
+	MaxSteering = Settings.StatMaxSteering
 	if MaxSteering < MinSteering then
 		MaxSteering = MinSteering
 	end
 -- SlipSteering Variables
-	MinSlipSteering = GetSetting("StatMinSlipSteering")
-	MaxSlipSteering = GetSetting("StatMaxSlipSteering")
+	MinSlipSteering = Settings.StatMinSlipSteering
+	MaxSlipSteering = Settings.StatMaxSlipSteering
 	if MaxSlipSteering < MinSlipSteering then
 		MaxSlipSteering = MinSlipSteering
 	end
 -- HP Variables
-	MinHP = GetSetting("StatMinHP")
-	MaxHP = GetSetting("StatMaxHP")
+	MinHP = Settings.StatMinHP
+	MaxHP = Settings.StatMaxHP
 	if MaxHP < MinHP then
 		MaxHP = MinHP
 	end
@@ -141,8 +141,8 @@ end
 
 if SettingRandomCarScale then
 	-- Random Car Scale
-	MinCarScale = GetSetting("StatMinScale")
-	MaxCarScale = GetSetting("StatMaxScale")
+	MinCarScale = Settings.StatMinScale
+	MaxCarScale = Settings.StatMaxScale
 	if MaxCarScale < MinCarScale then
 		MaxCarScale = MinCarScale
 	end
