@@ -23,7 +23,7 @@ elseif #RandomCarPoolChase < 5 and SettingRandomChase then
 end
 
 DebugPrint("Randomiser Settings", 2)
-for settingName, settingValue in pairs(GetSettings()) do
+for settingName, settingValue in pairs(Settings) do
 	DebugPrint("- " .. settingName .. " = " .. tostring(settingValue), 2)
 end
 
@@ -33,21 +33,21 @@ DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission p
 DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 
-if SettingRandomInteriors then
+if Settings.RandomInteriors then
 	if not Confirm("Random Interiors is an experimental addition that can cause the game to be unplayable. If you want to disable this, press Cancel") then
-		SettingRandomInteriors = false
+		Settings.RandomInteriors = false
 	end
 end
 
-if SettingCustomCars then
-	dofile(ModPath .. "/Resources/CustomCars.lua")
+if Settings.CustomCars then
+	dofile(Paths.Resources .. "CustomCars.lua")
 end
 
-dofile(ModPath .. "/Resources/RandomCarTune.lua")
-if SettingRandomDialogue then
-	dofile(ModPath .. "/Resources/RandomDialogue.lua")
+dofile(Paths.Resources .. "RandomCarTune.lua")
+if Settings.RandomDialogue then
+	dofile(Paths.Resources .. "RandomDialogue.lua")
 end
 
-if SettingRandomMissions then
-	dofile(ModPath .. "/Resources/RandomMissions.lua")
+if Settings.RandomMissions then
+	dofile(Paths.Resources .. "RandomMissions.lua")
 end
