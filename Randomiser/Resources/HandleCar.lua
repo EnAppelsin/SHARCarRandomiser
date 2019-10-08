@@ -2,6 +2,15 @@
 local Path = "/GameData/" .. GetPath()
 local File = nil
 
+if Settings.RandomStaticCars and RandomStaticCar and RandomStaticCarName then
+	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
+	if carName == RandomStaticCar then
+		Path = Path:gsub(carName, RandomStaticCarName)
+		RandomStaticCar = nil
+		RandomStaticCarName = nil
+	end
+end
+
 if Settings.CustomCars then
 	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
 	for i = 1, #CustomCarPool do

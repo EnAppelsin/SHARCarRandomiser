@@ -15,9 +15,9 @@ if MissionModules.Mission then
 		end
 	end
 	MissionInit = InitFile
-	if Settings.DebugLevel >= 5 then
+	--[[if Settings.DebugLevel >= 5 then
 		DebugPrint("Mission Load File:\r\n" .. LoadFile)
 		DebugPrint("Mission Init File:\r\n" .. InitFile)
-	end
+	end]]--
 	Output(LoadFile)
 end

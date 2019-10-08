@@ -96,15 +96,15 @@ function String1ToInt(str)
 end
 
 function String4ToInt(str)
-    b1, b2, b3, b4 = str:byte(1, 4)
+    local b1, b2, b3, b4 = str:byte(1, 4)
     return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
 end
 
 function IntToString4(int)
-    b1 = int % 256
-    b2 = math.floor(int / 256) % 256
-    b3 = math.floor(int / 256 / 256) % 256
-    b4 = math.floor(int / 256 / 256 / 256) % 256
+    local b1 = int % 256
+    local b2 = math.floor(int / 256) % 256
+    local b3 = math.floor(int / 256 / 256) % 256
+    local b4 = math.floor(int / 256 / 256 / 256) % 256
     return string.char(b1, b2, b3, b4)
 end
 
@@ -117,7 +117,7 @@ function FindSubchunks(Chunk, ID)
         while Position < Chunk:len() do
             local ChunkID = Chunk:sub(Position + 0, Position + 3)
             local ChunkLength = String4ToInt(Chunk:sub(Position + 8, Position + 11))
-           Position = Position + ChunkLength
+            Position = Position + ChunkLength
             if ChunkID == ID then
                 return Position - ChunkLength, ChunkLength
             end
@@ -352,4 +352,91 @@ function SetCarCameraIndex(CarModel, Index)
     end
     return CarModel
 end
-   
+
+function FixP3DString(str)
+	local strLen = str:len()
+	if strLen == 0 then return str end
+	local l = 0
+	for i=1,strLen do
+		if str:byte(i) ~= 0 then
+			l = l + 1
+		else
+			break
+		end
+	end
+	return str:sub(1, l)
+end
+
+function MakeP3DString(str)
+	local strLen = str:len()
+	local diff = strLen % 4
+	if diff == 0 then return str end
+	for i=1,4-diff do
+		str = str .. string.char(0)
+	end
+	return str
+end
+
+function ReplaceCar(Original, Replace)
+	local cam = nil
+	for pos, length in FindSubchunks(Replace, CAR_CAMERA_DATA_CHUNK) do
+        local cameraID = GetP3DInt4(Replace, pos + 12)
+        if cameraID <= 256 then
+            cam = cameraID
+			break
+        end
+    end
+	if not cam then return Original end
+	Original = SetCarCameraIndex(Original, cam)
+	local CompIndex, CompLength = FindSubchunk(Original, COMP_DRAW_CHUNK)
+    local OldName, OldCompNLength = GetP3DString(Original, CompIndex + 12)
+	CompIndex, CompLength = FindSubchunk(Replace, COMP_DRAW_CHUNK)
+    local NewName, CompNLength = GetP3DString(Replace, CompIndex + 12)
+	NewName = FixP3DString(NewName)
+	local Adjust = 0
+	for pos, length in FindSubchunks(Original, COLLISION_OBJECT_CHUNK) do
+		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
+		local diff = 0
+		if FixP3DString(name):sub(-2) == "BV" then
+			local name2 = MakeP3DString(NewName .. "BV")
+			diff = name2:len() - name:len()
+			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+		else
+			local name2 = MakeP3DString(NewName)
+			diff = name2:len() - name:len()
+			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+		end
+		Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+		Adjust = Adjust + diff
+	end
+	Adjust = 0
+	for pos, length in FindSubchunks(Original, PHYSICS_OBJECT_CHUNK) do
+		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
+		local diff = 0
+		if FixP3DString(name):sub(-2) == "BV" then
+			local name2 = MakeP3DString(NewName .. "BV")
+			diff = name2:len() - name:len()
+			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+		else
+			local name2 = MakeP3DString(NewName)
+			diff = name2:len() - name:len()
+			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+		end
+		Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+		Adjust = Adjust + diff
+	end
+	Adjust = 0
+	for pos, length in FindSubchunks(Original, COMP_DRAW_CHUNK) do
+		local diff = 0
+		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
+		if name == OldName then
+			local name2 = MakeP3DString(NewName)
+			diff = name2:len() - name:len()
+			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+			Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+			Adjust = Adjust + diff
+		end
+    end
+    Original = SetP3DInt4(Original, 9, Original:len())
+    return Original
+end
