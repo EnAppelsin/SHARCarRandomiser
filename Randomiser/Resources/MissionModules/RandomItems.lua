@@ -85,15 +85,15 @@ if Settings.RandomItems then
 	RandomItemPool["card_idle"] = ""
 	RandomItemPool["beecamera"] = ""
 	RandomItemPool["huskA"] = ""
-	
-	if Settings.RandomItemsIncludeChars then
-		for i=1,#RandomPedPool do
-			RandomItemPool[RandomPedPool[i] .. "_h"] = "art\\chars\\" .. RandomPedPool[i]:sub(1, 6) .. "_m"
-		end
-	end
 
 	local sort = 5
+	Level = {}
 	Mission = {}
+	if not tbl.Level[sort] then
+		tbl.Level[sort] = Level
+	else
+		Level = tbl.Level[sort]
+	end
 	if not tbl.Mission[sort] then
 		tbl.Mission[sort] = Mission
 	else
@@ -101,7 +101,7 @@ if Settings.RandomItems then
 	end
 	
 	function GetTmpTable()
-		local tmp = CloneKVTable(RandomItemPool)		
+		local tmp = CloneKVTable(RandomItemPool)
 		if Settings.RandomItemsIncludeCars then
 			if Settings.RandomMissionVehicles and MissionVehicles then
 				for k,v in pairs(MissionVehicles) do
@@ -122,7 +122,24 @@ if Settings.RandomItems then
 				end
 			end
 		end
+		if Settings.RandomItemsIncludeChars then
+			for i=1,#RandomPedPool do
+				tmp[RandomPedPool[i] .. "_h"] = "art\\chars\\" .. RandomPedPool[i]:sub(1, 6) .. "_m"
+			end
+		end
 		return tmp
+	end
+	
+	function Level.RandomItems(LoadFile, InitFile, Level, Path)
+		local TmpItemPool = CloneKVTable(RandomItemPool)
+		InitFile = InitFile:gsub("AddNPCCharacterBonusMission%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"", function(npc, skeleton, location, mission, drawable)
+			local newDrawable, newDrawablePath = GetRandomFromKVTbl(TmpItemPool, true)
+			if newDrawablePath and newDrawablePath:len() > 0 and not LoadFile:match(newDrawablePath) then
+				LoadFile = LoadFile .. "\r\nLoadP3DFile(\"" .. newDrawablePath .. ".p3d\");"
+			end
+			return "AddNPCCharacterBonusMission(\"" .. npc .. "\",\"" .. skeleton .. "\",\"" .. location .. "\",\"" .. mission .. "\",\"" .. newDrawable .. "\""
+		end)
+		return LoadFile, InitFile
 	end
 	
 	function Mission.RandomItems(LoadFile, InitFile, Level, Mission, Path)

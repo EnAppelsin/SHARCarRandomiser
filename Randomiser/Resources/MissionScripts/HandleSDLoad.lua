@@ -17,9 +17,9 @@ if MissionModules.SundayDrive then
 	LastLevel = nil
 	PlayerStats = nil
 	SDInit = InitFile
-	--[[if Settings.DebugLevel >= 5 then
+	if Settings.DebugLevel >= 5 then
 		DebugPrint("SD Load File:\r\n" .. LoadFile)
 		DebugPrint("SD Init File:\r\n" .. InitFile)
-	end]]--
+	end
 	Output(LoadFile)
 end
