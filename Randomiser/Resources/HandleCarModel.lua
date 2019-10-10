@@ -14,11 +14,23 @@ if Settings.CustomCars then
 		end
 	end
 end
-if not loading and Settings.RandomStaticCars then
+if not loading and loadTime and Settings.RandomStaticCars then
 	if not Path:match("huskA%.p3d") and not Path:match("common%.p3d") then
-		local RandomCar = math.random(#RandomCarPoolPlayer)
-		RandomStaticCarName = RandomCarPoolPlayer[RandomCar]
-		RandomStaticCar = carName
+		if Settings.SaveChoiceRSC and RandomStaticCarSave and RandomStaticCarSave[carName] then
+			RandomStaticCarName = RandomStaticCarSave[carName]
+			RandomStaticCar = carName
+		else
+			local RandomCar = math.random(#RandomCarPoolPlayer)
+			RandomStaticCarName = RandomCarPoolPlayer[RandomCar]
+			RandomStaticCar = carName
+			if Settings.SaveChoiceRSC then RandomStaticCarSave[carName] = RandomStaticCarName end
+		end
+		if Exists("/GameData/RandomiserSettings/RandomStaticCar.txt", true, false) then
+			local staticName = ReadFile("/GameData/RandomiserSettings/RandomStaticCar.txt")
+			if staticName:len() > 0 then
+				RandomStaticCarName = staticName
+			end
+		end
 		DebugPrint("Replacing dynamically loaded car \"" .. carName .. "\" with \"" .. RandomStaticCarName .. "\".")
 		if Settings.CustomCars and ExistsInTbl(CustomCarPool, RandomStaticCarName) then
 			Output(ReplaceCar(ReadFile("/GameData/CustomCars/" .. RandomStaticCarName .. "/" .. RandomStaticCarName .. ".p3d"), ReadFile(Path)))

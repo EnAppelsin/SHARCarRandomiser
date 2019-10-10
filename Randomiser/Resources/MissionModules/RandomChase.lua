@@ -17,6 +17,12 @@ if Settings.RandomChase then
 	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
 		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
+		if Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then
+			local staticName = ReadFile("/GameData/RandomiserSettings/RandomChaseCar.txt")
+			if staticName:len() > 0 then
+				RandomChase = staticName
+			end
+		end
 		LoadFile = LoadFile .. "\r\nLoadP3DFile(\"art\\cars\\" .. RandomChase .. ".p3d\");"
 		DebugPrint("Random chase cars for level -> " .. RandomChase)
 		

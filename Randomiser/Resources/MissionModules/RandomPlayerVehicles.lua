@@ -19,6 +19,12 @@ if Settings.RandomPlayerVehicles then
 		LastLevel = nil
 		RandomCar = math.random(#RandomCarPoolPlayer)
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
+		if Exists("/GameData/RandomiserSettings/RandomLevelCar.txt", true, false) then
+			local staticName = ReadFile("/GameData/RandomiserSettings/RandomLevelCar.txt")
+			if staticName:len() > 0 then
+				RandomCarName = staticName
+			end
+		end
 		LoadFile = LoadFile:gsub("LoadDisposableCar%s*%(%s*\"[^\n]-\"%s*,%s*\".-\"%s*,%s*\"DEFAULT\"%s*%);", "LoadDisposableCar(\"art\\cars\\" .. RandomCarName .. ".p3d\",\"" .. RandomCarName .. "\",\"DEFAULT\");", 1)
 		DebugPrint("Randomising car for level (load) -> " .. RandomCarName)
 		
@@ -37,6 +43,12 @@ if Settings.RandomPlayerVehicles then
 			RandomCar = math.random(#RandomCarPoolPlayer)
 		end
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
+		if Exists("/GameData/RandomiserSettings/RandomMissionCar.txt", true, false) then
+			local staticName = ReadFile("/GameData/RandomiserSettings/RandomMissionCar.txt")
+			if staticName:len() > 0 then
+				RandomCarName = staticName
+			end
+		end
 
 		local ForcedMission = false
 		local Match

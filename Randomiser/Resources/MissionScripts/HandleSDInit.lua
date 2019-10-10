@@ -3,3 +3,4 @@ if SDInit ~= nil then
 	SDInit = nil
 end
 loading = false
+loadTime = GetTime()

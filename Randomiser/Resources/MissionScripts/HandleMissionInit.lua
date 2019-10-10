@@ -3,3 +3,4 @@ if MissionInit ~= nil then
 	MissionInit = nil
 end
 loading = false
+loadTime = GetTime()

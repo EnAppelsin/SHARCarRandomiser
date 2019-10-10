@@ -367,12 +367,21 @@ function FixP3DString(str)
 	return str:sub(1, l)
 end
 
-function MakeP3DString(str)
+function MakeP3DString(str, minLen)
 	local strLen = str:len()
 	local diff = strLen % 4
-	if diff == 0 then return str end
-	for i=1,4-diff do
-		str = str .. string.char(0)
+	if diff > 0 then
+		for i=1,4-diff do
+			str = str .. string.char(0)
+		end
+	end
+	if minLen then
+		diff = minLen - str:len()
+		if diff > 0 then
+			for i=1,diff do
+				str = str .. string.char(0)
+			end
+		end
 	end
 	return str
 end
@@ -398,11 +407,11 @@ function ReplaceCar(Original, Replace)
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
 		local diff = 0
 		if FixP3DString(name):sub(-2) == "BV" then
-			local name2 = MakeP3DString(NewName .. "BV")
+			local name2 = MakeP3DString(NewName .. "BV", name:len())
 			diff = name2:len() - name:len()
 			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
 		else
-			local name2 = MakeP3DString(NewName)
+			local name2 = MakeP3DString(NewName, name:len())
 			diff = name2:len() - name:len()
 			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
 		end
@@ -414,11 +423,11 @@ function ReplaceCar(Original, Replace)
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
 		local diff = 0
 		if FixP3DString(name):sub(-2) == "BV" then
-			local name2 = MakeP3DString(NewName .. "BV")
+			local name2 = MakeP3DString(NewName .. "BV", name:len())
 			diff = name2:len() - name:len()
 			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
 		else
-			local name2 = MakeP3DString(NewName)
+			local name2 = MakeP3DString(NewName, name:len())
 			diff = name2:len() - name:len()
 			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
 		end
@@ -430,7 +439,7 @@ function ReplaceCar(Original, Replace)
 		local diff = 0
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
 		if name == OldName then
-			local name2 = MakeP3DString(NewName)
+			local name2 = MakeP3DString(NewName, name:len())
 			diff = name2:len() - name:len()
 			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
 			Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
