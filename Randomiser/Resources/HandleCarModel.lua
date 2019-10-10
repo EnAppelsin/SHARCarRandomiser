@@ -25,7 +25,7 @@ if not loading and loadTime and Settings.RandomStaticCars then
 			RandomStaticCar = carName
 			if Settings.SaveChoiceRSC then RandomStaticCarSave[carName] = RandomStaticCarName end
 		end
-		if Exists("/GameData/RandomiserSettings/RandomStaticCar.txt", true, false) then
+		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomStaticCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomStaticCar.txt")
 			if staticName:len() > 0 then
 				RandomStaticCarName = staticName

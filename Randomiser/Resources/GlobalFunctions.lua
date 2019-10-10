@@ -328,6 +328,24 @@ function GetDirs(tbl, dir)
 	end)
 end
 
+
+local bs = { [0] =
+   'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
+   'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f',
+   'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v',
+   'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/',
+}
+
+function base64(s)
+   local byte, rep = string.byte, string.rep
+   local pad = 2 - ((#s-1) % 3)
+   s = (s..rep('\0', pad)):gsub("...", function(cs)
+	  local a, b, c = byte(cs, 1, 3)
+	  return bs[a>>2] .. bs[(a&3)<<4|b>>4] .. bs[(b&15)<<2|c>>6] .. bs[c&63]
+   end)
+   return s:sub(1, #s-pad) .. rep('=', pad)
+end
+
 function DebugPrint(msg, level)
 	if level == nil then
 		level = 0
@@ -401,21 +419,18 @@ function ReplaceCar(Original, Replace)
     local OldName, OldCompNLength = GetP3DString(Original, CompIndex + 12)
 	CompIndex, CompLength = FindSubchunk(Replace, COMP_DRAW_CHUNK)
     local NewName, CompNLength = GetP3DString(Replace, CompIndex + 12)
-	NewName = FixP3DString(NewName)
+	local NewNameBV = MakeP3DString(FixP3DString(NewName) .. "BV")
 	local Adjust = 0
 	for pos, length in FindSubchunks(Original, COLLISION_OBJECT_CHUNK) do
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
 		local diff = 0
 		if FixP3DString(name):sub(-2) == "BV" then
-			local name2 = MakeP3DString(NewName .. "BV", name:len())
-			diff = name2:len() - name:len()
-			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+			Original, diff = SetP3DString(Original, pos + 12 + Adjust, NewNameBV)
 		else
-			local name2 = MakeP3DString(NewName, name:len())
-			diff = name2:len() - name:len()
-			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+			Original, diff = SetP3DString(Original, pos + 12 + Adjust, NewName)
 		end
-		Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+		Original = AddP3DInt4(Original, pos + 4 + Adjust, diff)
+		Original = AddP3DInt4(Original, pos + 8 + Adjust, diff)
 		Adjust = Adjust + diff
 	end
 	Adjust = 0
@@ -423,29 +438,25 @@ function ReplaceCar(Original, Replace)
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
 		local diff = 0
 		if FixP3DString(name):sub(-2) == "BV" then
-			local name2 = MakeP3DString(NewName .. "BV", name:len())
-			diff = name2:len() - name:len()
-			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+			Original, diff = SetP3DString(Original, pos + 12 + Adjust, NewNameBV)
 		else
-			local name2 = MakeP3DString(NewName, name:len())
-			diff = name2:len() - name:len()
-			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
+			Original, diff = SetP3DString(Original, pos + 12 + Adjust, NewName)
 		end
-		Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+		Original = AddP3DInt4(Original, pos + 4 + Adjust, diff)
+		Original = AddP3DInt4(Original, pos + 8 + Adjust, diff)
 		Adjust = Adjust + diff
 	end
 	Adjust = 0
 	for pos, length in FindSubchunks(Original, COMP_DRAW_CHUNK) do
-		local diff = 0
 		local name, _ = GetP3DString(Original, pos + 12 + Adjust)
+		local diff = 0
 		if name == OldName then
-			local name2 = MakeP3DString(NewName, name:len())
-			diff = name2:len() - name:len()
-			Original = SetP3DString(Original, pos + 12 + Adjust, name2)
-			Original = SetP3DInt4(Original, pos + 8 + Adjust, length + diff)
+			Original, diff = SetP3DString(Original, pos + 12 + Adjust, NewName)
+			Original = AddP3DInt4(Original, pos + 4 + Adjust, diff)
+			Original = AddP3DInt4(Original, pos + 8 + Adjust, diff)
 			Adjust = Adjust + diff
 		end
-    end
+	end
     Original = SetP3DInt4(Original, 9, Original:len())
     return Original
 end

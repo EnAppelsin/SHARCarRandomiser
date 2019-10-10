@@ -19,7 +19,7 @@ if Settings.RandomPlayerVehicles then
 		LastLevel = nil
 		RandomCar = math.random(#RandomCarPoolPlayer)
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
-		if Exists("/GameData/RandomiserSettings/RandomLevelCar.txt", true, false) then
+		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomLevelCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomLevelCar.txt")
 			if staticName:len() > 0 then
 				RandomCarName = staticName
@@ -43,7 +43,7 @@ if Settings.RandomPlayerVehicles then
 			RandomCar = math.random(#RandomCarPoolPlayer)
 		end
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
-		if Exists("/GameData/RandomiserSettings/RandomMissionCar.txt", true, false) then
+		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomMissionCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomMissionCar.txt")
 			if staticName:len() > 0 then
 				RandomCarName = staticName

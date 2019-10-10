@@ -74,7 +74,7 @@ local Bible = Original:sub(BiblePos, BiblePos + BibleLen - 1)
 local EnglishPos, EnglishLen = FindSubchunk(Bible, LANGUAGE_CHUNK)
 local English = Bible:sub(EnglishPos, EnglishPos + EnglishLen - 1)
 
-local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
+local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
 
 -- Increment number of entires by 1
 English = AddP3DInt4(English, 71, 1)

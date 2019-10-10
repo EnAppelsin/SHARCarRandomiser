@@ -17,7 +17,7 @@ if Settings.RandomChase then
 	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
 		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
-		if Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then
+		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomChaseCar.txt")
 			if staticName:len() > 0 then
 				RandomChase = staticName
