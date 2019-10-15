@@ -21,6 +21,22 @@ elseif Settings.RandomMissions and Path:match("L%d") then
 						Redirect(tmp)
 						redirected = true
 						break
+					else
+						local tmp = RedirectPath:gsub("L(%d)", "L%1R" .. i)
+						if Exists(tmp, true, false) then
+							DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+							Redirect(tmp)
+							redirected = true
+							break
+						else
+							local tmp = RedirectPath:gsub("L(%d)", "L%1B" .. i)
+							if Exists(tmp, true, false) then
+								DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+								Redirect(tmp)
+								redirected = true
+								break	
+							end
+						end
 					end
 				end
 			if not redirected then
