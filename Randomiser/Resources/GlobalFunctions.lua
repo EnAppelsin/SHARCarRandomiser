@@ -309,7 +309,7 @@ function GetFiles(tbl, dir, extensions, count)
 				for i = 1, #extensions do
 					local extension = extensions[i]
 					if endsWith(name, extension) then
-						table.insert(tbl, dir .. "/" .. name)
+						table.insert(tbl, dir .. (dir:sub(-1) == "/" and "" or "/") .. name)
 						break
 					end
 				end

@@ -39,4 +39,3 @@ elseif Settings.CustomCars then
 		end
 	end
 end
-end
