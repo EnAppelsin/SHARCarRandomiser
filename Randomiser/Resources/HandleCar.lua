@@ -132,6 +132,7 @@ if Settings.RandomMissionVehicles and MissionVehicles then
 					end
 				end
 			end
+			File = File:gsub("SetTireGrip%(.-%);", "SetTireGrip(40.0);", 1);			
 		end
 	end
 end
