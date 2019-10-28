@@ -141,7 +141,7 @@ if Settings.RandomStats then
 	end
 end
 
-if SettingRandomCarScale then
+if Settings.RandomCarScale then
 	-- Random Car Scale
 	MinCarScale = Settings.StatMinScale
 	MaxCarScale = Settings.StatMaxScale
