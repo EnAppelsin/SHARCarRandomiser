@@ -16,6 +16,9 @@ if Settings.RandomInteriors then
 		"01",
 		"02",
 	}
+	if Settings.RandomLevelMissions then
+		table.insert(l1interiors, "07")
+	end
 
 	l2interiors = {
 		"03",

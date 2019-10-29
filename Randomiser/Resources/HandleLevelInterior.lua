@@ -8,6 +8,9 @@ if Settings.RandomInteriors and interiorP3DLevel then
 	local newInterior = interiorReplace[interiorP3D]
 	if newInterior then
 		local newP3D = string.gsub(Path, "0%d.p3d", newInterior .. ".p3d")
+		if newP3D:match("l1i07") then
+			newP3D = newP3D:gsub("l1", "l4")
+		end
 		Redirect(newP3D)
 	end
 elseif Path:match("l1i07") then

@@ -27,7 +27,7 @@ OLD_PRIMITIVE_GROUP_CHUNK = "\002\000\001\000"
 COLOUR_LIST_CHUNK = "\008\000\001\000"
 
 
-ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)[\r\n]")
+ModVersion = GetModVersion()
 
 OrigChar = nil
 RandomChar = nil
