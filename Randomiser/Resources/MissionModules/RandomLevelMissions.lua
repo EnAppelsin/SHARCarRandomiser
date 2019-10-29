@@ -110,13 +110,10 @@ if Settings.RandomLevelMissions then
 		return InitFile
 	end
 	
-	local isSwapped = false
-	
 	function Mission.RandomLevelMissions(LoadFile, InitFile, Level, Mission, Path)
 		if Level == 7 or Mission == 0 or Path:match("sr") or Path:match("gr") or Path:match("bm") then
 			return LoadFile, InitFile
-		elseif isSwapped then
-			isSwapped = false
+		elseif ((Level == 1 or Level == 4) and ExistsInTbl(Swapped1, Mission, true)) or ((Level == 2 or Level == 5) and ExistsInTbl(Swapped2, Mission, true)) or ((Level == 3 or Level == 6) and ExistsInTbl(Swapped3, Mission, true)) then
 			local newLevel = GetLevel(Level)
 			local character = ReadFile("/GameData/scripts/missions/level0" .. newLevel .. "/leveli.mfk"):match("AddCharacter%s*%(%s*\"([^\n]-)\"")
 			local character2 = ReadFile("/GameData/scripts/missions/level0" .. Level .. "/leveli.mfk"):match("AddCharacter%s*%(%s*\"([^\n]-)\"")
@@ -132,7 +129,6 @@ if Settings.RandomLevelMissions then
 			return LoadFile, InitFile
 		end
 		if ((Level == 1 or Level == 4) and ExistsInTbl(Swapped1, Mission, true)) or ((Level == 2 or Level == 5) and ExistsInTbl(Swapped2, Mission, true)) or ((Level == 3 or Level == 6) and ExistsInTbl(Swapped3, Mission, true)) then
-			isSwapped = true
 			local newLevel = GetLevel(Level)
 			local character = ReadFile("/GameData/scripts/missions/level0" .. newLevel .. "/leveli.mfk"):match("AddCharacter%s*%(%s*\"([^\n]-)\"")
 			local character2 = ReadFile("/GameData/scripts/missions/level0" .. Level .. "/leveli.mfk"):match("AddCharacter%s*%(%s*\"([^\n]-)\"")
