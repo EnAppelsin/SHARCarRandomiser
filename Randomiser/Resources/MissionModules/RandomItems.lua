@@ -87,8 +87,8 @@ if Settings.RandomItems then
 	RandomItemPool["huskA"] = ""
 
 	local sort = 5
-	Level = {}
-	Mission = {}
+	local Level = {}
+	local Mission = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
 	else

@@ -2,7 +2,7 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomMissions then
 	local sort = 5
-	Level = {}
+	local Level = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
 	else

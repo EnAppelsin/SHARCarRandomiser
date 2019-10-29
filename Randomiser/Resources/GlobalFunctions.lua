@@ -95,6 +95,10 @@ function String1ToInt(str)
     return str:byte(1)
 end
 
+function IntToString1(i)
+    return string.char(i)
+end
+
 function String4ToInt(str)
     local b1, b2, b3, b4 = str:byte(1, 4)
     return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
@@ -146,6 +150,15 @@ function SetP3DString(Chunk, Offset, NewString)
 	local New = Chunk:sub(1, Offset - 1) .. LengthByte .. NewString .. Chunk:sub(Offset + OrigLength + 1)
     local Delta = NewString:len() - OrigLength
     return New, Delta, OrigName
+end
+
+function GetP3DInt1(Chunk, Offset)
+    return String1ToInt(Chunk:sub(Offset, Offset))
+end
+
+function SetP3DInt1(Chunk, Offset, NewValue)
+    NewValue = IntToString1(NewValue)
+    return Chunk:sub(1, Offset - 1) .. NewValue .. Chunk:sub(Offset + 1)
 end
 
 function GetP3DInt4(Chunk, Offset)
@@ -297,19 +310,23 @@ function endsWith(String,End)
    return End=='' or string.sub(String:lower(),-string.len(End))==End:lower()
 end
 
-function GetFiles(tbl, dir, extensions, count)
+function GetFiles(tbl, dir, extensions, count, topLevelOnly)
     if count == nil then
         count = 1
     end
+	if dir:sub(-1) ~= "/" then dir = dir .. "/" end
 	DirectoryGetEntries(dir, function(name, directory)
 		if directory then
-			GetFiles(tbl, dir .. name, extensions, count)
+			if not topLevelOnly then
+				if name:sub(-1) ~= "/" then name = name .. "/" end
+				GetFiles(tbl, dir .. name, extensions, count)			
+			end
 		else
 			for i = 1, count do
 				for i = 1, #extensions do
 					local extension = extensions[i]
 					if endsWith(name, extension) then
-						table.insert(tbl, dir .. (dir:sub(-1) == "/" and "" or "/") .. name)
+						table.insert(tbl, dir .. name)
 						break
 					end
 				end
@@ -459,4 +476,32 @@ function ReplaceCar(Original, Replace)
 	end
     Original = SetP3DInt4(Original, 9, Original:len())
     return Original
+end
+
+function BrightenModel(Original, Amount)
+	for staticMeshPos, staticMeshLen in FindSubchunks(Original, STATIC_WORLD_MESH_CHUNK) do
+		local staticMesh = Original:sub(staticMeshPos, staticMeshPos + staticMeshLen - 1)
+		for meshPos, meshLen in FindSubchunks(staticMesh, MESH_CHUNK) do
+			local mesh = staticMesh:sub(meshPos, meshPos + meshLen - 1)
+			for opgPos, opgLen in FindSubchunks(mesh, OLD_PRIMITIVE_GROUP_CHUNK) do
+				local opg = mesh:sub(opgPos, opgPos + opgLen - 1)
+				for colourListPos, colourListLen in FindSubchunks(opg, COLOUR_LIST_CHUNK) do
+					local startPos = staticMeshPos + meshPos + opgPos + colourListPos + 13
+					local Colours = ""
+					for i=startPos,startPos + colourListLen - 20,4 do
+						local b = GetP3DInt1(Original, i)
+						local g = GetP3DInt1(Original, i + 1)
+						local r = GetP3DInt1(Original, i + 2)
+						local a = GetP3DInt1(Original, i + 3)
+						b = math.min(255, math.max(0, b + Amount))
+						g = math.min(255, math.max(0, g + Amount))
+						r = math.min(255, math.max(0, r + Amount))
+						Colours = Colours .. IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+					end
+					Original = Original:sub(1, startPos - 1) .. Colours .. Original:sub(startPos + colourListLen - 16)
+				end
+			end
+		end
+	end
+	return Original
 end

@@ -131,8 +131,8 @@ if Settings.RandomMissionVehicles and MissionVehicles then
 						DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
 					end
 				end
+				File = File:gsub("SetTireGrip%(.-%);", "SetTireGrip(40.0);", 1);
 			end
-			File = File:gsub("SetTireGrip%(.-%);", "SetTireGrip(40.0);", 1);			
 		end
 	end
 end

@@ -2,9 +2,9 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomMissionVehicles then
 	local sort = 4
-	Level = {}
-	Mission = {}
-	SundayDrive = {}
+	local Level = {}
+	local Mission = {}
+	local SundayDrive = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
 	else

@@ -10,4 +10,6 @@ if Settings.RandomInteriors and interiorP3DLevel then
 		local newP3D = string.gsub(Path, "0%d.p3d", newInterior .. ".p3d")
 		Redirect(newP3D)
 	end
+elseif Path:match("l1i07") then
+	Redirect("/GameData/art/l4i07.p3d")
 end
