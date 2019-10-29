@@ -96,7 +96,10 @@ if Settings.RandomLevelMissions then
 			return "SetDynaLoadData(\"" .. orig:gsub("l" .. NewLevel, "l" .. Level) .. "\""
 		end)
 		InitFile = InitFile:gsub("AddStageCharacter%s*%(%s*\"" .. NewChar .. "\"", "AddStageCharacter(\"" .. BaseChar .. "\"")
-		InitFile = InitFile:gsub("AddObjective%s*%(%s*\"dialogue\".-CloseObjective%(%)", function(orig)
+		InitFile = InitFile:gsub("AddNPC%s*%(%s*\"" .. BaseChar .. "\"", "AddNPC(\"" .. NewChar .. "\"")
+		InitFile = InitFile:gsub("AddObjectiveNPCWaypoint%s*%(%s*\"" .. BaseChar .. "\"", "AddObjectiveNPCWaypoint(\"" .. NewChar .. "\"")
+		InitFile = InitFile:gsub("SetTalkToTarget%s*%(%s*\"" .. BaseChar .. "\"", "SetTalkToTarget(\"" .. NewChar .. "\"")
+		InitFile = InitFile:gsub("AddObjective%s*%(%s*\"dialogue\".-CloseObjective%s*%(%s*%)", function(orig)
 			local bitmap = orig:match("SetPresentationBitmap%s*%(%s*\"([^\n]-)\"%s*%);")
 			if bitmap then
 				return "AddObjective(\"timer\");\r\nSetPresentationBitmap(\"" .. bitmap .. "\");\r\nSetDurationTime(1);\r\nCloseObjective()"
