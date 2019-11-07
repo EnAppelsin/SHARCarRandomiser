@@ -24,6 +24,12 @@ TEXT_BIBLE_CHUNK = "\x0D\x80\x01\x00"
 LANGUAGE_CHUNK = "\x0E\x80\x01\x00"
 COLLISION_OBJECT_CHUNK = "\000\000\001\007"
 PHYSICS_OBJECT_CHUNK = "\000\016\001\007"
+LOCATOR_CHUNK = "\005\000\000\003"
+WALL_COLLISION_CONTAINER_CHUNK = "\007\000\240\003"
+STATIC_MESH_COLLISION_CHUNK = "\001\000\240\003"
+STATIC_WORLD_MESH_CHUNK = "\000\000\240\003"
+OLD_PRIMITIVE_GROUP_CHUNK = "\002\000\001\000"
+COLOUR_LIST_CHUNK = "\008\000\001\000"
 
 -- Some functions for converting binary numbers in strings to Lua numbers
 -- All functions are little endian
@@ -433,4 +439,32 @@ function DecompressP3D(File)
 	else
 		return File
 	end
+end
+
+function BrightenModel(Original, Amount)
+	for staticMeshPos, staticMeshLen in FindSubchunks(Original, STATIC_WORLD_MESH_CHUNK) do
+		local staticMesh = Original:sub(staticMeshPos, staticMeshPos + staticMeshLen - 1)
+		for meshPos, meshLen in FindSubchunks(staticMesh, MESH_CHUNK) do
+			local mesh = staticMesh:sub(meshPos, meshPos + meshLen - 1)
+			for opgPos, opgLen in FindSubchunks(mesh, OLD_PRIMITIVE_GROUP_CHUNK) do
+				local opg = mesh:sub(opgPos, opgPos + opgLen - 1)
+				for colourListPos, colourListLen in FindSubchunks(opg, COLOUR_LIST_CHUNK) do
+					local startPos = staticMeshPos + meshPos + opgPos + colourListPos + 13
+					local Colours = ""
+					for i=startPos,startPos + colourListLen - 20,4 do
+						local b = GetP3DInt1(Original, i)
+						local g = GetP3DInt1(Original, i + 1)
+						local r = GetP3DInt1(Original, i + 2)
+						local a = GetP3DInt1(Original, i + 3)
+						b = math.min(255, math.max(0, b + Amount))
+						g = math.min(255, math.max(0, g + Amount))
+						r = math.min(255, math.max(0, r + Amount))
+						Colours = Colours .. IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+					end
+					Original = Original:sub(1, startPos - 1) .. Colours .. Original:sub(startPos + colourListLen - 16)
+				end
+			end
+		end
+	end
+	return Original
 end
