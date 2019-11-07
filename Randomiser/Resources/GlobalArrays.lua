@@ -96,27 +96,29 @@ CustomCarPool = {}
 CustomCarSounds = {}
 
 RandomCarPoolPlayer = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolPlayer, 1, -1 do
-	if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then
-		table.remove(RandomCarPoolPlayer, i)
-	end
-end
 RandomCarPoolTraffic = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolTraffic, 1, -1 do
-	if not GetSetting(RandomCarPoolTraffic[i] .. "Traffic") then
-		table.remove(RandomCarPoolTraffic, i)
-	end
-end
 RandomCarPoolMission = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolMission, 1, -1 do
-	if not GetSetting(RandomCarPoolMission[i] .. "Mission") then
-		table.remove(RandomCarPoolMission, i)
-	end
-end
 RandomCarPoolChase = {table.unpack(RandomCarPool)}
-for i = #RandomCarPoolChase, 1, -1 do
-	if not GetSetting(RandomCarPoolChase[i] .. "Chase") then
-		table.remove(RandomCarPoolChase, i)
+if not Settings.SpeedrunMode then
+	for i = #RandomCarPoolPlayer, 1, -1 do
+		if not GetSetting(RandomCarPoolPlayer[i] .. "Player") then
+			table.remove(RandomCarPoolPlayer, i)
+		end
+	end
+	for i = #RandomCarPoolTraffic, 1, -1 do
+		if not GetSetting(RandomCarPoolTraffic[i] .. "Traffic") then
+			table.remove(RandomCarPoolTraffic, i)
+		end
+	end
+	for i = #RandomCarPoolMission, 1, -1 do
+		if not GetSetting(RandomCarPoolMission[i] .. "Mission") then
+			table.remove(RandomCarPoolMission, i)
+		end
+	end
+	for i = #RandomCarPoolChase, 1, -1 do
+		if not GetSetting(RandomCarPoolChase[i] .. "Chase") then
+			table.remove(RandomCarPoolChase, i)
+		end
 	end
 end
 

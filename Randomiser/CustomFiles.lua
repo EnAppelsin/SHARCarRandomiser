@@ -10,6 +10,23 @@ dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
 dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
 
+if Settings.SpeedrunMode then
+	--Force on
+	Settings.RandomPlayerVehicles = true
+	Settings.RandomTraffic = true
+	Settings.RandomChase = true
+	Settings.RandomChaseAmount = true
+	Settings.RandomChaseStats = true
+	Settings.RandomMissionVehicles = true
+	Settings.RandomMissionVehiclesStats = true
+	Settings.RandomStaticCars = true
+	Settings.SaveChoiceRSC = true
+	
+	--Force off
+	Settings.RemoveOutOfCar = false
+	Settings.CustomCars = false
+end
+
 Cache = {}
 
 if Settings.UseDebugSettings then

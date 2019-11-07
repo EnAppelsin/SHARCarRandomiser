@@ -111,7 +111,7 @@ end
 
 -- Add the settings string
 
-local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
+local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
 
 -- Increment number of entires by 1
 English = AddP3DInt4(English, 71, 1)
