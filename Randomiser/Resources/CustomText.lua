@@ -1,7 +1,14 @@
 -- This file modifies a binary .p3d file to create a custom string
 -- The internal string is "-" because this appears first in the 
 -- hash list, this simplifies some things
-local Path = "/GameData/" .. GetPath();
+local Path = "/GameData/" .. GetPath()
+
+-- The game reads the SRR2 4 times at the start for some bizarre reason
+-- Only shuffle things once just in case
+if Cache.SRR2 ~= nil then
+	Output(Cache.SRR2)
+end
+
 local Original = ReadFile(Path)
 
 local GameplaySettings = 
@@ -47,7 +54,8 @@ local ChaosSettings =
 [0x8]=Settings.RandomItems,
 [0x10]=Settings.RandomItemsIncludeChars,
 [0x20]=Settings.RandomItemsIncludeCars,
-[0x40]=Settings.RandomBonusMissions
+[0x40]=Settings.RandomBonusMissions,
+[0x80]=Settings.RandomText,
 }
 
 local GameplayN = 0
@@ -75,6 +83,33 @@ local Bible = Original:sub(BiblePos, BiblePos + BibleLen - 1)
 local EnglishPos, EnglishLen = FindSubchunk(Bible, LANGUAGE_CHUNK)
 local English = Bible:sub(EnglishPos, EnglishPos + EnglishLen - 1)
 
+-- Random Text Support
+if Settings.RandomText then
+	local ENTRIES = GetP3DInt4(English, 71)
+	
+	-- Read offsets as ints into an array
+	local Offsets = {}
+	for i = 1, ENTRIES do
+		Offsets[#Offsets + 1] = GetP3DInt4(English, 83 + 4 * ENTRIES + 4 * (i - 1))
+	end
+	
+	-- Shuffle array
+	for i = #Offsets, 2, -1 do
+		local j = math.random(i)
+		Offsets[i], Offsets[j] = Offsets[j], Offsets[i]
+	end
+	
+	-- Recreate binary string of offsets
+	local StrOffsets = ""
+	for i = 1, ENTRIES do
+		StrOffsets = StrOffsets .. IntToString4(Offsets[i])
+	end
+	
+	English = English:sub(1, 82 + 4*ENTRIES) .. StrOffsets .. English:sub(83 + 8*ENTRIES)
+end
+
+-- Add the settings string
+
 local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
 
 -- Increment number of entires by 1
@@ -100,5 +135,7 @@ Bible = AddP3DInt4(Bible, 9, STRING:len())
 
 Original = Original:sub(1, BiblePos - 1) .. Bible .. Original:sub(BiblePos + BibleLen)
 Original = AddP3DInt4(Original, 9, STRING:len())
+
+Cache.SRR2 = Original
 
 Output(Original)
