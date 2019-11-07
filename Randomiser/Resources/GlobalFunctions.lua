@@ -94,19 +94,23 @@ function endsWith(String,End)
    return End=='' or string.sub(String:lower(),-string.len(End))==End:lower()
 end
 
-function GetFiles(tbl, dir, extensions, count)
+function GetFiles(tbl, dir, extensions, count, topLevelOnly)
     if count == nil then
         count = 1
     end
+	if dir:sub(-1) ~= "/" then dir = dir .. "/" end
 	DirectoryGetEntries(dir, function(name, directory)
 		if directory then
-			GetFiles(tbl, dir .. name, extensions, count)
+			if not topLevelOnly then
+				if name:sub(-1) ~= "/" then name = name .. "/" end
+				GetFiles(tbl, dir .. name, extensions, count)			
+			end
 		else
 			for i = 1, count do
 				for i = 1, #extensions do
 					local extension = extensions[i]
 					if endsWith(name, extension) then
-						table.insert(tbl, dir .. (dir:sub(-1) == "/" and "" or "/") .. name)
+						table.insert(tbl, dir .. name)
 						break
 					end
 				end
@@ -156,3 +160,4 @@ function DebugPrint(msg, level)
 	print(currTimeStr .. prefix .. msg)
 	return true
 end
+

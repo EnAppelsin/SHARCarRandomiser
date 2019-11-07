@@ -2,7 +2,7 @@ local args = {...}
 local tbl = args[1]
 if Settings.SkipLocks then
 	local sort = 5
-	SundayDrive = {}
+	local SundayDrive = {}
 	if not tbl.SundayDrive[sort] then
 		tbl.SundayDrive[sort] = SundayDrive
 	else

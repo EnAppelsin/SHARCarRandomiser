@@ -16,6 +16,9 @@ if Settings.RandomInteriors then
 		"01",
 		"02",
 	}
+	if Settings.RandomLevelMissions then
+		table.insert(l1interiors, "07")
+	end
 
 	l2interiors = {
 		"03",
@@ -52,9 +55,9 @@ if Settings.RandomInteriors then
 	}
 	
 	local sort = 5
-	Level = {}
-	Mission = {}
-	SundayDrive = {}
+	local Level = {}
+	local Mission = {}
+	local SundayDrive = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
 	else

@@ -221,8 +221,8 @@ if Settings.RandomDirectives then
 	}
 	
 	local sort = 5
-	Mission = {}
-	SundayDrive = {}
+	local Mission = {}
+	local SundayDrive = {}
 	if not tbl.Mission[sort] then
 		tbl.Mission[sort] = Mission
 	else

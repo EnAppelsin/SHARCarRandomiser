@@ -1,5 +1,4 @@
-
-ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)[\r\n]")
+ModVersion = GetModVersion()
 
 OrigChar = nil
 RandomChar = nil

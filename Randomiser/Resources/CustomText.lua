@@ -55,7 +55,8 @@ local ChaosSettings =
 [0x10]=Settings.RandomItemsIncludeChars,
 [0x20]=Settings.RandomItemsIncludeCars,
 [0x40]=Settings.RandomBonusMissions,
-[0x80]=Settings.RandomText,
+[0x80]=Settings.RandomLevelMissions,
+[0x100]=Settings.RandomText,
 }
 
 local GameplayN = 0
