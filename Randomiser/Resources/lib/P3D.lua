@@ -38,6 +38,10 @@ function String1ToInt(str)
     return str:byte(1)
 end
 
+function IntToString1(i)
+    return string.char(i)
+end
+
 function String4ToInt(str)
     local b1, b2, b3, b4 = str:byte(1, 4)
     return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
@@ -90,6 +94,18 @@ function SetP3DString(Chunk, Offset, NewString)
     local Delta = NewString:len() - OrigLength
     return New, Delta, OrigName
 end
+
+
+function GetP3DInt1(Chunk, Offset)
+    return String1ToInt(Chunk:sub(Offset, Offset))
+end
+
+function SetP3DInt1(Chunk, Offset, NewValue)
+    NewValue = IntToString1(NewValue)
+    return Chunk:sub(1, Offset - 1) .. NewValue .. Chunk:sub(Offset + 1)
+end
+
+
 
 -- Get an INT4 at a specific offset from a P3D Chunk
 function GetP3DInt4(Chunk, Offset)
