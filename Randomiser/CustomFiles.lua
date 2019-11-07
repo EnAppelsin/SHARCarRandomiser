@@ -1,4 +1,5 @@
 ModPath = GetModPath()
+
 Paths = {}
 Paths.ModPath = GetModPath()
 Paths.Resources = Paths.ModPath .. "/Resources/"
@@ -6,7 +7,10 @@ Paths.MissionModules = Paths.Resources .. "MissionModules/"
 dofile(Paths.Resources .. "GlobalArrays.lua")
 dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
+dofile(Paths.Resources .. "lib/P3D.lua")
 dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+
+Cache = {}
 
 if Settings.UseDebugSettings then
 	if not Confirm("You have Use Debug Settings enabled. This allows a secondary mod to force certain randomisations and sometimes run code.\nAre you sure you want this enabled?") then
@@ -47,6 +51,16 @@ if Settings.VerboseDebug then
 	end
 end
 
+-- Hijack (for now) ReadFile to decompress P3Ds
+local OldReadFile = ReadFile
+ReadFile = function(Path, ...)
+	local File = OldReadFile(Path, ...)
+	if Path:sub(-3) == "p3d" then
+		return DecompressP3D(File)
+	end
+	return File
+end
+
 DebugPrint("Randomiser Settings", 2)
 for settingName, settingValue in pairs(Settings) do
 	DebugPrint("- " .. settingName .. " = " .. tostring(settingValue), 2)
@@ -76,3 +90,4 @@ end
 if Settings.RandomMissions then
 	dofile(Paths.Resources .. "RandomMissions.lua")
 end
+
