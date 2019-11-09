@@ -1,4 +1,3 @@
-Settings = GetSettings()
 
 -- CAR LIST
 RandomCarPool = {

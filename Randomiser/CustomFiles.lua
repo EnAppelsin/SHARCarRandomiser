@@ -1,14 +1,5 @@
 ModPath = GetModPath()
-
-Paths = {}
-Paths.ModPath = GetModPath()
-Paths.Resources = Paths.ModPath .. "/Resources/"
-Paths.MissionModules = Paths.Resources .. "MissionModules/"
-dofile(Paths.Resources .. "GlobalArrays.lua")
-dofile(Paths.Resources .. "GlobalVariables.lua")
-dofile(Paths.Resources .. "GlobalFunctions.lua")
-dofile(Paths.Resources .. "lib/P3D.lua")
-dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+Settings = GetSettings()
 
 if Settings.SpeedrunMode then
 	--Force on
@@ -26,6 +17,16 @@ if Settings.SpeedrunMode then
 	Settings.RemoveOutOfCar = false
 	Settings.CustomCars = false
 end
+
+Paths = {}
+Paths.ModPath = GetModPath()
+Paths.Resources = Paths.ModPath .. "/Resources/"
+Paths.MissionModules = Paths.Resources .. "MissionModules/"
+dofile(Paths.Resources .. "GlobalArrays.lua")
+dofile(Paths.Resources .. "GlobalVariables.lua")
+dofile(Paths.Resources .. "GlobalFunctions.lua")
+dofile(Paths.Resources .. "lib/P3D.lua")
+dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
 
 Cache = {}
 
@@ -101,4 +102,3 @@ end
 if Settings.RandomMissions then
 	dofile(Paths.Resources .. "RandomMissions.lua")
 end
-
