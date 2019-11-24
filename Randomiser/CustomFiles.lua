@@ -1,23 +1,6 @@
 ModPath = GetModPath()
 Settings = GetSettings()
 
-if Settings.SpeedrunMode then
-	--Force on
-	Settings.RandomPlayerVehicles = true
-	Settings.RandomTraffic = true
-	Settings.RandomChase = true
-	Settings.RandomChaseAmount = true
-	Settings.RandomChaseStats = true
-	Settings.RandomMissionVehicles = true
-	Settings.RandomMissionVehiclesStats = true
-	Settings.RandomStaticCars = true
-	Settings.SaveChoiceRSC = true
-	
-	--Force off
-	Settings.RemoveOutOfCar = false
-	Settings.CustomCars = false
-end
-
 Paths = {}
 Paths.ModPath = GetModPath()
 Paths.Resources = Paths.ModPath .. "/Resources/"
@@ -37,6 +20,32 @@ if Settings.UseDebugSettings then
 		dofile("/GameData/RandomiserSettings/CustomFiles.lua")
 	end
 end
+
+if Settings.SpeedrunMode then
+	--Force on
+	Settings.RandomPlayerVehicles = true
+	Settings.RandomTraffic = true
+	Settings.RandomChase = true
+	Settings.RandomChaseAmount = true
+	Settings.RandomChaseStats = true
+	Settings.RandomMissionVehicles = true
+	Settings.RandomMissionVehiclesStats = true
+	Settings.RandomStaticCars = true
+	Settings.SaveChoiceRSC = true
+	
+	--Force off
+	Settings.RemoveOutOfCar = false
+	Settings.CustomCars = false
+	
+	-- Remove Husks
+	table.remove(RandomCarPoolPlayer, #RandomCarPoolPlayer)
+    table.remove(RandomCarPoolTraffic, #RandomCarPoolTraffic)
+    table.remove(RandomCarPoolMission, #RandomCarPoolMission)
+    table.remove(RandomCarPoolChase, #RandomCarPoolChase)
+	
+	DebugPrint("Speedrun mode enabled, settings have been overridden")
+end
+
 DebugPrint("Debug settings enabled: " .. (Settings.UseDebugSettings and "true" or "false"))
 
 if #RandomCarPoolPlayer < 5 and SettingRandomPlayerVehicles then
