@@ -9,17 +9,6 @@ dofile(Paths.Resources .. "GlobalArrays.lua")
 dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
-dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
-
-Cache = {}
-
-if Settings.UseDebugSettings then
-	if not Confirm("You have Use Debug Settings enabled. This allows a secondary mod to force certain randomisations and sometimes run code.\nAre you sure you want this enabled?") then
-		Settings.UseDebugSettings = false
-	elseif Exists("/GameData/RandomiserSettings/CustomFiles.lua", true, false) then
-		dofile("/GameData/RandomiserSettings/CustomFiles.lua")
-	end
-end
 
 if Settings.SpeedrunMode then
 	--Force on
@@ -39,11 +28,23 @@ if Settings.SpeedrunMode then
 	
 	-- Remove Husks
 	table.remove(RandomCarPoolPlayer, #RandomCarPoolPlayer)
-    table.remove(RandomCarPoolTraffic, #RandomCarPoolTraffic)
-    table.remove(RandomCarPoolMission, #RandomCarPoolMission)
-    table.remove(RandomCarPoolChase, #RandomCarPoolChase)
+	table.remove(RandomCarPoolTraffic, #RandomCarPoolTraffic)
+	table.remove(RandomCarPoolMission, #RandomCarPoolMission)
+	table.remove(RandomCarPoolChase, #RandomCarPoolChase)
 	
 	DebugPrint("Speedrun mode enabled, settings have been overridden")
+end
+
+dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+
+Cache = {}
+
+if Settings.UseDebugSettings then
+	if not Confirm("You have Use Debug Settings enabled. This allows a secondary mod to force certain randomisations and sometimes run code.\nAre you sure you want this enabled?") then
+		Settings.UseDebugSettings = false
+	elseif Exists("/GameData/RandomiserSettings/CustomFiles.lua", true, false) then
+		dofile("/GameData/RandomiserSettings/CustomFiles.lua")
+	end
 end
 
 DebugPrint("Debug settings enabled: " .. (Settings.UseDebugSettings and "true" or "false"))
