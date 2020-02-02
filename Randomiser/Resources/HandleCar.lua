@@ -114,10 +114,10 @@ if Settings.RandomPlayerVehicles and RandomCarName and string.match(Path, Random
 	end
 end
 
-if Settings.RandomMissionVehicles and MissionVehicles then
-	for k,v in pairs(MissionVehicles) do
-		for i=1,#v do
-			if string.match(Path, v[i]) then
+if Settings.RandomMissionVehicles and MissionVehicles ~= nil then
+	for k,v in pairs(MissionVehicles) do	
+		for l, t in pairs(v) do
+			if string.match(Path, t) then
 				if Settings.RandomStats then
 					File = randomStats(File)
 				else
