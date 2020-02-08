@@ -90,12 +90,14 @@ if Settings.RandomMissionVehicles then
 			
 			return original .. "\n"
 		end)
+		MissionDrivers = {}
 		local TmpDriverPool = {table.unpack(RandomPedPool)}
 		InitFile = InitFile:gsub("AddStageVehicle%s*%(%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*,%s*\"([^\n]-)\"%s*%);", function(car, position, action, config, orig)
 			local driverName = GetRandomFromTbl(TmpDriverPool, true)
 			if #TmpDriverPool == 0 then
 				TmpDriverPool = {table.unpack(RandomPedPool)}
 			end
+			MissionDrivers[#MissionDrivers + 1] = MissionDrivers
 			for k in pairs(CarDrivers) do
 				if k == orig then
 					return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. driverName .. "\");"

@@ -254,7 +254,7 @@ RandomPedPool = {
 }
 
 -- Char P3D List
-RandomCharP3DPool = {
+RandomCharP3DPool = {--[[
 	"apu_m",
 	"askinn_m",
 	"a_amer_m",
@@ -365,7 +365,7 @@ RandomCharP3DPool = {
 	"zmale1_m",
 	"zmale3_m",
 	"zmale4_m"
-}
+]]}
 
 RandomDialoguePool = {}
 

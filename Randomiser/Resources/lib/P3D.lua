@@ -167,8 +167,8 @@ function GetCompositeDrawableName(P3DFile)
 	return nil
 end
 
-local SkinSkelCopy = {[TEXTURE_CHUNK] = true, [SHADER_CHUNK] = true, [MESH_CHUNK] = true, [ANIMATION_CHUNK] = true, [OLD_FRAME_CONTROLLER_CHUNK] = true, [PARTICLE_SYSTEM_FACTORY_CHUNK] = true, [PARTICLE_SYSTEM_2_CHUNK] = true}
-local SkinSkelRename = {[SKIN_CHUNK] = true, [SKELETON_CHUNK] = true, [MULTI_CONTROLLER_CHUNK] = true, [COMP_DRAW_CHUNK] = true}
+local SkinSkelCopy = {[SKIN_CHUNK] = true, [TEXTURE_CHUNK] = true, [SHADER_CHUNK] = true, [MESH_CHUNK] = true, [ANIMATION_CHUNK] = true, [OLD_FRAME_CONTROLLER_CHUNK] = true, [PARTICLE_SYSTEM_FACTORY_CHUNK] = true, [PARTICLE_SYSTEM_2_CHUNK] = true}
+local SkinSkelRename = {[SKELETON_CHUNK] = true, [MULTI_CONTROLLER_CHUNK] = true, [COMP_DRAW_CHUNK] = true}
 function ReplaceCharacterSkinSkel(Original, Replace)
 	local Output = {}
 	local OriginalStartPosition = 1
@@ -191,35 +191,44 @@ function ReplaceCharacterSkinSkel(Original, Replace)
 		end
 	end
 	if not contains then Renames[MULTI_CONTROLLER_CHUNK] = Renames[SKELETON_CHUNK] end
+	local Chunk, Delta
 	for ChunkPos, ChunkLen, ChunkID in FindSubchunks(Replace, nil) do
 		if SkinSkelCopy[ChunkID] then
-			Output[#Output + 1] = Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1)
+			Chunk = Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1)
+			if ChunkID == SKIN_CHUNK then
+				local NameLen = GetP3DInt1(Chunk, 13)
+				Chunk, Delta = SetP3DString(Chunk, 18 + NameLen, Renames[SKELETON_CHUNK])
+				Chunk = AddP3DInt4(Chunk, 5, Delta)
+				Chunk = AddP3DInt4(Chunk, 9, Delta)
+			end
+			Output[#Output + 1] = Chunk
 		elseif SkinSkelRename[ChunkID] then
-			local Chunk, Delta = SetP3DString(Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1), 13, Renames[ChunkID])
+			Chunk, Delta = SetP3DString(Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1), 13, Renames[ChunkID])
 			Chunk = AddP3DInt4(Chunk, 5, Delta)
 			Chunk = AddP3DInt4(Chunk, 9, Delta)
 			if ChunkID == COMP_DRAW_CHUNK then
 				Chunk, Delta = SetP3DString(Chunk, 14 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
 				Chunk = AddP3DInt4(Chunk, 5, Delta)
 				Chunk = AddP3DInt4(Chunk, 9, Delta)
-				local SkinListPos, SkinListLen = FindSubchunk(Chunk, COMP_DRAW_SKIN_LIST_SUBCHUNK)
+				--[[local SkinListPos, SkinListLen = FindSubchunk(Chunk, COMP_DRAW_SKIN_LIST_SUBCHUNK)
 				local SkinPos, SkinLin = FindSubchunk(Chunk, COMP_DRAW_SKIN_SUBCHUNK, SkinListPos, SkinListPos + SkinListLen - 1)
 				Chunk, Delta = SetP3DString(Chunk, SkinPos + 12, Renames[SKIN_CHUNK])
 				Chunk = AddP3DInt4(Chunk, SkinPos + 4, Delta)
 				Chunk = AddP3DInt4(Chunk, SkinPos + 8, Delta)
 				Chunk = AddP3DInt4(Chunk, SkinListPos + 8, Delta)
-				Chunk = AddP3DInt4(Chunk, 9, Delta)
+				Chunk = AddP3DInt4(Chunk, 9, Delta)]]--
 			end
-			if ChunkID == SKIN_CHUNK then
+			--[[if ChunkID == SKIN_CHUNK then
 				Chunk, Delta = SetP3DString(Chunk, 18 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
 				Chunk = AddP3DInt4(Chunk, 5, Delta)
 				Chunk = AddP3DInt4(Chunk, 9, Delta)
-			end
+			end]]--
 			Output[#Output + 1] = Chunk
 		end
 	end
 	local OutputVal = table.concat(Output)
 	OutputVal = SetP3DInt4(OutputVal, 9, OutputVal:len())
+	print(base64(OutputVal))
 	return OutputVal
 end
 
