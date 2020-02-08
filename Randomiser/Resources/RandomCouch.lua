@@ -19,7 +19,7 @@ if Settings.RandomCouch then
 
 	local Path = "/GameData/" .. GetPath();
 	local Original = ReadFile(Path)
-	local ReplacePath = "/GameData/art/chars/" .. Ped .. ".p3d"
+	local ReplacePath = Ped
 	local Replace = ReadFile(ReplacePath)
 	local GlobalPath = "/GameData/art/chars/global.p3d"
 	local Global = ReadFile(GlobalPath)

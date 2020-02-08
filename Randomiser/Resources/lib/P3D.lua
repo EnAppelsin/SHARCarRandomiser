@@ -12,6 +12,9 @@ ANIMATION_GROUP_CHUNK = "\002\016\018\000"
 SKIN_CHUNK = "\001\000\001\000"
 SKELETON_CHUNK = "\000\069\000\000"
 MESH_CHUNK = "\000\000\001\000"
+MULTI_CONTROLLER_CHUNK = "\xA0\x48\x00\x00"
+PARTICLE_SYSTEM_FACTORY_CHUNK = "\x00\x58\x01\x00"
+PARTICLE_SYSTEM_2_CHUNK = "\x01\x58\x01\x00"
 COMP_DRAW_CHUNK = "\018\069\000\000"
 COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
 COMP_DRAW_PROP_LIST_SUBCHUNK = "\020\069\000\000"
@@ -33,21 +36,41 @@ STATIC_WORLD_MESH_CHUNK = "\000\000\240\003"
 OLD_PRIMITIVE_GROUP_CHUNK = "\002\000\001\000"
 COLOUR_LIST_CHUNK = "\008\000\001\000"
 
+STATIC_WORLD_PROP_CHUNK = "\010\000\240\003"
+BREAKABLE_WORLD_PROP_CHUNK = "\002\000\240\003"
+EXPLOSION_EFFECT_TYPE_CHUNK = "\000\016\003\020"
+WORLD_SPHERE_CHUNK = "\011\000\240\003"
+STATIC_COLLISIONLESS_WORLD_PROP_CHUNK = "\009\000\240\003"
+LENS_FLARE_CHUNK = "\x0D\x00\xF0\x03"
+LIGHT_CHUNK = "\000\048\001\000"
+OLD_BILLBOARD_QUAD_GROUP_CHUNK = "\002\112\001\000"
+OLD_BILLBOARD_QUAD_CHUNK = "\001\112\001\000"
+BREAKABLE_WORLD_PROP_CHUNK2 = "\014\000\240\003"
+BREAKABLE_DRAWABLE_CHUNK = "\016\000\240\003"
+
 -- Some functions for converting binary numbers in strings to Lua numbers
 -- All functions are little endian
 
-function String1ToInt(str)
-    return str:byte(1)
+function String1ToInt(str, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+
+    return str:byte(StartPosition)
 end
+
+GetP3DInt1 = String1ToInt
 
 function IntToString1(i)
     return string.char(i)
 end
 
-function String4ToInt(str)
-    local b1, b2, b3, b4 = str:byte(1, 4)
+function String4ToInt(str, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+	
+    local b1, b2, b3, b4 = str:byte(StartPosition, StartPosition + 3)
     return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
 end
+
+GetP3DInt4 = String4ToInt
 
 function IntToString4(int)
     local b1 = int % 256
@@ -59,16 +82,18 @@ end
 
 -- Iterate a chunk to find its subchunks, because simple pattern matching can find false matches
 
-function FindSubchunks(Chunk, ID)
-    local LengthStr = Chunk:sub(5, 8)
-    local Position = 1 + String4ToInt(LengthStr)
+function FindSubchunks(Chunk, ID, StartPosition, EndPosition)
+	if StartPosition == nil then StartPosition = 1 end
+	if EndPosition == nil then EndPosition = Chunk:len() end
+
+    local Position = StartPosition + String4ToInt(Chunk, StartPosition + 4)
     return function()
-        while Position < Chunk:len() do
+        while Position < EndPosition do
             local ChunkID = Chunk:sub(Position + 0, Position + 3)
-            local ChunkLength = String4ToInt(Chunk:sub(Position + 8, Position + 11))
+            local ChunkLength = String4ToInt(Chunk, Position + 8)--Lucas: Removed call to string.sub
             Position = Position + ChunkLength
-            if ChunkID == ID then
-                return Position - ChunkLength, ChunkLength
+            if ID == nil or ChunkID == ID then--Lucas: Yield all chunks if ID is nil
+                return Position - ChunkLength, ChunkLength, ChunkID--Lucas: Yield the ChunkID as well
             end
         end
         return nil
@@ -76,8 +101,8 @@ function FindSubchunks(Chunk, ID)
 end
 
 -- Simple use of iterator to the find the first chunk of an ID
-function FindSubchunk(Chunk, ID)
-    return FindSubchunks(Chunk, ID)()
+function FindSubchunk(Chunk, ID, StartPosition, EndPosition)
+    return FindSubchunks(Chunk, ID, StartPosition, EndPosition)()
 end
 
 -- Extract a string from a P3D chunk
@@ -97,21 +122,9 @@ function SetP3DString(Chunk, Offset, NewString)
     return New, Delta, OrigName
 end
 
-
-function GetP3DInt1(Chunk, Offset)
-    return String1ToInt(Chunk:sub(Offset, Offset))
-end
-
 function SetP3DInt1(Chunk, Offset, NewValue)
     NewValue = IntToString1(NewValue)
     return Chunk:sub(1, Offset - 1) .. NewValue .. Chunk:sub(Offset + 1)
-end
-
-
-
--- Get an INT4 at a specific offset from a P3D Chunk
-function GetP3DInt4(Chunk, Offset)
-    return String4ToInt(Chunk:sub(Offset, Offset + 3))
 end
 
 -- Sets an INT4 at a specific offset from a P3D Chunk
@@ -146,8 +159,72 @@ function p3d_debug(message)
     -- print(message)
 end
 
--- Replace the character model from Original with the data from Replace
+function GetCompositeDrawableName(P3DFile)
+	local ChunkPos, ChunkLen = FindSubchunk(P3DFile, COMP_DRAW_CHUNK)
+	if ChunkPos then
+		return FixP3DString(GetP3DString(P3DFile, ChunkPos + 12))
+	end
+	return nil
+end
+
+local SkinSkelCopy = {[TEXTURE_CHUNK] = true, [SHADER_CHUNK] = true, [MESH_CHUNK] = true, [ANIMATION_CHUNK] = true, [OLD_FRAME_CONTROLLER_CHUNK] = true, [PARTICLE_SYSTEM_FACTORY_CHUNK] = true, [PARTICLE_SYSTEM_2_CHUNK] = true}
+local SkinSkelRename = {[SKIN_CHUNK] = true, [SKELETON_CHUNK] = true, [MULTI_CONTROLLER_CHUNK] = true, [COMP_DRAW_CHUNK] = true}
 function ReplaceCharacterSkinSkel(Original, Replace)
+	local Output = {}
+	local OriginalStartPosition = 1
+	local Renames = {}
+	for ChunkPos, ChunkLen, ChunkID in FindSubchunks(Original, nil) do
+		if SkinSkelCopy[ChunkID] then
+			Output[#Output + 1] = Original:sub(OriginalStartPosition, ChunkPos - 1)
+			OriginalStartPosition = ChunkPos + ChunkLen
+		elseif SkinSkelRename[ChunkID] then
+			Output[#Output + 1] = Original:sub(OriginalStartPosition, ChunkPos - 1)
+			OriginalStartPosition = ChunkPos + ChunkLen
+			Renames[ChunkID] = GetP3DString(Original, ChunkPos + 12)
+		end
+	end
+	local contains = false
+	for k,v in pairs(Renames) do
+		if k == MULTI_CONTROLLER_CHUNK then
+			contains = true
+			break
+		end
+	end
+	if not contains then Renames[MULTI_CONTROLLER_CHUNK] = Renames[SKELETON_CHUNK] end
+	for ChunkPos, ChunkLen, ChunkID in FindSubchunks(Replace, nil) do
+		if SkinSkelCopy[ChunkID] then
+			Output[#Output + 1] = Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1)
+		elseif SkinSkelRename[ChunkID] then
+			local Chunk, Delta = SetP3DString(Replace:sub(ChunkPos, ChunkPos + ChunkLen - 1), 13, Renames[ChunkID])
+			Chunk = AddP3DInt4(Chunk, 5, Delta)
+			Chunk = AddP3DInt4(Chunk, 9, Delta)
+			if ChunkID == COMP_DRAW_CHUNK then
+				Chunk, Delta = SetP3DString(Chunk, 14 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
+				Chunk = AddP3DInt4(Chunk, 5, Delta)
+				Chunk = AddP3DInt4(Chunk, 9, Delta)
+				local SkinListPos, SkinListLen = FindSubchunk(Chunk, COMP_DRAW_SKIN_LIST_SUBCHUNK)
+				local SkinPos, SkinLin = FindSubchunk(Chunk, COMP_DRAW_SKIN_SUBCHUNK, SkinListPos, SkinListPos + SkinListLen - 1)
+				Chunk, Delta = SetP3DString(Chunk, SkinPos + 12, Renames[SKIN_CHUNK])
+				Chunk = AddP3DInt4(Chunk, SkinPos + 4, Delta)
+				Chunk = AddP3DInt4(Chunk, SkinPos + 8, Delta)
+				Chunk = AddP3DInt4(Chunk, SkinListPos + 8, Delta)
+				Chunk = AddP3DInt4(Chunk, 9, Delta)
+			end
+			if ChunkID == SKIN_CHUNK then
+				Chunk, Delta = SetP3DString(Chunk, 18 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
+				Chunk = AddP3DInt4(Chunk, 5, Delta)
+				Chunk = AddP3DInt4(Chunk, 9, Delta)
+			end
+			Output[#Output + 1] = Chunk
+		end
+	end
+	local OutputVal = table.concat(Output)
+	OutputVal = SetP3DInt4(OutputVal, 9, OutputVal:len())
+	return OutputVal
+end
+
+-- Replace the character model from Original with the data from Replace
+function OldReplaceCharacterSkinSkel(Original, Replace)
     -- Copy textures over
     local Textures = ""
 	for position, length in FindSubchunks(Replace, TEXTURE_CHUNK) do
@@ -186,7 +263,7 @@ function ReplaceCharacterSkinSkel(Original, Replace)
     local Animation = ""
     if ANIndex ~= nil then
         p3d_debug("Replacing eyeball animation")
-        Animation = Replace:sub(ANIndex, ANIndex + ANLength - 1)        
+        Animation = Replace:sub(ANIndex, ANIndex + ANLength - 1)		
         -- Remove the original animation
         local ANIndex, ANLength = FindSubchunk(Original, ANIMATION_CHUNK)
         if ANIndex ~= nil then
@@ -255,7 +332,6 @@ function ReplaceCharacterSkinSkel(Original, Replace)
     
     -- Update file length
     Original = SetP3DInt4(Original, 9, Original:len())
-    
     return Original
 end
 
@@ -459,30 +535,205 @@ function DecompressP3D(File)
 	end
 end
 
-function BrightenModel(Original, Amount)
-	for staticMeshPos, staticMeshLen in FindSubchunks(Original, STATIC_WORLD_MESH_CHUNK) do
-		local staticMesh = Original:sub(staticMeshPos, staticMeshPos + staticMeshLen - 1)
-		for meshPos, meshLen in FindSubchunks(staticMesh, MESH_CHUNK) do
-			local mesh = staticMesh:sub(meshPos, meshPos + meshLen - 1)
-			for opgPos, opgLen in FindSubchunks(mesh, OLD_PRIMITIVE_GROUP_CHUNK) do
-				local opg = mesh:sub(opgPos, opgPos + opgLen - 1)
-				for colourListPos, colourListLen in FindSubchunks(opg, COLOUR_LIST_CHUNK) do
-					local startPos = staticMeshPos + meshPos + opgPos + colourListPos + 13
-					local Colours = ""
-					for i=startPos,startPos + colourListLen - 20,4 do
-						local b = GetP3DInt1(Original, i)
-						local g = GetP3DInt1(Original, i + 1)
-						local r = GetP3DInt1(Original, i + 2)
-						local a = GetP3DInt1(Original, i + 3)
-						b = math.min(255, math.max(0, b + Amount))
-						g = math.min(255, math.max(0, g + Amount))
-						r = math.min(255, math.max(0, r + Amount))
-						Colours = Colours .. IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+local LensFlare = IsHackLoaded("LensFlare")
+function BrightenModel(Original, Amount, Percentage)
+	if Percentage == nil then
+		Percentage = false
+	end
+	local Output = {}
+	local modified = false
+	local StartPosition = 1
+	local ROOT_CHUNKS = {STATIC_WORLD_MESH_CHUNK, STATIC_WORLD_PROP_CHUNK, BREAKABLE_WORLD_PROP_CHUNK, EXPLOSION_EFFECT_TYPE_CHUNK, WORLD_SPHERE_CHUNK, STATIC_COLLISIONLESS_WORLD_PROP_CHUNK}
+	for ChunkPos, ChunkLen, ChunkID in FindSubchunks(Original, nil) do
+		if ExistsInTbl(ROOT_CHUNKS, ChunkID) then
+			for meshPos, meshLen in FindSubchunks(Original, MESH_CHUNK, ChunkPos, ChunkPos + ChunkLen - 1) do
+				for opgPos, opgLen in FindSubchunks(Original, OLD_PRIMITIVE_GROUP_CHUNK, meshPos, meshPos + meshLen - 1) do
+					for colourListPos, colourListLen in FindSubchunks(Original, COLOUR_LIST_CHUNK, opgPos, opgPos + opgLen - 1) do
+						local ColourCount = GetP3DInt4(Original, colourListPos + 12)
+						local ColoursStartPosition = colourListPos + 16
+						local Colours = {}
+						Output[#Output + 1] = Original:sub(StartPosition, ColoursStartPosition - 1)
+						local ColourStartPosition = ColoursStartPosition
+						for i=1,ColourCount do
+							local a = GetP3DInt1(Original, ColourStartPosition + 3)
+							local r = GetP3DInt1(Original, ColourStartPosition + 2)
+							local g = GetP3DInt1(Original, ColourStartPosition + 1)
+							local b = GetP3DInt1(Original, ColourStartPosition)
+							ColourStartPosition = ColourStartPosition + 4
+							
+							r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+							Colours[#Colours + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+						end
+						modified = true
+						Output[#Output + 1] = table.concat(Colours)
+						StartPosition = ColoursStartPosition + 4 * ColourCount
 					end
-					Original = Original:sub(1, startPos - 1) .. Colours .. Original:sub(startPos + colourListLen - 16)
 				end
 			end
+			if LensFlare and ChunkID == WORLD_SPHERE_CHUNK then
+				for lensPos, lensLen in FindSubchunks(Original, LENS_FLARE_CHUNK, ChunkPos, ChunkPos + ChunkLen - 1) do
+					for groupPos, groupLen in FindSubchunks(Original, OLD_BILLBOARD_QUAD_GROUP_CHUNK, lensPos, lensPos + lensLen - 1) do
+						for billboardPos, billboardLen in FindSubchunks(Original, OLD_BILLBOARD_QUAD_CHUNK, groupPos, groupPos + groupLen - 1) do
+							local billboardNameLen = GetP3DInt1(Original, billboardPos + 16)
+							local ColourPosition = billboardPos + billboardNameLen + 33
+							Output[#Output + 1] = Original:sub(StartPosition, ColourPosition - 1)
+							local a = GetP3DInt1(Original, ColourPosition + 3)
+							local r = GetP3DInt1(Original, ColourPosition + 2)
+							local g = GetP3DInt1(Original, ColourPosition + 1)
+							local b = GetP3DInt1(Original, ColourPosition)
+							modified = true
+							r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+							Output[#Output + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+							StartPosition = ColourPosition + 4
+						end
+					end
+					for meshPos, meshLen in FindSubchunks(Original, MESH_CHUNK, lensPos, lensPos + lensLen - 1) do
+						for opgPos, opgLen in FindSubchunks(Original, OLD_PRIMITIVE_GROUP_CHUNK, meshPos, meshPos + meshLen - 1) do
+							for colourListPos, colourListLen in FindSubchunks(Original, COLOUR_LIST_CHUNK, opgPos, opgPos + opgLen - 1) do
+								local ColourCount = GetP3DInt4(Original, colourListPos + 12)
+								local ColoursStartPosition = colourListPos + 16
+								local Colours = {}
+								Output[#Output + 1] = Original:sub(StartPosition, ColoursStartPosition - 1)
+								local ColourStartPosition = ColoursStartPosition
+								for i=1,ColourCount do
+									local a = GetP3DInt1(Original, ColourStartPosition + 3)
+									local r = GetP3DInt1(Original, ColourStartPosition + 2)
+									local g = GetP3DInt1(Original, ColourStartPosition + 1)
+									local b = GetP3DInt1(Original, ColourStartPosition)
+									ColourStartPosition = ColourStartPosition + 4
+									
+									r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+									Colours[#Colours + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+								end
+								modified = true
+								Output[#Output + 1] = table.concat(Colours)
+								StartPosition = ColoursStartPosition + 4 * ColourCount
+							end
+						end
+					end
+				end
+			end
+		elseif ChunkID == MESH_CHUNK then
+			for opgPos, opgLen in FindSubchunks(Original, OLD_PRIMITIVE_GROUP_CHUNK, ChunkPos, ChunkPos + ChunkLen - 1) do
+				for colourListPos, colourListLen in FindSubchunks(Original, COLOUR_LIST_CHUNK, opgPos, opgPos + opgLen - 1) do
+					local ColourCount = GetP3DInt4(Original, colourListPos + 12)
+					local ColoursStartPosition = colourListPos + 16
+					local Colours = {}
+					Output[#Output + 1] = Original:sub(StartPosition, ColoursStartPosition - 1)
+					local ColourStartPosition = ColoursStartPosition
+					for i=1,ColourCount do
+						local a = GetP3DInt1(Original, ColourStartPosition + 3)
+						local r = GetP3DInt1(Original, ColourStartPosition + 2)
+						local g = GetP3DInt1(Original, ColourStartPosition + 1)
+						local b = GetP3DInt1(Original, ColourStartPosition)
+						ColourStartPosition = ColourStartPosition + 4
+						
+						r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+						Colours[#Colours + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+					end
+					modified = true
+					Output[#Output + 1] = table.concat(Colours)
+					StartPosition = ColoursStartPosition + 4 * ColourCount
+				end
+			end
+		elseif ChunkID == OLD_BILLBOARD_QUAD_GROUP_CHUNK then
+			for billboardPos, billboardLen in FindSubchunks(Original, OLD_BILLBOARD_QUAD_CHUNK, ChunkPos, ChunkPos + ChunkLen - 1) do
+				local billboardNameLen = GetP3DInt1(Original, billboardPos + 16)
+				local ColourPosition = billboardPos + billboardNameLen + 33
+				Output[#Output + 1] = Original:sub(StartPosition, ColourPosition - 1)
+				local a = GetP3DInt1(Original, ColourPosition + 3)
+				local r = GetP3DInt1(Original, ColourPosition + 2)
+				local g = GetP3DInt1(Original, ColourPosition + 1)
+				local b = GetP3DInt1(Original, ColourPosition)
+				modified = true
+				r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+				Output[#Output + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+				StartPosition = ColourPosition + 4
+			end
+		elseif ChunkID == OLD_BILLBOARD_QUAD_CHUNK then
+			local billboardNameLen = GetP3DInt1(Original, ChunkPos + 16)
+			local ColourPosition = ChunkPos + billboardNameLen + 33
+			Output[#Output + 1] = Original:sub(StartPosition, ColourPosition - 1)
+			local a = GetP3DInt1(Original, ColourPosition + 3)
+			local r = GetP3DInt1(Original, ColourPosition + 2)
+			local g = GetP3DInt1(Original, ColourPosition + 1)
+			local b = GetP3DInt1(Original, ColourPosition)
+			modified = true
+			r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+			Output[#Output + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+			StartPosition = ColourPosition + 4
+		elseif ChunkID == BREAKABLE_WORLD_PROP_CHUNK2 then
+			for drawablePos, drawableLen in FindSubchunks(Original, BREAKABLE_DRAWABLE_CHUNK, ChunkPos, ChunkPos + ChunkLen - 1) do
+				for groupPos, groupLen in FindSubchunks(Original, OLD_BILLBOARD_QUAD_GROUP_CHUNK, drawablePos, drawablePos + drawableLen - 1) do
+					for billboardPos, billboardLen in FindSubchunks(Original, OLD_BILLBOARD_QUAD_CHUNK, groupPos, groupPos + groupLen - 1) do
+						local billboardNameLen = GetP3DInt1(Original, billboardPos + 16)
+						local ColourPosition = billboardPos + billboardNameLen + 33
+						Output[#Output + 1] = Original:sub(StartPosition, ColourPosition - 1)
+						local a = GetP3DInt1(Original, ColourPosition + 3)
+						local r = GetP3DInt1(Original, ColourPosition + 2)
+						local g = GetP3DInt1(Original, ColourPosition + 1)
+						local b = GetP3DInt1(Original, ColourPosition)
+						modified = true
+						r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+						Output[#Output + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+						StartPosition = ColourPosition + 4
+					end
+				end
+				for meshPos, meshLen in FindSubchunks(Original, MESH_CHUNK, drawablePos, drawablePos + drawableLen - 1) do
+					for opgPos, opgLen in FindSubchunks(Original, OLD_PRIMITIVE_GROUP_CHUNK, meshPos, meshPos + meshLen - 1) do
+						for colourListPos, colourListLen in FindSubchunks(Original, COLOUR_LIST_CHUNK, opgPos, opgPos + opgLen - 1) do
+							local ColourCount = GetP3DInt4(Original, colourListPos + 12)
+							local ColoursStartPosition = colourListPos + 16
+							local Colours = {}
+							Output[#Output + 1] = Original:sub(StartPosition, ColoursStartPosition - 1)
+							local ColourStartPosition = ColoursStartPosition
+							for i=1,ColourCount do
+								local a = GetP3DInt1(Original, ColourStartPosition + 3)
+								local r = GetP3DInt1(Original, ColourStartPosition + 2)
+								local g = GetP3DInt1(Original, ColourStartPosition + 1)
+								local b = GetP3DInt1(Original, ColourStartPosition)
+								ColourStartPosition = ColourStartPosition + 4
+								
+								r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+								Colours[#Colours + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+							end
+							modified = true
+							Output[#Output + 1] = table.concat(Colours)
+							StartPosition = ColoursStartPosition + 4 * ColourCount
+						end
+					end
+				end
+			end
+		elseif ChunkID == LIGHT_CHUNK then
+			local lightNameLen = GetP3DInt1(Original, ChunkPos + 12)
+			local ColourPosition = ChunkPos + lightNameLen + 21
+			Output[#Output + 1] = Original:sub(StartPosition, ColourPosition - 1)
+			local a = GetP3DInt1(Original, ColourPosition + 3)
+			local r = GetP3DInt1(Original, ColourPosition + 2)
+			local g = GetP3DInt1(Original, ColourPosition + 1)
+			local b = GetP3DInt1(Original, ColourPosition)
+			modified = true
+			r, g, b = BrightenRGB(r, g, b, Amount, Percentage)
+			Output[#Output + 1] = IntToString1(b) .. IntToString1(g) .. IntToString1(r) .. IntToString1(a)
+			StartPosition = ColourPosition + 4
 		end
 	end
-	return Original
+	Output[#Output + 1] = Original:sub(StartPosition)
+	return table.concat(Output), modified
+end
+
+local min = math.min
+local max = math.max
+local floor = math.floor
+function BrightenRGB(r, g, b, Amount, Percentage)
+	if Percentage then
+		b = min(255, max(0, floor(b * Amount)))
+		g = min(255, max(0, floor(g * Amount)))
+		r = min(255, max(0, floor(r * Amount)))
+	else
+		b = min(255, max(0, b + Amount))
+		g = min(255, max(0, g + Amount))
+		r = min(255, max(0, r + Amount))
+	end
+	return r, g, b
 end

@@ -17,6 +17,7 @@ if Settings.RandomPedestrians then
 			table.insert(groups, group)
 		end
 		local ret = ""
+		LevelPedestrians = {}
 		for i = 1, #groups do
 			local group = groups[i]
 			DebugPrint("Randomising group " .. group)
@@ -28,6 +29,10 @@ if Settings.RandomPedestrians then
 				end
 				Peds = Peds .. pedName .. ", "
 				ret = ret .. "AddPed(\"" .. pedName .. "\", 1);\r\n"
+				if pedName:len() > 6 then
+					pedName = pedName:sub(1, 6)
+				end
+				LevelPedestrians[#LevelPedestrians + 1] = pedName .. "_m"
 			end
 			ret = ret .. "ClosePedGroup( );"
 		end
@@ -36,7 +41,7 @@ if Settings.RandomPedestrians then
 		end)
 		LevelCharacters = {}
 		for npc in InitFile:gmatch("AddAmbientCharacter%s*%(%s*\"([^\n]-)\"") do
-			table.insert(LevelCharacters, npc)
+			LevelCharacters[#LevelCharacters + 1] = npc
 		end
 		DebugPrint("Random pedestrians for level -> " .. Peds)
 		return LoadFile, InitFile

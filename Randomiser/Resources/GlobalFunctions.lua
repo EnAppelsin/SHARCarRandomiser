@@ -106,13 +106,13 @@ function GetFiles(tbl, dir, extensions, count, topLevelOnly)
 				GetFiles(tbl, dir .. name, extensions, count)			
 			end
 		else
-			for i = 1, count do
-				for i = 1, #extensions do
-					local extension = extensions[i]
-					if endsWith(name, extension) then
+			for i = 1, #extensions do
+				local extension = extensions[i]
+				if GetFileExtension(name) == extension then
+					for i = 1, count do
 						table.insert(tbl, dir .. name)
-						break
 					end
+					break
 				end
 			end
 		end

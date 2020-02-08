@@ -1,8 +1,11 @@
 local Path = GetPath()
+local FileName = RemoveFileExtension(GetFileName(Path))
 
-if Settings.RandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar .. "_m%.p3d") or Path:match("art/chars/" .. OrigChar:sub(1,1) .. "_.-_m%.p3d")) then
+if Settings.RandomPedestrians and Settings.CustomChars and ExistsInTbl(LevelPedestrians, FileName) and CustomChars[FileName] then
+	Output(ReadFile(CustomChars[FileName]))
+elseif Settings.RandomCharacter and OrigChar and (Path:match("art/chars/" .. OrigChar .. "_m%.p3d") or Path:match("art/chars/" .. OrigChar:sub(1,1) .. "_.-_m%.p3d")) then
 	local Original = ReadFile("/GameData/" .. Path)
-	local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+	local ReplacePath = GetRandomFromTbl(RandomCharP3DPool, false)
 	local Replace = ReadFile(ReplacePath)
 	
 	DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
@@ -20,7 +23,7 @@ else
 				end
 				if Path:match("art/chars/" .. model .. "_m%.p3d") then
 					local Original = ReadFile("/GameData/" .. Path)
-					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+					local ReplacePath = GetRandomFromTbl(RandomCharP3DPool, false)
 					local Replace = ReadFile(ReplacePath)
 					
 					DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
@@ -40,7 +43,7 @@ else
 				end
 				if Path:match("art/chars/" .. model .. "_m%.p3d") then
 					local Original = ReadFile("/GameData/" .. Path)
-					local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+					local ReplacePath = GetRandomFromTbl(RandomCharP3DPool, false)
 					local Replace = ReadFile(ReplacePath)
 					
 					DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")
@@ -61,7 +64,7 @@ else
 			end
 			if Path:match("art/chars/" .. model .. "_m%.p3d") then
 				local Original = ReadFile("/GameData/" .. Path)
-				local ReplacePath = "/GameData/art/chars/" .. GetRandomFromTbl(RandomCharP3DPool, false) .. ".p3d"
+				local ReplacePath = GetRandomFromTbl(RandomCharP3DPool, false)
 				local Replace = ReadFile(ReplacePath)
 				
 				DebugPrint("Replacing \"" .. Path .. "\" with \"" .. ReplacePath .. "\"")

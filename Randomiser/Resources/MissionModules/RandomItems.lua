@@ -123,8 +123,14 @@ if Settings.RandomItems then
 			end
 		end
 		if Settings.RandomItemsIncludeChars then
+			local Ped
 			for i=1,#RandomPedPool do
-				tmp[RandomPedPool[i] .. "_h"] = "art\\chars\\" .. RandomPedPool[i]:sub(1, 6) .. "_m"
+				Ped = RandomPedPool[i]
+				if CustomChars[Ped] then
+					tmp[Ped .. "_h"] = RemoveFileExtension(FixSlashes(CustomChars[Ped]:sub(11), true, false))
+				else
+					tmp[Ped .. "_h"] = "art\\chars\\" .. Ped:sub(1, 6) .. "_m"
+				end
 			end
 		end
 		return tmp

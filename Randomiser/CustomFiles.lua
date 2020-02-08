@@ -10,6 +10,13 @@ dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
 
+GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
+for i=#RandomCharP3DPool,1,-1 do
+	if not endsWith(RemoveFileExtension(GetFileName(RandomCharP3DPool[i])), "_m") then
+		table.remove(RandomCharP3DPool, i)
+	end
+end
+
 if Settings.SpeedrunMode then
 	--Force on
 	Settings.RandomPlayerVehicles = true
@@ -94,14 +101,12 @@ for settingName, settingValue in pairs(Settings) do
 	DebugPrint("- " .. settingName .. " = " .. tostring(settingValue), 2)
 end
 
-DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
-DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
-DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission pool")
-DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
-DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
-
 if Settings.CustomCars then
 	dofile(Paths.Resources .. "CustomCars.lua")
+end
+
+if Settings.CustomChars then
+	dofile(Paths.Resources .. "CustomChars.lua")
 end
 
 dofile(Paths.Resources .. "RandomCarTune.lua")
@@ -112,3 +117,10 @@ end
 if Settings.RandomMissions then
 	dofile(Paths.Resources .. "RandomMissions.lua")
 end
+
+DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
+DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
+DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission pool")
+DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
+DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
+DebugPrint("Using " .. #RandomCharP3DPool .. " characters")
