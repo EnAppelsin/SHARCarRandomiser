@@ -22,7 +22,7 @@ var gameplay = {
 0x4000:"Boost HP",
 0x8000:"Remove Out Of Car Conditions",
 0x10000:"Random Static Cars",
-0x10000:"Same static cars for level load"
+0x20000:"Same static cars for level load"
 };
 
 var graphics =
@@ -47,6 +47,8 @@ var chaos =
 0x10:"Random Items - Include Characters",
 0x20:"Random Items - Include Cars",
 0x40:"Random Bonus Missions",
+0x80: "Random Level Missions",
+0x100: "Random Text",
 }
 
 function parseSettings(settingList, value) {
