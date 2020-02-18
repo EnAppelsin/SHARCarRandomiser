@@ -16,7 +16,7 @@ function P3DChunk:new(Data)
 	Data.ChunkType = Data.Raw:sub(1, 4)
 	Data.ValueLen = GetP3DInt4(Data.Raw, 5)
 	Data.DataLen = GetP3DInt4(Data.Raw, 9)
-	Data.ValueStr = Data.Raw:sub(1, ValueLen)
+	Data.ValueStr = Data.Raw:sub(1, Data.ValueLen)
 	local i
 	for ChunkPos, ChunkLen, ChunkID in FindSubchunks(Data.Raw, nil) do
 		i = #Data.ChunkTypes + 1
@@ -67,7 +67,7 @@ function P3DChunk:AddChunk(ChunkData)
 end
 
 function P3DChunk:Output()
-	return self.ValuesStr .. table.concat(self.Chunks)
+	return self.ValueStr .. table.concat(self.Chunks)
 end
 
 function P3DChunk:GetName()
@@ -109,13 +109,13 @@ function ShaderP3DChunk:new(Data)
 	o.ValueIndexes = {}
 	o.ValueIndexes.Name = idx
 	o.Name = GetP3DString(o.ValueStr, idx)
-	idx = idx + o.Values.Name:len() + 1
+	idx = idx + o.Name:len() + 1
 	o.ValueIndexes.Version = idx
 	o.Version = GetP3DInt4(o.ValueStr, idx)
 	idx = idx + 4
 	o.ValueIndexes.PDDIShader = idx
 	o.PDDIShader = GetP3DString(o.ValueStr, idx)
-	idx = idx + o.Values.PDDIShader:len() + 1
+	idx = idx + o.PDDIShader:len() + 1
 	o.ValueIndexes.HasTranslucency = idx
 	o.HasTranslucency = GetP3DInt4(o.ValueStr, idx)
 	idx = idx + 4
