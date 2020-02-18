@@ -48,6 +48,9 @@ OLD_BILLBOARD_QUAD_CHUNK = "\001\112\001\000"
 BREAKABLE_WORLD_PROP_CHUNK2 = "\014\000\240\003"
 BREAKABLE_DRAWABLE_CHUNK = "\016\000\240\003"
 
+SHADER_INTEGER_PARAMETER_CHUNK = "\x03\x10\x01\x00"
+SHADER_TEXTURE_PARAMETER_CHUNK = "\x02\x10\x01\x00"
+
 -- Some functions for converting binary numbers in strings to Lua numbers
 -- All functions are little endian
 

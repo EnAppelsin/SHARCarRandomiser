@@ -9,6 +9,7 @@ dofile(Paths.Resources .. "GlobalArrays.lua")
 dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
+dofile(Paths.Resources .. "lib/P3DChunk.lua")
 
 GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
 for i=#RandomCharP3DPool,1,-1 do
