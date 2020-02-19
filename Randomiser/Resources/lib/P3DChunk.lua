@@ -91,13 +91,13 @@ function P3DChunk:SetName(NewName)
 end
 
 function P3DChunk:GetChunkIndexes(ChunkID)
-	local i = 1
+	local i = #self.ChunkTypes
 	return function()
-		while i <= #self.ChunkTypes do
+		while i > 0 do
 			local ChunkType = self.ChunkTypes[i]
-			i = i + 1
+			i = i - 1
 			if ChunkID == nil or ChunkType == ChunkID then
-				return i - 1, ChunkType
+				return i + 1, ChunkType
 			end
 		end
 		return nil
