@@ -576,6 +576,33 @@ function ColourListP3DChunk:Output()
 	return pack("<c4iii", self.ChunkType, len, len, ColoursN) .. table.concat(self.Colours)
 end
 
+--Position list chunk
+PositionListP3DChunk = P3DChunk:newChildClass("Position List")
+function PositionListP3DChunk:new(Data)
+	local o = PositionListP3DChunk.parentClass.new(self, Data)
+	local idx = 13
+	local NumPositions = GetP3DInt4(o.ValueStr, 13)
+	idx = idx + 4
+	o.Positions = {}
+	for i=0,NumPositions - 1 do
+		local pos = {X=0,Y=0,Z=0}
+		pos.X, pos.Y, pos.Z = unpack("<fff", o.ValueStr, idx + i * 12)
+		o.Positions[#o.Positions + 1] = pos
+	end
+	return o
+end
+
+function PositionListP3DChunk:Output()
+	local PositionsN = #self.Positions
+	local len = 16 + PositionsN * 4
+	local positions = {}
+	for i=1,PositionsN do
+		local pos = self.Positions[i]
+		positions[#positions + 1] = pack("<fff", pos.X, pos.Y, pos.Z)
+	end
+	return pack("<c4iii", self.ChunkType, len, len, PositionsN) .. table.concat(positions)
+end
+
 --Lens flare chunk
 LensFlareP3DChunk = P3DChunk:newChildClass("Lens Flare")
 function LensFlareP3DChunk:new(Data)
@@ -942,4 +969,71 @@ function LightP3DChunk:SetEnabled(NewEnabled)
 	local idx = self.ValueIndexes.Version
 	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewEnabled)
 	self.Enabled = NewEnabled
+end
+
+--Mesh chunk
+SkinP3DChunk = P3DChunk:newChildClass("Skin")
+function SkinP3DChunk:new(Data)
+	local o = SkinP3DChunk.parentClass.new(self, Data)
+	local idx = 13
+	o.Name, o.Version, o.SkeletonName, o.NumPrimitiveGroups = unpack("<s1is1i", o.ValueStr, idx)
+	o.ValueIndexes = {}
+	o.ValueIndexes.Name = idx
+	idx = idx + o.Name:len() + 1
+	o.ValueIndexes.Version = idx
+	idx = idx + 4
+	o.ValueIndexes.SkeletonName = idx
+	idx = idx + o.SkeletonName:len() + 1
+	o.ValueIndexes.NumPrimitiveGroups = idx
+	return o
+end
+
+function SkinP3DChunk:SetName(NewName)
+	local idx = self.ValueIndexes.Name
+	NewName = MakeP3DString(NewName)
+	local newVal, Delta = SetP3DString(self.ValueStr, idx, NewName)
+	for k,v in pairs(self.ValueIndexes) do
+		if v > idx then
+			self.ValueIndexes[k] = v + Delta
+		end
+	end
+	self.ValueLen = self.ValueLen + Delta
+	self.DataLen = self.DataLen + Delta
+	self.ValueStr = newVal
+	self.Name = NewName
+end
+
+function SkinP3DChunk:SetVersion(NewVersion)
+	local idx = self.ValueIndexes.Version
+	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewVersion)
+	self.Version = NewVersion
+end
+
+function SkinP3DChunk:SetSkeletonName(NewSkeletonName)
+	local idx = self.ValueIndexes.SkeletonName
+	NewSkeletonName = MakeP3DString(NewSkeletonName)
+	local newVal, Delta = SetP3DString(self.ValueStr, idx, NewSkeletonName)
+	for k,v in pairs(self.ValueIndexes) do
+		if v > idx then
+			self.ValueIndexes[k] = v + Delta
+		end
+	end
+	self.ValueLen = self.ValueLen + Delta
+	self.DataLen = self.DataLen + Delta
+	self.ValueStr = newVal
+	self.SkeletonName = NewSkeletonName
+end
+
+function SkinP3DChunk:SetNumPrimitiveGroups(NewNumPrimitiveGroups)
+	local idx = self.ValueIndexes.NumPrimitiveGroups
+	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewNumPrimitiveGroups)
+	self.NumPrimitiveGroups = NewNumPrimitiveGroups
+end
+
+function SkinP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	SkinP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == OLD_PRIMITIVE_GROUP_CHUNK then
+		self:SetNumPrimitiveGroups(self.NumPrimitiveGroups - 1)
+	end
 end

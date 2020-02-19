@@ -35,6 +35,7 @@ STATIC_MESH_COLLISION_CHUNK = "\001\000\240\003"
 STATIC_WORLD_MESH_CHUNK = "\000\000\240\003"
 OLD_PRIMITIVE_GROUP_CHUNK = "\002\000\001\000"
 COLOUR_LIST_CHUNK = "\008\000\001\000"
+POSITION_LIST_CHUNK = "\005\000\001\000"
 
 STATIC_WORLD_PROP_CHUNK = "\010\000\240\003"
 BREAKABLE_WORLD_PROP_CHUNK = "\002\000\240\003"
@@ -779,6 +780,72 @@ function SetModelRGBProcessOldBillboardQuad(Original, A, R, G, B)
 	local OldBillboardQuadChunk = OldBillboardQuadP3DChunk:new{Raw = Original}
 	OldBillboardQuadChunk:SetColour(A, R, G, B)
 	return OldBillboardQuadChunk:Output()
+end
+
+function MakeModelInvisible(Original)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	local ROOT_CHUNKS = {STATIC_WORLD_MESH_CHUNK, STATIC_WORLD_PROP_CHUNK, BREAKABLE_WORLD_PROP_CHUNK, EXPLOSION_EFFECT_TYPE_CHUNK, WORLD_SPHERE_CHUNK, STATIC_COLLISIONLESS_WORLD_PROP_CHUNK}
+	local modified = false
+	for RootIdx, RootID in RootChunk:GetChunkIndexes(nil) do
+		if ExistsInTbl(ROOT_CHUNKS, RootID) then
+			RootChunk:SetChunkAtIndex(RootIdx, MakeModelInvisibleProcessRoot(RootChunk:GetChunkAtIndex(RootIdx)))
+			modified = true
+		elseif RootID == MESH_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, MakeModelInvisibleProcessMesh(RootChunk:GetChunkAtIndex(RootIdx)))
+			modified = true
+		--[[elseif RootID == SKIN_CHUNK then
+			local SkinChunk = SkinP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in SkinChunk:GetChunkIndexes(OLD_PRIMITIVE_GROUP_CHUNK) do
+				local OPGChunk = OldPrimitiveGroupP3DChunk:new{Raw = SkinChunk:GetChunkAtIndex(idx)}
+				for idx2 in OPGChunk:GetChunkIndexes(POSITION_LIST_CHUNK) do
+					local PositionListChunk = PositionListP3DChunk:new{Raw = OPGChunk:GetChunkAtIndex(idx2)}
+					for i=1,#PositionListChunk.Positions do
+						PositionListChunk.Positions[i].X = 0
+						PositionListChunk.Positions[i].Y = 0
+						PositionListChunk.Positions[i].Z = 0
+					end
+					OPGChunk:SetChunkAtIndex(idx2, PositionListChunk:Output())
+				end
+				SkinChunk:SetChunkAtIndex(idx, OPGChunk:Output())
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, SkinChunk:Output())
+			modified = true]]
+		elseif RootID == BREAKABLE_WORLD_PROP_CHUNK2 then
+			local AnimDynaPhysChunk = AnimDynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in AnimDynaPhysChunk:GetChunkIndexes(BREAKABLE_DRAWABLE_CHUNK) do
+				local AnimObjWrapperChunk = AnimObjWrapperP3DChunk:new{Raw = AnimDynaPhysChunk:GetChunkAtIndex(idx)}
+				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(MESH_CHUNK) do
+					AnimObjWrapperChunk:SetChunkAtIndex(idx2, MakeModelInvisibleProcessMesh(AnimObjWrapperChunk:GetChunkAtIndex(idx2)))
+				end
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, AnimDynaPhysChunk:Output())
+			modified = true
+		end
+	end
+	return RootChunk:Output(), modified
+end
+function MakeModelInvisibleProcessRoot(Original)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	for idx in RootChunk:GetChunkIndexes(MESH_CHUNK) do
+		RootChunk:SetChunkAtIndex(idx, MakeModelInvisibleProcessMesh(RootChunk:GetChunkAtIndex(idx)))
+	end
+	if LensFlare and RootChunk.ChunkType == WORLD_SPHERE_CHUNK then
+		for idx in RootChunk:GetChunkIndexes(LENS_FLARE_CHUNK) do
+			local LensFlareChunk = LensFlareP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
+			for idx2 in LensFlareChunk:GetChunkIndexes(MESH_CHUNK) do
+				LensFlareChunk:SetChunkAtIndex(idx2, MakeModelInvisibleProcessMesh(LensFlareChunk:GetChunkAtIndex(idx2)))
+			end
+			RootChunk:SetChunkAtIndex(idx, LensFlareChunk:Output())
+		end
+	end
+	return RootChunk:Output()
+end
+function MakeModelInvisibleProcessMesh(Original)
+	local MeshChunk = MeshP3DChunk:new{Raw = Original}
+	for idx in MeshChunk:GetChunkIndexes(OLD_PRIMITIVE_GROUP_CHUNK) do
+		MeshChunk:RemoveChunkAtIndex(idx)
+	end
+	return MeshChunk:Output()
 end
 
 local min = math.min
