@@ -782,6 +782,25 @@ function SetModelRGBProcessOldBillboardQuad(Original, A, R, G, B)
 	return OldBillboardQuadChunk:Output()
 end
 
+function MakeCharacterInvisible(Original)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	local modified = false
+	for idx, id in RootChunk:GetChunkIndexes(nil) do
+		if id == COMP_DRAW_CHUNK then
+			local CompDrawChunk = CompositeDrawableP3DChunk:new{Raw=RootChunk:GetChunkAtIndex(idx)}
+			for idx2 in CompDrawChunk:GetChunkIndexes(nil) do
+				CompDrawChunk:RemoveChunkAtIndex(idx2)
+			end
+			RootChunk:SetChunkAtIndex(idx, CompDrawChunk:Output())
+			modified = true
+		elseif id ~= SKELETON_CHUNK then
+			RootChunk:RemoveChunkAtIndex(idx)
+			modified = true
+		end
+	end
+	return RootChunk:Output(), modified
+end
+
 function MakeModelInvisible(Original)
 	local RootChunk = P3DChunk:new{Raw = Original}
 	local ROOT_CHUNKS = {STATIC_WORLD_MESH_CHUNK, STATIC_WORLD_PROP_CHUNK, BREAKABLE_WORLD_PROP_CHUNK, EXPLOSION_EFFECT_TYPE_CHUNK, WORLD_SPHERE_CHUNK, STATIC_COLLISIONLESS_WORLD_PROP_CHUNK}
@@ -793,23 +812,6 @@ function MakeModelInvisible(Original)
 		elseif RootID == MESH_CHUNK then
 			RootChunk:SetChunkAtIndex(RootIdx, MakeModelInvisibleProcessMesh(RootChunk:GetChunkAtIndex(RootIdx)))
 			modified = true
-		--[[elseif RootID == SKIN_CHUNK then
-			local SkinChunk = SkinP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
-			for idx in SkinChunk:GetChunkIndexes(OLD_PRIMITIVE_GROUP_CHUNK) do
-				local OPGChunk = OldPrimitiveGroupP3DChunk:new{Raw = SkinChunk:GetChunkAtIndex(idx)}
-				for idx2 in OPGChunk:GetChunkIndexes(POSITION_LIST_CHUNK) do
-					local PositionListChunk = PositionListP3DChunk:new{Raw = OPGChunk:GetChunkAtIndex(idx2)}
-					for i=1,#PositionListChunk.Positions do
-						PositionListChunk.Positions[i].X = 0
-						PositionListChunk.Positions[i].Y = 0
-						PositionListChunk.Positions[i].Z = 0
-					end
-					OPGChunk:SetChunkAtIndex(idx2, PositionListChunk:Output())
-				end
-				SkinChunk:SetChunkAtIndex(idx, OPGChunk:Output())
-			end
-			RootChunk:SetChunkAtIndex(RootIdx, SkinChunk:Output())
-			modified = true]]
 		elseif RootID == BREAKABLE_WORLD_PROP_CHUNK2 then
 			local AnimDynaPhysChunk = AnimDynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
 			for idx in AnimDynaPhysChunk:GetChunkIndexes(BREAKABLE_DRAWABLE_CHUNK) do

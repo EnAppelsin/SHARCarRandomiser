@@ -971,7 +971,7 @@ function LightP3DChunk:SetEnabled(NewEnabled)
 	self.Enabled = NewEnabled
 end
 
---Mesh chunk
+--Skin chunk
 SkinP3DChunk = P3DChunk:newChildClass("Skin")
 function SkinP3DChunk:new(Data)
 	local o = SkinP3DChunk.parentClass.new(self, Data)
@@ -1036,4 +1036,47 @@ function SkinP3DChunk:RemoveChunkAtIndex(idx)
 	if ID == OLD_PRIMITIVE_GROUP_CHUNK then
 		self:SetNumPrimitiveGroups(self.NumPrimitiveGroups - 1)
 	end
+end
+
+--Composite drawable chunk
+CompositeDrawableP3DChunk = P3DChunk:newChildClass("Composite Drawable")
+function CompositeDrawableP3DChunk:new(Data)
+	local o = CompositeDrawableP3DChunk.parentClass.new(self, Data)
+	local idx = 13
+	o.Name, o.SkeletonName = unpack("<s1s1", o.ValueStr, idx)
+	o.ValueIndexes = {}
+	o.ValueIndexes.Name = idx
+	idx = idx + o.Name:len() + 1
+	o.ValueIndexes.SkeletonName = idx
+	return o
+end
+
+function CompositeDrawableP3DChunk:SetName(NewName)
+	local idx = self.ValueIndexes.Name
+	NewName = MakeP3DString(NewName)
+	local newVal, Delta = SetP3DString(self.ValueStr, idx, NewName)
+	for k,v in pairs(self.ValueIndexes) do
+		if v > idx then
+			self.ValueIndexes[k] = v + Delta
+		end
+	end
+	self.ValueLen = self.ValueLen + Delta
+	self.DataLen = self.DataLen + Delta
+	self.ValueStr = newVal
+	self.Name = NewName
+end
+
+function CompositeDrawableP3DChunk:SetSkeletonName(NewSkeletonName)
+	local idx = self.ValueIndexes.SkeletonName
+	NewSkeletonName = MakeP3DString(NewSkeletonName)
+	local newVal, Delta = SetP3DString(self.ValueStr, idx, NewSkeletonName)
+	for k,v in pairs(self.ValueIndexes) do
+		if v > idx then
+			self.ValueIndexes[k] = v + Delta
+		end
+	end
+	self.ValueLen = self.ValueLen + Delta
+	self.DataLen = self.DataLen + Delta
+	self.ValueStr = newVal
+	self.SkeletonName = NewSkeletonName
 end
