@@ -48,39 +48,73 @@ OLD_BILLBOARD_QUAD_CHUNK = "\001\112\001\000"
 BREAKABLE_WORLD_PROP_CHUNK2 = "\014\000\240\003"
 BREAKABLE_DRAWABLE_CHUNK = "\016\000\240\003"
 
-SHADER_INTEGER_PARAMETER_CHUNK = "\x03\x10\x01\x00"
-SHADER_TEXTURE_PARAMETER_CHUNK = "\x02\x10\x01\x00"
+TEXTURE_PARAMETER_CHUNK = "\x02\x10\x01\x00"
+INTEGER_PARAMETER_CHUNK = "\x03\x10\x01\x00"
+FLOAT_PARAMETER_CHUNK = "\x04\x10\x01\x00"
+COLOUR_PARAMETER_CHUNK = "\x05\x10\x01\x00"
 
 -- Some functions for converting binary numbers in strings to Lua numbers
 -- All functions are little endian
+
+local pack = string.pack
+local unpack = string.unpack
 
 function String1ToInt(str, StartPosition)
 	if StartPosition == nil then StartPosition = 1 end
 
     return str:byte(StartPosition)
 end
-
 GetP3DInt1 = String1ToInt
 
-function IntToString1(i)
-    return string.char(i)
-end
 
 function String4ToInt(str, StartPosition)
 	if StartPosition == nil then StartPosition = 1 end
 	
-    local b1, b2, b3, b4 = str:byte(StartPosition, StartPosition + 3)
-    return b1 + (b2 * 256) + (b3 * 256 * 256) + (b4 * 256 *256*256)
+	return unpack("<i", str, StartPosition)
 end
-
 GetP3DInt4 = String4ToInt
 
+function String4ToFloat(str, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+	
+	return unpack("<f", str, StartPosition)
+end
+GetP3DFloat = String4ToFloat
+
+function String4ToARGB(str, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+	
+	local B, G, R, A = unpack("<BBBB", str, StartPosition)
+	return A, R, G, B
+end
+GetP3DARGB = String4ToARGB
+
+IntToString1 = string.char
+
 function IntToString4(int)
-    local b1 = int % 256
-    local b2 = math.floor(int / 256) % 256
-    local b3 = math.floor(int / 256 / 256) % 256
-    local b4 = math.floor(int / 256 / 256 / 256) % 256
-    return string.char(b1, b2, b3, b4)
+	return pack("<i", int)
+end
+
+function FloatToString4(float)
+	return pack("<f", float)
+end
+
+function ARGBToString4(A, R, G, B)
+	return pack("<BBBB", B, G, R, A)
+end
+
+function Vector3ToString12(X, Y, Z)
+	return pack("<fff", X, Y, Z)
+end
+
+function Vector2ToString8(X, Y)
+	return pack("<ff", X, Y)
+end
+
+function UnpackChunkHeader(Chunk, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+
+	return unpack("<c4ii", Chunk, StartPosition)
 end
 
 -- Iterate a chunk to find its subchunks, because simple pattern matching can find false matches
@@ -92,8 +126,9 @@ function FindSubchunks(Chunk, ID, StartPosition, EndPosition)
     local Position = StartPosition + String4ToInt(Chunk, StartPosition + 4)
     return function()
         while Position < EndPosition do
-            local ChunkID = Chunk:sub(Position + 0, Position + 3)
-            local ChunkLength = String4ToInt(Chunk, Position + 8)--Lucas: Removed call to string.sub
+			local ChunkID, ChunkValueLength, ChunkLength = UnpackChunkHeader(Chunk, Position)
+            --[[local ChunkID = Chunk:sub(Position + 0, Position + 3)
+            local ChunkLength = String4ToInt(Chunk, Position + 8)]]--Lucas: Removed call to string.sub
             Position = Position + ChunkLength
             if ID == nil or ChunkID == ID then--Lucas: Yield all chunks if ID is nil
                 return Position - ChunkLength, ChunkLength, ChunkID--Lucas: Yield the ChunkID as well
@@ -110,19 +145,26 @@ end
 
 -- Extract a string from a P3D chunk
 function GetP3DString(Chunk, Offset)
-    local NLength = String1ToInt(Chunk:sub(Offset, Offset))
-    local Name =  Chunk:sub(Offset + 1, Offset + NLength)
-    return Name, NLength
+    local Name = unpack("<s1", Chunk, Offset)
+    return Name, Name:len()
 end
 
 -- Change a string inside a P3D string
 -- Returns the new P3D, the change in length for updating header data, and the original string
 function SetP3DString(Chunk, Offset, NewString)
 	local OrigName, OrigLength = GetP3DString(Chunk, Offset)
-    local LengthByte = string.char(NewString:len())
-	local New = Chunk:sub(1, Offset - 1) .. LengthByte .. NewString .. Chunk:sub(Offset + OrigLength + 1)
+	local New = Chunk:sub(1, Offset - 1) .. pack("<s1", NewString) .. Chunk:sub(Offset + OrigLength + 1)
     local Delta = NewString:len() - OrigLength
     return New, Delta, OrigName
+end
+
+-- Get FourCC
+function GetP3DFourCC(Chunk, Offset)
+	return unpack("<c4", Chunk, Offset)
+end
+
+function SetP3DFourCC(Chunk, Offset, NewValue)
+	return Chunk:sub(1, Offset - 1) .. pack("<c4", NewValue) .. Chunk:sub(Offset + 4)
 end
 
 function SetP3DInt1(Chunk, Offset, NewValue)
@@ -140,6 +182,33 @@ end
 function AddP3DInt4(Chunk, Offset, Adjust)
     local New = GetP3DInt4(Chunk, Offset) + Adjust
     return SetP3DInt4(Chunk, Offset, New)
+end
+
+-- Sets a float at a specific offset from a P3D Chunk
+function SetP3DFloat(Chunk, Offset, NewValue)
+    NewValue = FloatToString4(NewValue)
+    return Chunk:sub(1, Offset - 1) .. NewValue .. Chunk:sub(Offset + 4)
+end
+
+-- Add a number to a float at a specific offset from a P3D Chunk
+function AddP3DFloat(Chunk, Offset, Adjust)
+    local New = GetP3DFloat(Chunk, Offset) + Adjust
+    return SetP3DFloat(Chunk, Offset, New)
+end
+
+-- Sets a 4 byte ARGB value at a specific offset from a P3D Chunk
+function SetP3DARGB(Chunk, Offset, A, R, G, B)
+    return Chunk:sub(1, Offset - 1) .. ARGBToString4(A, R, G, B) .. Chunk:sub(Offset + 4)
+end
+
+-- Sets a 4 byte ARGB value at a specific offset from a P3D Chunk
+function SetP3DVector3(Chunk, Offset, X, Y, Z)
+    return Chunk:sub(1, Offset - 1) .. Vector3ToString12(X, Y, Z) .. Chunk:sub(Offset + 12)
+end
+
+-- Sets a 4 byte ARGB value at a specific offset from a P3D Chunk
+function SetP3DVector2(Chunk, Offset, X, Y)
+    return Chunk:sub(1, Offset - 1) .. Vector2ToString8(X, Y) .. Chunk:sub(Offset + 8)
 end
 
 --Remove a substring from a string
@@ -213,25 +282,12 @@ function ReplaceCharacterSkinSkel(Original, Replace)
 				Chunk, Delta = SetP3DString(Chunk, 14 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
 				Chunk = AddP3DInt4(Chunk, 5, Delta)
 				Chunk = AddP3DInt4(Chunk, 9, Delta)
-				--[[local SkinListPos, SkinListLen = FindSubchunk(Chunk, COMP_DRAW_SKIN_LIST_SUBCHUNK)
-				local SkinPos, SkinLin = FindSubchunk(Chunk, COMP_DRAW_SKIN_SUBCHUNK, SkinListPos, SkinListPos + SkinListLen - 1)
-				Chunk, Delta = SetP3DString(Chunk, SkinPos + 12, Renames[SKIN_CHUNK])
-				Chunk = AddP3DInt4(Chunk, SkinPos + 4, Delta)
-				Chunk = AddP3DInt4(Chunk, SkinPos + 8, Delta)
-				Chunk = AddP3DInt4(Chunk, SkinListPos + 8, Delta)
-				Chunk = AddP3DInt4(Chunk, 9, Delta)]]--
 			end
-			--[[if ChunkID == SKIN_CHUNK then
-				Chunk, Delta = SetP3DString(Chunk, 18 + Renames[ChunkID]:len(), Renames[SKELETON_CHUNK])
-				Chunk = AddP3DInt4(Chunk, 5, Delta)
-				Chunk = AddP3DInt4(Chunk, 9, Delta)
-			end]]--
 			Output[#Output + 1] = Chunk
 		end
 	end
 	local OutputVal = table.concat(Output)
 	OutputVal = SetP3DInt4(OutputVal, 9, OutputVal:len())
-	print(base64(OutputVal))
 	return OutputVal
 end
 
@@ -375,19 +431,20 @@ function FixP3DString(str)
 end
 
 -- Pad a string to make it P3D compatible (multiple of 4)
+local null = string.char(0)
 function MakeP3DString(str, minLen)
 	local strLen = str:len()
 	local diff = strLen % 4
 	if diff > 0 then
 		for i=1,4-diff do
-			str = str .. string.char(0)
+			str = str .. null
 		end
 	end
 	if minLen then
 		diff = minLen - str:len()
 		if diff > 0 then
 			for i=1,diff do
-				str = str .. string.char(0)
+				str = str .. null
 			end
 		end
 	end
@@ -537,7 +594,7 @@ function DecompressP3D(File)
 			local UncompressedBlock = GetP3DInt4(File, pos)
 			pos = pos + 4
 			local Data = File:sub(pos, pos + CompressedLength)
-			pos = pos +  CompressedLength
+			pos = pos + CompressedLength
 			Uncompressed, UncompressedPos = DecompressBlock(Data, Uncompressed, UncompressedPos, UncompressedBlock)
 			DecompressedLength = DecompressedLength + UncompressedBlock
 		end
@@ -732,6 +789,181 @@ function BrightenModel(Original, Amount, Percentage)
 	end
 	Output[#Output + 1] = Original:sub(StartPosition)
 	return table.concat(Output), modified
+end
+function NewBrightenModel(Original, Amount, Percentage)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	local ROOT_CHUNKS = {STATIC_WORLD_MESH_CHUNK, STATIC_WORLD_PROP_CHUNK, BREAKABLE_WORLD_PROP_CHUNK, EXPLOSION_EFFECT_TYPE_CHUNK, WORLD_SPHERE_CHUNK, STATIC_COLLISIONLESS_WORLD_PROP_CHUNK}
+	local modified = false
+	for RootIdx, RootID in RootChunk:GetChunkIndexes(nil) do
+		if ExistsInTbl(ROOT_CHUNKS, RootID) then
+			RootChunk:SetChunkAtIndex(RootIdx, BrightenModelProcessRoot(RootChunk:GetChunkAtIndex(RootIdx), Amount, Percentage))
+			modified = true
+		elseif RootID == MESH_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, BrightenModelProcessMesh(RootChunk:GetChunkAtIndex(RootIdx), Amount, Percentage))
+			modified = true
+		elseif RootID == OLD_BILLBOARD_QUAD_GROUP_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, BrightenModelProcessOldBillboardQuadGroup(RootChunk:GetChunkAtIndex(RootIdx), Amount, Percentage))
+			modified = true
+		elseif RootID == OLD_BILLBOARD_QUAD_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, BrightenModelProcessOldBillboardQuad(RootChunk:GetChunkAtIndex(RootIdx), Amount, Percentage))
+			modified = true
+		elseif RootID == BREAKABLE_WORLD_PROP_CHUNK2 then
+			local AnimDynaPhysChunk = AnimDynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in AnimDynaPhysChunk:GetChunkIndexes(BREAKABLE_DRAWABLE_CHUNK) do
+				local AnimObjWrapperChunk = AnimObjWrapperP3DChunk:new{Raw = AnimDynaPhysChunk:GetChunkAtIndex(idx)}
+				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(MESH_CHUNK) do
+					AnimObjWrapperChunk:SetChunkAtIndex(idx2, BrightenModelProcessMesh(AnimObjWrapperChunk:GetChunkAtIndex(idx2), Amount, Percentage))
+				end
+				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_GROUP_CHUNK) do
+					AnimObjWrapperChunk:SetChunkAtIndex(idx2, BrightenModelProcessOldBillboardQuadGroup(AnimObjWrapperChunk:GetChunkAtIndex(idx2), Amount, Percentage))
+				end
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, AnimDynaPhysChunk:Output())
+			modified = true
+		elseif RootID == LIGHT_CHUNK then
+			local LightChunk = LightP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			local R, G, B = BrightenRGB(LightChunk.Colour.R, LightChunk.Colour.G, LightChunk.Colour.B, Amount, Percentage)
+			LightChunk:SetColour(LightChunk.Colour.A, R, G, B)
+			RootChunk:SetChunkAtIndex(RootIdx, LightChunk:Output())
+			modified = true
+		end
+	end
+	return RootChunk:Output(), modified
+end
+function BrightenModelProcessRoot(Original, Amount, Percentage)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	for idx in RootChunk:GetChunkIndexes(MESH_CHUNK) do
+		RootChunk:SetChunkAtIndex(idx, BrightenModelProcessMesh(RootChunk:GetChunkAtIndex(idx), Amount, Percentage))
+	end
+	if LensFlare and RootChunk.ChunkType == WORLD_SPHERE_CHUNK then
+		for idx in RootChunk:GetChunkIndexes(LENS_FLARE_CHUNK) do
+			local LensFlareChunk = LensFlareP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
+			for idx2 in LensFlareChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_GROUP_CHUNK) do
+				LensFlareChunk:SetChunkAtIndex(idx2, BrightenModelProcessOldBillboardQuadGroup(LensFlareChunk:GetChunkAtIndex(idx2), Amount, Percentage))
+			end
+			for idx2 in LensFlareChunk:GetChunkIndexes(MESH_CHUNK) do
+				LensFlareChunk:SetChunkAtIndex(idx2, BrightenModelProcessMesh(LensFlareChunk:GetChunkAtIndex(idx2), Amount, Percentage))
+			end
+			RootChunk:SetChunkAtIndex(idx, LensFlareChunk:Output())
+		end
+	end
+	return RootChunk:Output()
+end
+function BrightenModelProcessMesh(Original, Amount, Percentage)
+	local MeshChunk = MeshP3DChunk:new{Raw = Original}
+	for idx in MeshChunk:GetChunkIndexes(OLD_PRIMITIVE_GROUP_CHUNK) do
+		local OldPrimitiveGroupChunk = OldPrimitiveGroupP3DChunk:new{Raw = MeshChunk:GetChunkAtIndex(idx)}
+		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(COLOUR_LIST_CHUNK) do
+			local ColourListChunk = ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
+			for i=1,#ColourListChunk.Colours do
+				local A, R, G, B = String4ToARGB(ColourListChunk.Colours[i])
+				R, G, B = BrightenRGB(R, G, B, Amount, Percentage)
+				ColourListChunk.Colours[i] = ARGBToString4(A, R, G, B)
+			end
+			OldPrimitiveGroupChunk:SetChunkAtIndex(idx2, ColourListChunk:Output())
+		end
+		MeshChunk:SetChunkAtIndex(idx, OldPrimitiveGroupChunk:Output())
+	end
+	return MeshChunk:Output()
+end
+function BrightenModelProcessOldBillboardQuadGroup(Original, Amount, Percentage)
+	local OldBillboardQuadGroupChunk = OldBillboardQuadGroupP3DChunk:new{Raw = Original}
+	for idx in OldBillboardQuadGroupChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_CHUNK) do
+		OldBillboardQuadGroupChunk:SetChunkAtIndex(idx, BrightenModelProcessOldBillboardQuad(OldBillboardQuadGroupChunk:GetChunkAtIndex(idx), Amount, Percentage))
+	end
+	return OldBillboardQuadGroupChunk:Output()
+end
+function BrightenModelProcessOldBillboardQuad(Original, Amount, Percentage)
+	local OldBillboardQuadChunk = OldBillboardQuadP3DChunk:new{Raw = Original}
+	local R, G, B = BrightenRGB(OldBillboardQuadChunk.Colour.R, OldBillboardQuadChunk.Colour.G, OldBillboardQuadChunk.Colour.B, Amount, Percentage)
+	OldBillboardQuadChunk:SetColour(OldBillboardQuadChunk.Colour.A, R, G, B)
+	return OldBillboardQuadChunk:Output()
+end
+
+function SetModelRGB(Original, A, R, G, B)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	local ROOT_CHUNKS = {STATIC_WORLD_MESH_CHUNK, STATIC_WORLD_PROP_CHUNK, BREAKABLE_WORLD_PROP_CHUNK, EXPLOSION_EFFECT_TYPE_CHUNK, WORLD_SPHERE_CHUNK, STATIC_COLLISIONLESS_WORLD_PROP_CHUNK}
+	local modified = false
+	for RootIdx, RootID in RootChunk:GetChunkIndexes(nil) do
+		if ExistsInTbl(ROOT_CHUNKS, RootID) then
+			RootChunk:SetChunkAtIndex(RootIdx, SetModelRGBProcessRoot(RootChunk:GetChunkAtIndex(RootIdx), A, R, G, B))
+			modified = true
+		elseif RootID == MESH_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, SetModelRGBProcessMesh(RootChunk:GetChunkAtIndex(RootIdx), A, R, G, B))
+			modified = true
+		elseif RootID == OLD_BILLBOARD_QUAD_GROUP_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, SetModelRGBProcessOldBillboardQuadGroup(RootChunk:GetChunkAtIndex(RootIdx), A, R, G, B))
+			modified = true
+		elseif RootID == OLD_BILLBOARD_QUAD_CHUNK then
+			RootChunk:SetChunkAtIndex(RootIdx, SetModelRGBProcessOldBillboardQuad(RootChunk:GetChunkAtIndex(RootIdx), A, R, G, B))
+			modified = true
+		elseif RootID == BREAKABLE_WORLD_PROP_CHUNK2 then
+			local AnimDynaPhysChunk = AnimDynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in AnimDynaPhysChunk:GetChunkIndexes(BREAKABLE_DRAWABLE_CHUNK) do
+				local AnimObjWrapperChunk = AnimObjWrapperP3DChunk:new{Raw = AnimDynaPhysChunk:GetChunkAtIndex(idx)}
+				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(MESH_CHUNK) do
+					AnimObjWrapperChunk:SetChunkAtIndex(idx2, SetModelRGBProcessMesh(AnimObjWrapperChunk:GetChunkAtIndex(idx2), A, R, G, B))
+				end
+				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_GROUP_CHUNK) do
+					AnimObjWrapperChunk:SetChunkAtIndex(idx2, SetModelRGBProcessOldBillboardQuadGroup(AnimObjWrapperChunk:GetChunkAtIndex(idx2), A, R, G, B))
+				end
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, AnimDynaPhysChunk:Output())
+			modified = true
+		elseif RootID == LIGHT_CHUNK then
+			local LightChunk = LightP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			LightChunk:SetColour(A, R, G, B)
+			RootChunk:SetChunkAtIndex(RootIdx, LightChunk:Output())
+			modified = true
+		end
+	end
+	return RootChunk:Output(), modified
+end
+function SetModelRGBProcessRoot(Original, A, R, G, B)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	for idx in RootChunk:GetChunkIndexes(MESH_CHUNK) do
+		RootChunk:SetChunkAtIndex(idx, SetModelRGBProcessMesh(RootChunk:GetChunkAtIndex(idx), A, R, G, B))
+	end
+	if LensFlare and RootChunk.ChunkType == WORLD_SPHERE_CHUNK then
+		for idx in RootChunk:GetChunkIndexes(LENS_FLARE_CHUNK) do
+			local LensFlareChunk = LensFlareP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
+			for idx2 in LensFlareChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_GROUP_CHUNK) do
+				LensFlareChunk:SetChunkAtIndex(idx2, SetModelRGBProcessOldBillboardQuadGroup(LensFlareChunk:GetChunkAtIndex(idx2), A, R, G, B))
+			end
+			for idx2 in LensFlareChunk:GetChunkIndexes(MESH_CHUNK) do
+				LensFlareChunk:SetChunkAtIndex(idx2, SetModelRGBProcessMesh(LensFlareChunk:GetChunkAtIndex(idx2), A, R, G, B))
+			end
+			RootChunk:SetChunkAtIndex(idx, LensFlareChunk:Output())
+		end
+	end
+	return RootChunk:Output()
+end
+function SetModelRGBProcessMesh(Original, A, R, G, B)
+	local MeshChunk = MeshP3DChunk:new{Raw = Original}
+	for idx in MeshChunk:GetChunkIndexes(OLD_PRIMITIVE_GROUP_CHUNK) do
+		local OldPrimitiveGroupChunk = OldPrimitiveGroupP3DChunk:new{Raw = MeshChunk:GetChunkAtIndex(idx)}
+		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(COLOUR_LIST_CHUNK) do
+			local ColourListChunk = ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
+			for i=1,#ColourListChunk.Colours do
+				ColourListChunk.Colours[i] = ARGBToString4(A, R, G, B)
+			end
+			OldPrimitiveGroupChunk:SetChunkAtIndex(idx2, ColourListChunk:Output())
+		end
+		MeshChunk:SetChunkAtIndex(idx, OldPrimitiveGroupChunk:Output())
+	end
+	return MeshChunk:Output()
+end
+function SetModelRGBProcessOldBillboardQuadGroup(Original, A, R, G, B)
+	local OldBillboardQuadGroupChunk = OldBillboardQuadGroupP3DChunk:new{Raw = Original}
+	for idx in OldBillboardQuadGroupChunk:GetChunkIndexes(OLD_BILLBOARD_QUAD_CHUNK) do
+		OldBillboardQuadGroupChunk:SetChunkAtIndex(idx, SetModelRGBProcessOldBillboardQuad(OldBillboardQuadGroupChunk:GetChunkAtIndex(idx), A, R, G, B))
+	end
+	return OldBillboardQuadGroupChunk:Output()
+end
+function SetModelRGBProcessOldBillboardQuad(Original, A, R, G, B)
+	local OldBillboardQuadChunk = OldBillboardQuadP3DChunk:new{Raw = Original}
+	OldBillboardQuadChunk:SetColour(A, R, G, B)
+	return OldBillboardQuadChunk:Output()
 end
 
 local min = math.min
