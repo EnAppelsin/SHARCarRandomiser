@@ -565,7 +565,9 @@ function ColourListP3DChunk:new(Data)
 	idx = idx + 4
 	o.Colours = {}
 	for i=0,NumColours - 1 do
-		o.Colours[#o.Colours + 1] = unpack("c4", o.ValueStr, idx + i * 4)
+		local col = {A=0,R=0,G=0,B=0}
+		col.A, col.R, col.G, col.B = GetP3DARGB(o.ValueStr, idx + i * 4)
+		o.Colours[#o.Colours + 1] = col
 	end
 	return o
 end
@@ -573,7 +575,12 @@ end
 function ColourListP3DChunk:Output()
 	local ColoursN = #self.Colours
 	local len = 16 + ColoursN * 4
-	return pack("<c4iii", self.ChunkType, len, len, ColoursN) .. table.concat(self.Colours)
+	local colours = {}
+	for i=1,ColoursN do
+		local col = self.Colours[i]
+		colours[#colours + 1] = ARGBToString4(col.A, col.R, col.G, col.B)
+	end
+	return pack("<c4iii", self.ChunkType, len, len, ColoursN) .. table.concat(colours)
 end
 
 --Position list chunk

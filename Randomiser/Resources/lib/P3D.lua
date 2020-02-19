@@ -672,9 +672,8 @@ function BrightenModelProcessMesh(Original, Amount, Percentage)
 		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(COLOUR_LIST_CHUNK) do
 			local ColourListChunk = ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
 			for i=1,#ColourListChunk.Colours do
-				local A, R, G, B = String4ToARGB(ColourListChunk.Colours[i])
-				R, G, B = BrightenRGB(R, G, B, Amount, Percentage)
-				ColourListChunk.Colours[i] = ARGBToString4(A, R, G, B)
+				local col = ColourListChunk.Colours[i]
+				col.R, col.G, col.B = BrightenRGB(col.R, col.G, col.B, Amount, Percentage)
 			end
 			OldPrimitiveGroupChunk:SetChunkAtIndex(idx2, ColourListChunk:Output())
 		end
@@ -761,7 +760,10 @@ function SetModelRGBProcessMesh(Original, A, R, G, B)
 		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(COLOUR_LIST_CHUNK) do
 			local ColourListChunk = ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
 			for i=1,#ColourListChunk.Colours do
-				ColourListChunk.Colours[i] = ARGBToString4(A, R, G, B)
+				ColourListChunk.Colours[i].A = A
+				ColourListChunk.Colours[i].R = R
+				ColourListChunk.Colours[i].G = G
+				ColourListChunk.Colours[i].B = B
 			end
 			OldPrimitiveGroupChunk:SetChunkAtIndex(idx2, ColourListChunk:Output())
 		end
