@@ -598,7 +598,7 @@ function PositionListP3DChunk:Output()
 	local positions = {}
 	for i=1,PositionsN do
 		local pos = self.Positions[i]
-		positions[#positions + 1] = pack("<fff", pos.X, pos.Y, pos.Z)
+		positions[#positions + 1] = Vector3ToString12(pos.X, pos.Y, pos.Z)
 	end
 	return pack("<c4iii", self.ChunkType, len, len, PositionsN) .. table.concat(positions)
 end
