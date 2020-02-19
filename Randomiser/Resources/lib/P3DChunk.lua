@@ -63,7 +63,7 @@ function P3DChunk:AddChunk(ChunkData)
 	if ChunkLen < 12 then return end
 	local ChunkID = ChunkData:sub(1, 4)
 	self.ChunkTypes[#self.ChunkTypes + 1] = ChunkID
-	self.Chunks[#self.Chunks] = ChunkData
+	self.Chunks[#self.Chunks + 1] = ChunkData
 	self.DataLen = self.DataLen + ChunkLen
 end
 
@@ -291,18 +291,16 @@ function ShaderP3DChunk:GetFloatParameter(Name)
 	return nil
 end
 
---Static entity chunk
+--Static phys chunk
 StaticPhysP3DChunk = P3DChunk:newChildClass("Static Phys")
 function StaticPhysP3DChunk:new(Data)
 	local o = StaticPhysP3DChunk.parentClass.new(self, Data)
 	local idx = 13
-	o.Name, o.Unknown, o.RenderOrder = unpack("<s1ii", o.ValueStr, idx)
+	o.Name, o.Unknown = unpack("<s1i", o.ValueStr, idx)
 	o.ValueIndexes = {}
 	o.ValueIndexes.Name = idx
 	idx = idx + o.Name:len() + 1
 	o.ValueIndexes.Unknown = idx
-	idx = idx + 4
-	o.ValueIndexes.RenderOrder = idx
 	return o
 end
 
@@ -327,23 +325,59 @@ function StaticPhysP3DChunk:SetUnknown(NewUnknown)
 	self.Unknown = NewUnknown
 end
 
-function StaticPhysP3DChunk:SetRenderOrder(NewRenderOrder)
+--Static entity chunk
+StaticEntityP3DChunk = P3DChunk:newChildClass("Static Entity")
+function StaticEntityP3DChunk:new(Data)
+	local o = StaticEntityP3DChunk.parentClass.new(self, Data)
+	local idx = 13
+	o.Name, o.Unknown, o.RenderOrder = unpack("<s1ii", o.ValueStr, idx)
+	o.ValueIndexes = {}
+	o.ValueIndexes.Name = idx
+	idx = idx + o.Name:len() + 1
+	o.ValueIndexes.Unknown = idx
+	idx = idx + 4
+	o.ValueIndexes.RenderOrder = idx
+	return o
+end
+
+function StaticEntityP3DChunk:SetName(NewName)
+	local idx = self.ValueIndexes.Name
+	NewName = MakeP3DString(NewName)
+	local newVal, Delta = SetP3DString(self.ValueStr, idx, NewName)
+	for k,v in pairs(self.ValueIndexes) do
+		if v > idx then
+			self.ValueIndexes[k] = v + Delta
+		end
+	end
+	self.ValueLen = self.ValueLen + Delta
+	self.DataLen = self.DataLen + Delta
+	self.ValueStr = newVal
+	self.Name = NewName
+end
+
+function StaticEntityP3DChunk:SetUnknown(NewUnknown)
+	local idx = self.ValueIndexes.Unknown
+	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewUnknown)
+	self.Unknown = NewUnknown
+end
+
+function StaticEntityP3DChunk:SetRenderOrder(NewRenderOrder)
 	local idx = self.ValueIndexes.RenderOrder
 	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewRenderOrder)
 	self.RenderOrder = NewRenderOrder
 end
 
 --Inst stat phys chunk
-InstStatPhysP3DChunk = StaticPhysP3DChunk:newChildClass("Inst Stat Phys")
+InstStatPhysP3DChunk = StaticEntityP3DChunk:newChildClass("Inst Stat Phys")
 
 --Inst stat entity chunk
-InstStatEntityP3DChunk = StaticPhysP3DChunk:newChildClass("Inst Stat Entity")
+InstStatEntityP3DChunk = StaticEntityP3DChunk:newChildClass("Inst Stat Entity")
 
 --Inst stat phys chunk
-DynaPhysP3DChunk = StaticPhysP3DChunk:newChildClass("Dyna Phys")
+DynaPhysP3DChunk = StaticEntityP3DChunk:newChildClass("Dyna Phys")
 
 --Anim dyna phys chunk
-AnimDynaPhysP3DChunk = StaticPhysP3DChunk:newChildClass("Anim Dyna Phys")
+AnimDynaPhysP3DChunk = StaticEntityP3DChunk:newChildClass("Anim Dyna Phys")
 
 --Anim obj warpper chunk
 AnimObjWrapperP3DChunk = P3DChunk:newChildClass("Anim Obj Wrapper")

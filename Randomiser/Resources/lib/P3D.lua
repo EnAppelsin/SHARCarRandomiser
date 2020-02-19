@@ -784,6 +784,35 @@ function SetModelRGBProcessOldBillboardQuad(Original, A, R, G, B)
 	return OldBillboardQuadChunk:Output()
 end
 
+function MakeModelSolid(Original)
+	local RootChunk = P3DChunk:new{Raw = Original}
+	local modified = false
+	for idx in RootChunk:GetChunkIndexes(BREAKABLE_WORLD_PROP_CHUNK) do
+		local DynaPhysChunk = DynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
+		
+		local StaticEntity = pack("<c4iis1ii", STATIC_WORLD_MESH_CHUNK, 12, 12, DynaPhysChunk.Name, 0, 0)
+		StaticEntity = SetP3DInt4(StaticEntity, 5, StaticEntity:len())
+		StaticEntity = SetP3DInt4(StaticEntity, 9, StaticEntity:len())
+		local StaticEntityChunk = StaticEntityP3DChunk:new{Raw = StaticEntity}
+		
+		local StaticPhys = pack("<c4iis1i", STATIC_MESH_COLLISION_CHUNK, 12, 12, DynaPhysChunk.Name, 0)
+		StaticPhys = SetP3DInt4(StaticPhys, 5, StaticPhys:len())
+		StaticPhys = SetP3DInt4(StaticPhys, 9, StaticPhys:len())
+		local StaticPhysChunk = StaticPhysP3DChunk:new{Raw = StaticPhys}
+		for idx2, id in DynaPhysChunk:GetChunkIndexes(nil) do
+			if id == MESH_CHUNK then
+				StaticEntityChunk:AddChunk(DynaPhysChunk:GetChunkAtIndex(idx2))
+			elseif id == COLLISION_OBJECT_CHUNK then
+				StaticPhysChunk:AddChunk(DynaPhysChunk:GetChunkAtIndex(idx2))
+			end
+		end
+		RootChunk:SetChunkAtIndex(idx, StaticEntityChunk:Output())
+		RootChunk:AddChunk(StaticPhysChunk:Output())
+		modified = true
+	end
+	return RootChunk:Output(), modified
+end
+
 function MakeCharacterInvisible(Original)
 	local RootChunk = P3DChunk:new{Raw = Original}
 	local modified = false
