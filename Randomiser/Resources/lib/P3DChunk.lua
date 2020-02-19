@@ -248,7 +248,7 @@ function ShaderP3DChunk:SetColourParameter(Name, A, R, G, B)
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
 			ChunkData = ChunkData:sub(1, 16) .. ARGBToString4(A, R, G, B)
-			self:SetChunkAtIndex(idx, newVal)
+			self:SetChunkAtIndex(idx, ChunkData)
 			return
 		end
 	end
@@ -423,6 +423,14 @@ function WorldSphereP3DChunk:SetNumBillboardQuadGroups(NewNumBillboardQuadGroups
 	self.NumBillboardQuadGroups = NewNumBillboardQuadGroups
 end
 
+function WorldSphereP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	WorldSphereP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == OLD_BILLBOARD_QUAD_GROUP_CHUNK then
+		self:SetNumBillboardQuadGroups(self.NumBillboardQuadGroups - 1)
+	end
+end
+
 --Mesh chunk
 MeshP3DChunk = P3DChunk:newChildClass("Mesh")
 function MeshP3DChunk:new(Data)
@@ -463,6 +471,14 @@ function MeshP3DChunk:SetNumPrimitiveGroups(NewNumPrimitiveGroups)
 	local idx = self.ValueIndexes.NumPrimitiveGroups
 	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewNumPrimitiveGroups)
 	self.NumPrimitiveGroups = NewNumPrimitiveGroups
+end
+
+function MeshP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	MeshP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == OLD_PRIMITIVE_GROUP_CHUNK then
+		self:SetNumPrimitiveGroups(self.NumPrimitiveGroups - 1)
+	end
 end
 
 --Old primitive group chunk
@@ -602,6 +618,14 @@ function LensFlareP3DChunk:SetNumBillboardQuadGroups(NewNumBillboardQuadGroups)
 	self.NumBillboardQuadGroups = NewNumBillboardQuadGroups
 end
 
+function LensFlareP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	LensFlareP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == OLD_BILLBOARD_QUAD_GROUP_CHUNK then
+		self:SetNumBillboardQuadGroups(self.NumBillboardQuadGroups - 1)
+	end
+end
+
 --Old billboard quad group chunk
 OldBillboardQuadGroupP3DChunk = P3DChunk:newChildClass("Old Billboard Quad Group")
 function OldBillboardQuadGroupP3DChunk:new(Data)
@@ -683,6 +707,14 @@ function OldBillboardQuadGroupP3DChunk:SetNumQuads(NewNumQuads)
 	local idx = self.ValueIndexes.NumQuads
 	self.ValueStr = SetP3DInt4(self.ValueStr, idx, NewNumQuads)
 	self.NumQuads = NewNumQuads
+end
+
+function OldBillboardQuadGroupP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	OldBillboardQuadGroupP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == OLD_BILLBOARD_QUAD_CHUNK then
+		self:SetNumQuads(self.NumQuads - 1)
+	end
 end
 
 --Old billboard quad chunk
