@@ -91,7 +91,7 @@ for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
 			LanguageChunk.Offsets[i], LanguageChunk.Offsets[j] = LanguageChunk.Offsets[j], LanguageChunk.Offsets[i]
 		end
 	end
-	LanguageChunk:AddValue("-", Values)
+	LanguageChunk:AddValue("RandoSettings", Values)
 	BibleChunk:SetChunkAtIndex(idx, LanguageChunk:Output())
 end
 Chunk:SetChunkAtIndex(BibleIdx, BibleChunk:Output())

@@ -2413,3 +2413,107 @@ function P3D.TriggerVolumeP3DChunk:Output()
 	local Len = 12 + self.Name:len() + 1 + 4 + 12 + 64
 	return pack("<IIIs1ifffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsRect, self.HalfExtents.X, self.HalfExtents.Y, self.HalfExtents.Z, self.Matrix.M11, self.Matrix.M12, self.Matrix.M13, self.Matrix.M14, self.Matrix.M21, self.Matrix.M22, self.Matrix.M23, self.Matrix.M34, self.Matrix.M31, self.Matrix.M32, self.Matrix.M33, self.Matrix.M34, self.Matrix.M41, self.Matrix.M42, self.Matrix.M43, self.Matrix.M44) .. chunks
 end
+
+--Frontend Project Chunk
+P3D.FrontendProjectP3DChunk = P3D.P3DChunk:newChildClass("Frontend Project")
+function P3D.FrontendProjectP3DChunk:new(Data)
+	local o = P3D.FrontendProjectP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.ResolutionX, o.ResolutionY, o.Platform, o.PagePath, o.ResourcePath, o.ScreenPath = unpack("<s1iiis1s1s1s1", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendProjectP3DChunk:create(Name,Version,ResolutionX,ResolutionY,Platform,PagePath,ResourcePath,ScreenPath)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + Platform:len() + 1 + PagePath:len() + 1 + ResourcePath:len() + 1 + ScreenPath:len() + 1
+	return P3D.FrontendProjectP3DChunk:new{Raw = pack("<IIIs1iiis1s1s1s1", P3D.Identifiers.Frontend_Project, Len, Len, Name, Version, ResolutionX, ResolutionY, Platform, PagePath, ResourcePath, ScreenPath)}
+end
+
+function P3D.FrontendProjectP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + self.Platform:len() + 1 + self.PagePath:len() + 1 + self.ResourcePath:len() + 1 + self.ScreenPath:len() + 1
+	return pack("<IIIs1iiis1s1s1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.ResolutionX, self.ResolutionY, self.Platform, self.PagePath, self.ResourcePath, self.ScreenPath) .. chunks
+end
+
+--Frontend Page Chunk
+P3D.FrontendPageP3DChunk = P3D.P3DChunk:newChildClass("Frontend Page")
+function P3D.FrontendPageP3DChunk:new(Data)
+	local o = P3D.FrontendPageP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.ResolutionX, o.ResolutionY = unpack("<s1iii", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendPageP3DChunk:create(Name,Version,ResolutionX,ResolutionY)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4
+	return P3D.FrontendPageP3DChunk:new{Raw = pack("<IIIs1iii", P3D.Identifiers.Frontend_Page, Len, Len, Name, Version, ResolutionX, ResolutionY)}
+end
+
+function P3D.FrontendPageP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4
+	return pack("<IIIs1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.ResolutionX, self.ResolutionY) .. chunks
+end
+
+--Frontend Layer Chunk
+P3D.FrontendLayerP3DChunk = P3D.P3DChunk:newChildClass("Frontend Layer")
+function P3D.FrontendLayerP3DChunk:new(Data)
+	local o = P3D.FrontendLayerP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Visible, o.Editable, o.Alpha = unpack("<s1iiii", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendLayerP3DChunk:create(Name,Version,Visible,Editable,Alpha)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4
+	return P3D.FrontendLayerP3DChunk:new{Raw = pack("<IIIs1iiii", P3D.Identifiers.Frontend_Layer, Len, Len, Name, Version, Visible, Editable, Alpha)}
+end
+
+function P3D.FrontendLayerP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4
+	return pack("<IIIs1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Visible, self.Editable, self.Alpha) .. chunks
+end
+
+--Frontend Multi Text Chunk
+P3D.FrontendMultiTextP3DChunk = P3D.P3DChunk:newChildClass("Frontend Multi Text")
+P3D.FrontendMultiTextP3DChunk.Justifications = {
+	Left = 0,
+	Right = 1,
+	Top = 2,
+	Bottom = 3,
+	Centre = 4,
+}
+function P3D.FrontendMultiTextP3DChunk:new(Data)
+	local o = P3D.FrontendMultiTextP3DChunk.parentClass.new(self, Data)
+	o.Colour = {A=0,R=0,G=0,B=0}
+	o.ShadowColour = {A=0,R=0,G=0,B=0}
+	o.Name, o.Version, o.PositionX, o.PositionY, o.DimensionX, o.DimensionY, o.JustificationX, o.JustificationY, o.Colour.B, o.Colour.G, o.Colour.R, o.Colour.A, o.Translucency, o.RotationValue, o.TextStyleName, o.ShadowEnabled, o.ShadowColour.B, o.ShadowColour.G, o.ShadowColour.R, o.ShadowColour.A, o.ShadowOffsetX, o.ShadowOffsetY, o.CurrentText = unpack("<s1iiiiiiiBBBBifs1BBBBBiii", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendMultiTextP3DChunk:create(Name,Version,PositionX,PositionY,DimensionX,DimensionY,JustificationX,JustificationY,Colour,Translucency,RotationValue,TextStyleName,ShadowEnabled,ShadowColour,ShadowOffsetX,ShadowOffsetY,CurrentText)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + TextStyleName:len() + 1 + 1 + 4 + 4 + 4 + 4
+	return P3D.FrontendMultiTextP3DChunk:new{Raw = pack("<IIIs1iiiiiiiBBBBifs1BBBBBiii", P3D.Identifiers.Frontend_Multi_Text, Len, Len, Name, Version, PositionX, PositionY, DimensionX, DimensionY, JustificationX, JustificationY, Colour.B, Colour.G, Colour.R, Colour.A, Translucency, RotationValue, TextStyleName, ShadowEnabled, ShadowColour.B, ShadowColour.G, ShadowColour.R, ShadowColour.A, ShadowOffsetX, ShadowOffsetY, CurrentText)}
+end
+
+function P3D.FrontendMultiTextP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + self.TextStyleName:len() + 1 + 1 + 4 + 4 + 4 + 4
+	return pack("<IIIs1iiiiiiiBBBBifs1BBBBBiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.PositionX, self.PositionY, self.DimensionX, self.DimensionY, self.JustificationX, self.JustificationY, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Translucency, self.RotationValue, self.TextStyleName, self.ShadowEnabled, self.ShadowColour.B, self.ShadowColour.G, self.ShadowColour.R, self.ShadowColour.A, self.ShadowOffsetX, self.ShadowOffsetY, self.CurrentText) .. chunks
+end
+
+--Frontend String Text Bible Chunk
+P3D.FrontendStringTextBibleP3DChunk = P3D.P3DChunk:newChildClass("Frontend String Text Bible")
+function P3D.FrontendStringTextBibleP3DChunk:new(Data)
+	local o = P3D.FrontendStringTextBibleP3DChunk.parentClass.new(self, Data)
+	o.BibleName, o.StringId = unpack("<s1s1", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendStringTextBibleP3DChunk:create(BibleName,StringId)
+	local Len = 12 + BibleName:len() + 1 + StringId:len() + 1
+	return P3D.FrontendStringTextBibleP3DChunk:new{Raw = pack("<IIIs1s1", P3D.Identifiers.Frontend_String_Text_Bible, Len, Len, BibleName, StringId)}
+end
+
+function P3D.FrontendStringTextBibleP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.BibleName:len() + 1 + self.StringId:len() + 1
+	return pack("<IIIs1s1", self.ChunkType, Len, Len + chunks:len(), self.BibleName, self.StringId) .. chunks
+end
