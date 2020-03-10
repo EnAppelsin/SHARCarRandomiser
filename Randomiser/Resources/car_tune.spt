@@ -1037,7 +1037,6 @@ create carSoundParameters named mono_v
     SetAttackTimeMsecs ( 89.000000 )
     SetDecayFinishTrim ( 0.680000 )
     SetDownshiftDamperSize ( 0.110000 )
-    SetOverlayClipName ( "generator" )
     SetRoadSkidClipName ( "monorail_skid" )
     SetDirtSkidClipName ( "blank" )
 }

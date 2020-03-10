@@ -9,7 +9,7 @@ dofile(Paths.Resources .. "GlobalArrays.lua")
 dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
-dofile(Paths.Resources .. "lib/P3DChunk.lua")
+dofile(Paths.Resources .. "lib/P3DFunctions.lua")
 
 GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
 for i=#RandomCharP3DPool,1,-1 do
@@ -85,16 +85,6 @@ if Settings.VerboseDebug then
 		print("!? Redirect " .. GetPath() .. " -> " .. name)
 		return OldRedirect(name)
 	end
-end
-
--- Hijack (for now) ReadFile to decompress P3Ds
-local OldReadFile = ReadFile
-ReadFile = function(Path, ...)
-	local File = OldReadFile(Path, ...)
-	if Path:sub(-3) == "p3d" then
-		return DecompressP3D(File)
-	end
-	return File
 end
 
 DebugPrint("Randomiser Settings", 2)
