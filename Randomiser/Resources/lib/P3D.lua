@@ -478,6 +478,7 @@ function P3D.MakeFourCC(str)
 end
 
 function P3D.MakeP3DString(str)
+	if str == nil then return nil end
 	local strLen = str:len()
 	local diff = strLen % 4
 	if diff > 0 then
@@ -487,6 +488,7 @@ function P3D.MakeP3DString(str)
 end
 
 function P3D.CleanP3DString(str)
+	if str == nil then return nil end
 	local strLen = str:len()
 	if strLen == 0 then return str end
 	local l = 0
@@ -1859,7 +1861,8 @@ function P3D.MultiControllerP3DChunk:GetTrackCount()
 	local TrackN = 0
 	for i=1,#self.ChunkTypes do
 		if self.ChunkTypes[i] == P3D.Identifiers.Multi_Controller_Tracks then
-			TrackN = TrackN + 1
+			local MultiControllerTracksChunk = P3D.MultiControllerTracksP3DChunk:new{Raw = self.Chunks[i]}
+			TrackN = TrackN + MultiControllerTracksChunk:GetTrackCount()
 		end
 	end
 	return TrackN

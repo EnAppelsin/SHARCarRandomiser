@@ -39,9 +39,19 @@ if Settings.RandomCouch then
 			ReplaceP3D:SetChunkAtIndex(idx, MultiControllerChunk)
 			ReplaceP3D:AddChunk(ScenegraphChunk, idx)
 			addedMultiController = true
-		elseif (id == P3D.Identifiers.Shader or id == P3D.Identifiers.Texture) and not addedAnim then
-			ReplaceP3D:AddChunk(AnimChunk, idx + 1)
-			addedAnim = true
+		elseif id == P3D.Identifiers.Shader then
+			local ShaderChunk = P3D.ShaderP3DChunk:new{Raw = ReplaceP3D:GetChunkAtIndex(idx)}
+			if P3D.CleanP3DString(ShaderChunk.Name) == "eyeball_m" then
+				local tex = P3D.CleanP3DString(ShaderChunk:GetTextureParameter("TEX"))
+				if tex and tex:sub(-2) == ".0" then
+					ShaderChunk:SetTextureParameter("TEX", P3D.MakeP3DString(tex:sub(1, -3) .. ".3"))
+					ReplaceP3D:SetChunkAtIndex(idx, ShaderChunk:Output())
+				end
+			end
+			if not addedAnim then
+				ReplaceP3D:AddChunk(AnimChunk, idx + 1)
+				addedAnim = true
+			end
 		elseif id == P3D.Identifiers.Skeleton then
 			local SkeletonChunk = P3D.SkeletonP3DChunk:new{Raw = ReplaceP3D:GetChunkAtIndex(idx)}
 			SkeletonChunk.Name = Motion_Root_Label
