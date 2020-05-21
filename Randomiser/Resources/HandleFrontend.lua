@@ -18,9 +18,11 @@ for idx in ProjectChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Page) do
 	end
 end
 if PageIDX then
+	local TextStyleChunk = P3D.FrontendTextStyleResourceP3DChunk:create(P3D.MakeP3DString("font1_14"),1,P3D.MakeP3DString("fonts\\font1_14.p3d"),P3D.MakeP3DString("Tt2001m__14"))
+	PageChunk:AddChunk(TextStyleChunk:Output(), 1)
 	local LayerIDX = PageChunk:GetChunkIndex(P3D.Identifiers.Frontend_Layer)
 	local LayerChunk = P3D.FrontendLayerP3DChunk:new{Raw = PageChunk:GetChunkAtIndex(LayerIDX)}
-	local MultiTextChunk = P3D.FrontendMultiTextP3DChunk:create(P3D.MakeP3DString("RandoSettings"), 17, 220, 75, 200, 18, P3D.FrontendMultiTextP3DChunk.Justifications.Centre, P3D.FrontendMultiTextP3DChunk.Justifications.Top, {A=255,R=255,G=255,B=255}, 0, 0, P3D.MakeP3DString("fontB_16"), 1, {A=192,R=0,G=0,B=0}, 2, -2, 0)
+	local MultiTextChunk = P3D.FrontendMultiTextP3DChunk:create(P3D.MakeP3DString("RandoSettings"), 17, 220, 75, 200, 18, P3D.FrontendMultiTextP3DChunk.Justifications.Centre, P3D.FrontendMultiTextP3DChunk.Justifications.Top, {A=255,R=255,G=255,B=255}, 0, 0, P3D.MakeP3DString("font1_14"), 1, {A=192,R=0,G=0,B=0}, 2, -2, 0)
 	local TextChunk = P3D.FrontendStringTextBibleP3DChunk:create("srr2", P3D.MakeP3DString("RandoSettings"))
 	MultiTextChunk:AddChunk(TextChunk:Output())
 	LayerChunk:AddChunk(MultiTextChunk:Output())

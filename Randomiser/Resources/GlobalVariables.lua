@@ -1,3 +1,4 @@
+ModName = GetModName()
 ModVersion = GetModVersion()
 
 OrigChar = nil
@@ -16,44 +17,19 @@ MissionCharacters = {}
 
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
-RandomPedPoolN = #RandomPedPool
 RandomDialoguePoolN = 0
+RCFDialoguePoolN = 0
 
-cartunespt = ReadFile(Paths.Resources .. "car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-carsoundspt = ReadFile(Paths.Resources .. "carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-dialogspt = ReadFile(Paths.Resources .. "dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-
---[[SettingRandomCouch = GetSetting("RandomCouch")
-SettingRandomMusic = GetSetting("RandomMusic")
-SettingRandomMusicCues = GetSetting("RandomMusicCues")
-SettingRandomDialogue = GetSetting("RandomDialogue")
-SettingRandomCharacter = GetSetting("RandomCharacter")
-SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
-SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
-SettingSaveChoice = GetSetting("SaveChoice")
-SettingRandomCarScale = GetSetting("RandomCarScale")
-SettingRandomCarSounds = GetSetting("RandomCarSounds")
-SettingCustomCars = GetSetting("CustomCars")
-SettingRandomPedestrians = GetSetting("RandomPedestrians")
-SettingRandomTraffic = GetSetting("RandomTraffic")
-SettingRandomChase = GetSetting("RandomChase")
-SettingRandomChaseAmount = GetSetting("RandomChaseAmount")
-SettingRandomChaseStats = GetSetting("RandomChaseStats")
-SettingRandomMissionVehicles = GetSetting("RandomMissionVehicles")
-SettingRandomMissionVehiclesStats = GetSetting("RandomMissionVehiclesStats")
-SettingDifferentCellouts = GetSetting("DifferentCellouts")
-SettingSaveChoiceMV = GetSetting("SaveChoiceMV")
-SettingRandomStats = GetSetting("RandomStats")
-SettingSkipLocks = GetSetting("SkipLocks")
-SettingSkipFMVs = GetSetting("SkipFMVs")
-SettingBoostHP = GetSetting("BoostHP")
-SettingDebugLevel = GetSetting("DebugLevel")
-
---Chaos settings
-SettingRandomInteriors = GetSetting("RandomInteriors")
-SettingRandomDirectives = GetSetting("RandomDirectives")
-SettingRandomMissions = GetSetting("RandomMissions")
-SettingRandomItems = GetSetting("RandomItems")]]--
+if IsHackLoaded("FileSystemRCFs") then
+	print("File system RCFs")
+	cartunespt = ReadFile("/GameData/sound/scripts/car_tune.spt"):gsub("SetEngineClipName %( \"tt\" %)", "SetEngineClipName ( \"snake_car\" )"):gsub("SetEngineIdleClipName %( \"tt\" %)", "SetEngineIdleClipName ( \"snake_car\" )"):gsub("\r\n    SetOverlayClipName %( \"\" %)", ""):gsub("\r\n    SetOverlayClipName %( \"generator\" %)", "")
+	carsoundspt = ReadFile("/GameData/sound/scripts/carsound.spt")
+	dialogspt = ReadFile("/GameData/sound/scripts/dialog.spt")
+else
+	cartunespt = ReadFile(Paths.Resources .. "car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+	carsoundspt = ReadFile(Paths.Resources .. "carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+	dialogspt = ReadFile(Paths.Resources .. "dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
+end
 
 --Random Stat Min/Max Variables
 if Settings.RandomStats then

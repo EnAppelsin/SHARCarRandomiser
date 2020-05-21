@@ -77,7 +77,7 @@ for k, v in pairs(ChaosSettings) do
 	end
 end
 
-local Values = os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)
+local Values = os.date("[%Y-%m-%d]") .. "\n" .. ModName .. " v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)
 
 local Chunk = P3D.P3DChunk:new{Raw = ReadFile(Path)}
 local BibleIdx = Chunk:GetChunkIndex(P3D.Identifiers.Frontend_Text_Bible)
@@ -89,6 +89,20 @@ for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
 		for i=#LanguageChunk.Offsets,2,-1 do
 			local j = math.random(i)
 			LanguageChunk.Offsets[i], LanguageChunk.Offsets[j] = LanguageChunk.Offsets[j], LanguageChunk.Offsets[i]
+		end
+		if math.random(20) == 1 then
+			local ucs2 = {}
+			for i=1,#LanguageChunk.Buffer,2 do
+				local s = string.unpack("<H", LanguageChunk.Buffer, i)
+				local case = math.random(2)
+				if case == 1 and s >= 65 and s <= 90 then
+					s = s + 32
+				elseif case == 2 and s >= 97 and s <= 122 then
+					s = s - 32
+				end
+				ucs2[#ucs2 + 1] = s
+			end
+			LanguageChunk.Buffer = string.pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
 		end
 	end
 	LanguageChunk:AddValue("RandoSettings", Values)

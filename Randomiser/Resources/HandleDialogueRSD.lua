@@ -1,11 +1,33 @@
 local Path = "/GameData/" .. GetPath()
 
-if Settings.RandomDialogue and RandomDialoguePoolN > 0 then
-	local RedirectPath = RandomDialoguePool[math.random(RandomDialoguePoolN)]
+if Settings.RandomDialogue and (RandomDialoguePoolN > 0 or RCFDialoguePoolN > 0) then
+	if RandomDialoguePoolN > 0 and RCFDialoguePoolN > 0 then
+		if math.random(2) == 1 then
+			local RedirectPath = RandomDialoguePool[math.random(RandomDialoguePoolN)]
 
-	DebugPrint("Redirecting " .. Path .. " to " .. RedirectPath)
+			DebugPrint("Redirecting " .. Path .. " to " .. RedirectPath)
 
-	Redirect(RedirectPath)
+			Redirect(RedirectPath)
+		else
+			local DataEntry = GetRandomFromTbl(RCFDialoguePool)
+			
+			DebugPrint("Redirecting to RSD at " .. DataEntry.Position .. " in " .. DataEntry.Path)
+			
+			Output(ReadFileOffset(DataEntry.Path, DataEntry.Position + 1, DataEntry.Size))
+		end
+	elseif RandomDialoguePoolN > 0 then
+		local RedirectPath = RandomDialoguePool[math.random(RandomDialoguePoolN)]
+
+		DebugPrint("Redirecting " .. Path .. " to " .. RedirectPath)
+
+		Redirect(RedirectPath)
+	elseif RCFDialoguePoolN > 0 then
+		local DataEntry = GetRandomFromTbl(RCFDialoguePool)
+		
+		DebugPrint("Redirecting to RSD at " .. DataEntry.Position .. " in " .. DataEntry.Path)
+		
+		Output(ReadFileOffset(DataEntry.Path, DataEntry.Position + 1, DataEntry.Size))
+	end
 elseif Settings.RandomMissions and Path:match("L%d") then
 	if IsModEnabled("RandomiserDialogue") then
 		local RedirectPath = Path:gsub("/GameData/", "/GameData/RandomDialogue/")
@@ -41,11 +63,11 @@ elseif Settings.RandomMissions and Path:match("L%d") then
 				end
 			if not redirected then
 				DebugPrint("Redirecting " .. Path .. " to empty.rsd")
-				Redirect(ModPath .. "/Resources/empty.rsd")
+				Redirect(Paths.Resources .. "empty.rsd")
 			end
 		end
 	else
 		DebugPrint("Redirecting " .. Path .. " to empty.rsd")
-		Redirect(ModPath .. "/Resources/empty.rsd")
+		Redirect(Paths.Resources .. "empty.rsd")
 	end
 end

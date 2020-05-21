@@ -217,6 +217,7 @@ if Settings.RandomItems then
 			end
 		end)
 		for i=1,#items do
+			DebugPrint("Adding item load: " .. items[i] .. ".")
 			LoadFile = LoadFile .. "\r\nLoadP3DFile(\"" .. items[i] .. ".p3d\");"
 		end
 		return LoadFile, InitFile

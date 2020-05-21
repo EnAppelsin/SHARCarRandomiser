@@ -310,6 +310,7 @@ P3D.Identifiers = {
 }
 local pack = string.pack
 local unpack = string.unpack
+local concat = table.concat
 
 function P3D.UnpackChunkHeader(str, StartPosition)
 	if StartPosition == nil then StartPosition = 1 end
@@ -491,14 +492,9 @@ function P3D.CleanP3DString(str)
 	if str == nil then return nil end
 	local strLen = str:len()
 	if strLen == 0 then return str end
-	local l = 0
-	for i=strLen,1,-1 do
-		if str:byte(i) ~= 0 then
-			l = i
-			break
-		end
-	end
-	return str:sub(1, l)
+	local l = str:find("\0")
+	if l == nil then return str end
+	return str:sub(1, l-1)
 end
 
 function P3D.FindSubchunks(Chunk, ID, StartPosition, EndPosition)
@@ -591,7 +587,7 @@ function P3D.DecompressBlock(Source, Length, SourceIndex)
 			Written = Written + Unknown2
 		end
 	end
-	return table.concat(DestTbl), DestinationPos
+	return concat(DestTbl), DestinationPos
 end
 
 -- Decompress a compressed P3D, returns the original P3D if not compressed
@@ -608,7 +604,7 @@ function P3D.Decompress(File)
 			pos = pos + CompressedLength
 			DecompressedLength = DecompressedLength + UncompressedBlock
 		end
-		return table.concat(UncompressedTbl)
+		return concat(UncompressedTbl)
 	else
 		return File
 	end
@@ -648,6 +644,10 @@ function P3D.P3DChunk:new(Data)
 	return setmetatable(Data, self)
 end
 
+function P3D.P3DChunk:create()
+	return P3D.P3DChunk:new{Raw = P3D.BlankHeader}
+end
+
 function P3D.P3DChunk:newChildClass(type)
 	self.__index = self
 	return setmetatable({type = type or "none", parentClass = self}, self)
@@ -658,7 +658,6 @@ function P3D.P3DChunk:GetChunkCount()
 end
 
 function P3D.P3DChunk:RemoveChunkAtIndex(idx)
-	local ChunkLen = self.Chunks[idx]:len()
 	table.remove(self.ChunkTypes, idx)
 	table.remove(self.Chunks, idx)
 end
@@ -695,7 +694,7 @@ function P3D.P3DChunk:AddChildChunks(RootChunk)
 end
 
 function P3D.P3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local len = 12 + self.ValueStr:len()
 	return pack("<III", self.ChunkType, len, len + chunks:len()) .. self.ValueStr .. chunks
 end
@@ -744,28 +743,9 @@ function P3D.TextureP3DChunk:create(Name,Version,Width,Height,Bpp,AlphaDepth,Num
 end
 
 function P3D.TextureP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiiiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.AlphaDepth, self.NumMipMaps, self.TextureType, self.Usage, self.Priority) .. chunks
-end
-
---Image Chunk
-P3D.ImageP3DChunk = P3D.P3DChunk:newChildClass("Image")
-function P3D.ImageP3DChunk:new(Data)
-	local o = P3D.ImageP3DChunk.parentClass.new(self, Data)
-	o.Name, o.Version, o.Width, o.Height, o.Bpp, o.Palettized, o.HasAlpha, o.Format = unpack("<s1iiiiiii", o.ValueStr)
-	return o
-end
-
-function P3D.ImageP3DChunk:create(Name,Version,Width,Height,Bpp,Palettized,HasAlpha,Format)
-	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return P3D.ImageP3DChunk:new{Raw = pack("<IIIs1iiiiiii", P3D.Identifiers.Image, Len, Len, Name, Version, Width, Height, Bpp, Palettized, HasAlpha, Format)}
-end
-
-function P3D.ImageP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
-	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return pack("<IIIs1iiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.Palettized, self.HasAlpha, self.Format) .. chunks
 end
 
 --Shader Chunk
@@ -791,7 +771,7 @@ function P3D.ShaderP3DChunk:GetParameterCount()
 end
 
 function P3D.ShaderP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.PDDIShader:len() + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIs1is1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.PDDIShader, self.HasTranslucency, self.VertexNeeds, self.VertexMask, self:GetParameterCount()) .. chunks
 end
@@ -905,7 +885,7 @@ function P3D.StaticPhysP3DChunk:create(Name,Unknown)
 end
 
 function P3D.StaticPhysP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4
 	return pack("<IIIs1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown) .. chunks
 end
@@ -924,7 +904,7 @@ function P3D.StaticEntityP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.StaticEntityP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -943,7 +923,7 @@ function P3D.InstStatPhysP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.InstStatPhysP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -962,7 +942,7 @@ function P3D.InstStatEntityP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.InstStatEntityP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -981,7 +961,7 @@ function P3D.DynaPhysP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.DynaPhysP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -1000,7 +980,7 @@ function P3D.AnimP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.AnimP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -1019,7 +999,7 @@ function P3D.AnimCollP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.AnimCollP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -1038,7 +1018,7 @@ function P3D.AnimDynaPhysP3DChunk:create(Name,Unknown,RenderOrder)
 end
 
 function P3D.AnimDynaPhysP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.RenderOrder) .. chunks
 end
@@ -1057,7 +1037,7 @@ function P3D.AnimObjWrapperP3DChunk:create(Name,Unknown,Unknown2)
 end
 
 function P3D.AnimObjWrapperP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 1 + 1
 	return pack("<IIIs1BB", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.Unknown2) .. chunks
 end
@@ -1076,7 +1056,7 @@ function P3D.BreakableObjectP3DChunk:create(Index,Count)
 end
 
 function P3D.BreakableObjectP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4
 	return pack("<IIIii", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Count) .. chunks
 end
@@ -1109,7 +1089,7 @@ end
 
 function P3D.WorldSphereP3DChunk:Output()
 	local OBQGN, MeshN = self:GetOldBillboardQuadGroupAndMeshCount()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4
 	return pack("<IIIs1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, MeshN, OBQGN) .. chunks
 end
@@ -1138,7 +1118,7 @@ function P3D.MeshP3DChunk:GetOldPrimitiveGroupCount()
 end
 
 function P3D.MeshP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self:GetOldPrimitiveGroupCount()) .. chunks
 end
@@ -1157,7 +1137,7 @@ function P3D.OldPrimitiveGroupP3DChunk:create(Version,ShaderName,PrimitiveType,V
 end
 
 function P3D.OldPrimitiveGroupP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.ShaderName:len() + 1 + 4 + 4 + 4 + 4 + 4
 	return pack("<IIIis1iiiii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.ShaderName, self.PrimitiveType, self.VertexType, self.NumVertices, self.NumIndices, self.NumMatrices) .. chunks
 end
@@ -1185,7 +1165,7 @@ function P3D.ColourListP3DChunk:create(...)
 		local col = arg[i]
 		colours[#colours + 1] = ARGBToString4(col.A, col.R, col.G, col.B)
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, ColoursN) .. table.concat(colours)}
+	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, ColoursN) .. concat(colours)}
 end
 
 function P3D.ColourListP3DChunk:GetColoursCount()
@@ -1200,7 +1180,7 @@ function P3D.ColourListP3DChunk:Output()
 		local col = self.Colours[i]
 		colours[#colours + 1] = P3D.ARGBToString4(col.A, col.R, col.G, col.B)
 	end
-	return pack("<IIIi", self.ChunkType, len, len, ColoursN) .. table.concat(colours)
+	return pack("<IIIi", self.ChunkType, len, len, ColoursN) .. concat(colours)
 end
 
 --Position List chunk
@@ -1230,7 +1210,7 @@ function P3D.PositionListP3DChunk:create(...)
 		local pos = arg[i]
 		positions[#positions + 1] = P3D.Vector3ToString12(pos,X, pos.Y, pos.Z)
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, PositionsN) .. table.concat(positions)}
+	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, PositionsN) .. concat(positions)}
 end
 
 function P3D.PositionListP3DChunk:Output()
@@ -1241,7 +1221,7 @@ function P3D.PositionListP3DChunk:Output()
 		local pos = self.Positions[i]
 		positions[#positions + 1] = P3D.Vector3ToString12(pos,X, pos.Y, pos.Z)
 	end
-	return pack("<IIIi", self.ChunkType, len, len, PositionsN) .. table.concat(positions)
+	return pack("<IIIi", self.ChunkType, len, len, PositionsN) .. concat(positions)
 end
 
 --Lens Flare Chunk
@@ -1268,7 +1248,7 @@ function P3D.LensFlareP3DChunk:GetOldBillboardQuadGroupCount()
 end
 
 function P3D.LensFlareP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self:GetOldBillboardQuadGroupCount()) .. chunks
 end
@@ -1297,7 +1277,7 @@ function P3D.OldBillboardQuadGroupP3DChunk:GetOldBillboardQuadCount()
 end
 
 function P3D.OldBillboardQuadGroupP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + self.Shader:len() + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIis1s1iiii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.Shader, self.ZTest, self.ZWrite, self.Fog, self:GetOldBillboardQuadCount()) .. chunks
 end
@@ -1323,7 +1303,7 @@ function P3D.OldBillboardQuadP3DChunk:create(Version,Name,BillboardMode,Translat
 end
 
 function P3D.OldBillboardQuadP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 12 + 4+ 8+ 8+ 8+ 8 + 4 + 4 + 4+ 8
 	return pack("<IIIis1ifffBBBBfffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.BillboardMode, self.Translate.X, self.Translate.Y, self.Translate.Z, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.UV1.X, self.UV1.Y, self.UV2.X, self.UV2.Y, self.UV3.X, self.UV3.Y, self.UV4.X, self.UV4.Y, self.Width, self.Height, self.Distance, self.UVOffset.X, self.UVOffset.Y) .. chunks
 end
@@ -1343,7 +1323,7 @@ function P3D.LightP3DChunk:create(Name,Version,Type,Colour,Constant,Linear,Squar
 end
 
 function P3D.LightP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiBBBBfffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Type, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Constant, self.Linear, self.Squared, self.Enabled) .. chunks
 end
@@ -1372,7 +1352,7 @@ function P3D.SkinP3DChunk:GetOldPrimitiveGroupCount()
 end
 
 function P3D.SkinP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.SkeletonName:len() + 1 + 4
 	return pack("<IIIs1is1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.SkeletonName, self:GetOldPrimitiveGroupCount()) .. chunks
 end
@@ -1391,7 +1371,7 @@ function P3D.CompositeDrawableP3DChunk:create(Name,SkeletonName)
 end
 
 function P3D.CompositeDrawableP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + self.SkeletonName:len() + 1
 	return pack("<IIIs1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.SkeletonName) .. chunks
 end
@@ -1414,7 +1394,7 @@ function P3D.CompositeDrawableSkinListP3DChunk:GetElementCount()
 end
 
 function P3D.CompositeDrawableSkinListP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4
 	return pack("<IIIi", self.ChunkType, Len, Len + chunks:len(), self:GetElementCount()) .. chunks
 end
@@ -1433,7 +1413,7 @@ function P3D.CompositeDrawableSkinP3DChunk:create(Name,IsTranslucent)
 end
 
 function P3D.CompositeDrawableSkinP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4
 	return pack("<IIIs1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent) .. chunks
 end
@@ -1456,7 +1436,7 @@ function P3D.CompositeDrawablePropListP3DChunk:GetElementCount()
 end
 
 function P3D.CompositeDrawablePropListP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4
 	return pack("<IIIi", self.ChunkType, Len, Len + chunks:len(), self:GetElementCount()) .. chunks
 end
@@ -1475,7 +1455,7 @@ function P3D.CompositeDrawablePropP3DChunk:create(Name,IsTranslucent,SkeletonJoi
 end
 
 function P3D.CompositeDrawablePropP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent, self.SkeletonJointID) .. chunks
 end
@@ -1498,7 +1478,7 @@ function P3D.CompositeDrawableEffectListP3DChunk:GetElementCount()
 end
 
 function P3D.CompositeDrawableEffectListP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4
 	return pack("<IIIi", self.ChunkType, Len, Len + chunks:len(), self:GetElementCount()) .. chunks
 end
@@ -1517,7 +1497,7 @@ function P3D.CompositeDrawableEffectP3DChunk:create(Name,IsTranslucent,SkeletonJ
 end
 
 function P3D.CompositeDrawableEffectP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent, self.SkeletonJointID) .. chunks
 end
@@ -1536,7 +1516,7 @@ function P3D.CollisionEffectP3DChunk:create(Classtype,ATCEntry,SoundResourceData
 end
 
 function P3D.CollisionEffectP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4 + self.SoundResourceDataName:len() + 1
 	return pack("<IIIiis1", self.ChunkType, Len, Len + chunks:len(), self.Classtype, self.ATCEntry, self.SoundResourceDataName) .. chunks
 end
@@ -1565,7 +1545,7 @@ function P3D.StatePropDataV1P3DChunk:GetStateCount()
 end
 
 function P3D.StatePropDataV1P3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + self.ObjectFactoryName:len() + 1 + 4
 	return pack("<IIIis1s1i", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.ObjectFactoryName, self:GetStateCount()) .. chunks
 end
@@ -1605,7 +1585,7 @@ end
 
 function P3D.StatePropStateDataV1P3DChunk:Output()
 	local DrawableN, FrameControllerN, EventN, CallbackN = self:GetCounts()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiiiiif", self.ChunkType, Len, Len + chunks:len(), self.Name, self.AutoTransition, self.OutState, DrawableN, FrameControllerN, EventN, CallbackN, self.OutFrame) .. chunks
 end
@@ -1634,7 +1614,7 @@ function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, Unkn
 	for i=1,4 - Type:len() % 4 do
 		dataTbl[#dataTbl + 1] = "\0"
 	end
-	local data = table.concat(dataTbl)
+	local data = concat(dataTbl)
 	local Len = 12 + Name:len() + 1 + 4 + 4 + data:len() + 4 + 4 + 12 + 4
 	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iic" .. data:len() .. "iifffi", P3D.Identifiers.Locator, Len, Len, Name, 9, data:len() / 4 + 2, data, Unknown1, Unknown2, Position.X, Position.Y, Position.Z, 0)}
 end
@@ -1658,11 +1638,11 @@ function P3D.LocatorP3DChunk:GetType9Data()
 		else
 			if #buffer > 0 then
 				if index == 1 then
-					UnknownStr1 = table.concat(buffer)
+					UnknownStr1 = concat(buffer)
 				elseif index == 2 then
-					UnknownStr2 = table.concat(buffer)
+					UnknownStr2 = concat(buffer)
 				elseif index == 3 then
-					Type = table.concat(buffer)
+					Type = concat(buffer)
 				end
 				buffer = {}
 				index = index + 1
@@ -1683,7 +1663,7 @@ function P3D.LocatorP3DChunk:GetTriggerCount()
 end
 
 function P3D.LocatorP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Data:len() + 12 + 4
 	return pack("<IIIs1iic" .. self.DataLen * 4 .."fffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Type, self.DataLen, self.Data, self.Position.X, self.Position.Y, self.Position.Z, self:GetTriggerCount()) .. chunks
 end
@@ -1712,7 +1692,7 @@ function P3D.SkeletonP3DChunk:GetJointCount()
 end
 
 function P3D.SkeletonP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self:GetJointCount()) .. chunks
 end
@@ -1732,7 +1712,7 @@ function P3D.SkeletonJointP3DChunk:create(Name,Parent,DOF,FreeAxis,PrimaryAxis,S
 end
 
 function P3D.SkeletonJointP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 64
 	return pack("<IIIs1iiiiiiffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Parent, self.DOF, self.FreeAxis, self.PrimaryAxis, self.SecondaryAxis, self.TwistAxis, self.RestPose.M11, self.RestPose.M12, self.RestPose.M13, self.RestPose.M14, self.RestPose.M21, self.RestPose.M22, self.RestPose.M23, self.RestPose.M34, self.RestPose.M31, self.RestPose.M32, self.RestPose.M33, self.RestPose.M34, self.RestPose.M41, self.RestPose.M42, self.RestPose.M43, self.RestPose.M44) .. chunks
 end
@@ -1751,7 +1731,7 @@ function P3D.OldFrameControllerP3DChunk:create(Version,Name,Type,FrameOffset,Hie
 end
 
 function P3D.OldFrameControllerP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4 + self.HierarchyName:len() + 1 + self.AnimationName:len() + 1
 	return pack("<IIIis1c4fs1s1", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.Type, self.FrameOffset, self.HierarchyName, self.AnimationName) .. chunks
 end
@@ -1780,7 +1760,7 @@ function P3D.PhysicsObjectP3DChunk:GetJointCount()
 end
 
 function P3D.PhysicsObjectP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.MaterialName:len() + 1 + 4 + 4 + 4
 	return pack("<IIIs1is1iff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, self:GetJointCount(), self.Volume, self.RestingSensitivity) .. chunks
 end
@@ -1810,7 +1790,7 @@ end
 
 function P3D.CollisionObjectP3DChunk:Output()
 	local OwnerN = self:GetOwnerCount()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.MaterialName:len() + 1 + 4 + 4
 	return pack("<IIIs1is1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, #self.Chunks - OwnerN, OwnerN) .. chunks
 end
@@ -1839,7 +1819,7 @@ function P3D.CollisionVolumeP3DChunk:GetVolumeCount()
 end
 
 function P3D.CollisionVolumeP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4 + 4
 	return pack("<IIIiii", self.ChunkType, Len, Len + chunks:len(), self.ObjectReferenceIndex, self.OwnerIndex, self:GetVolumeCount()) .. chunks
 end
@@ -1869,7 +1849,7 @@ function P3D.MultiControllerP3DChunk:GetTrackCount()
 end
 
 function P3D.MultiControllerP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Length, self.Framerate, self:GetTrackCount()) .. chunks
 end
@@ -1899,7 +1879,7 @@ function P3D.MultiControllerTracksP3DChunk:create(...)
 		tracks[#tracks + 1] = pack("<s1fff", track.Name, track.StartTime, track.EndTime, track.Scale)
 		len = len + track.Name:len() + 1 + 4 + 4 + 4
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. table.concat(tracks)}
+	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. concat(tracks)}
 end
 
 function P3D.MultiControllerTracksP3DChunk:GetTrackCount()
@@ -1915,7 +1895,7 @@ function P3D.MultiControllerTracksP3DChunk:Output()
 		tracks[#tracks + 1] = pack("<s1fff", track.Name, track.StartTime, track.EndTime, track.Scale)
 		len = len + track.Name:len() + 1 + 4 + 4 + 4
 	end
-	return pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. table.concat(tracks)
+	return pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. concat(tracks)
 end
 
 --Animation Chunk
@@ -1932,7 +1912,7 @@ function P3D.AnimationP3DChunk:create(Version,Name,AnimationType,NumFrames,Frame
 end
 
 function P3D.AnimationP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + self.AnimationType:len() + 4 + 4 + 4
 	return pack("<IIIis1c4ffi", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.AnimationType, self.NumFrames, self.FrameRate, self.Cyclic) .. chunks
 end
@@ -1951,7 +1931,7 @@ function P3D.ParticleSystem2P3DChunk:create(Version,Name,Unknown)
 end
 
 function P3D.ParticleSystem2P3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + self.Unknown:len() + 1
 	return pack("<IIIis1s1", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.Unknown) .. chunks
 end
@@ -1980,7 +1960,7 @@ function P3D.ParticleSystemFactoryP3DChunk:GetEmitterCount()
 end
 
 function P3D.ParticleSystemFactoryP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4 + 4 + 2 + 2 + 4
 	return pack("<IIIis1fiihhi", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.FrameRate, self.NumAnimFrames, self.NumOLFrames, self.CycleAnim, self.EnableSorting, self:GetEmitterCount()) .. chunks
 end
@@ -2000,7 +1980,7 @@ function P3D.InstanceListP3DChunk:create(Name,Data)
 end
 
 function P3D.InstanceListP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + self.Data:len()
 	return pack("<IIIs1", self.ChunkType, Len, Len + chunks:len(), self.Name) .. self.Data .. chunks
 end
@@ -2020,7 +2000,7 @@ function P3D.ScenegraphP3DChunk:create(Name,Data)
 end
 
 function P3D.ScenegraphP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + self.Data:len()
 	return pack("<IIIs1", self.ChunkType, Len, Len + chunks:len(), self.Name) .. self.Data .. chunks
 end
@@ -2046,7 +2026,7 @@ function P3D.OldScenegraphBranchP3DChunk:create(Name)
 end
 
 function P3D.OldScenegraphBranchP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4
 	return pack("<IIIs1i", self.ChunkType, Len, Len + chunks:len(), self.Name, #self.Chunks) .. chunks
 end
@@ -2066,7 +2046,7 @@ function P3D.OldScenegraphTransformP3DChunk:create(Name,Transform)
 end
 
 function P3D.OldScenegraphTransformP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 64
 	return pack("<IIIs1iffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, #self.Chunks, self.Transform.M11, self.Transform.M12, self.Transform.M13, self.Transform.M14, self.Transform.M21, self.Transform.M22, self.Transform.M23, self.Transform.M34, self.Transform.M31, self.Transform.M32, self.Transform.M33, self.Transform.M34, self.Transform.M41, self.Transform.M42, self.Transform.M43, self.Transform.M44) .. chunks
 end
@@ -2085,7 +2065,7 @@ function P3D.OldScenegraphDrawableP3DChunk:create(Name,DrawableName,IsTranslucen
 end
 
 function P3D.OldScenegraphDrawableP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + self.DrawableName:len() + 1 + 4
 	return pack("<IIIs1s1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.DrawableName, self.IsTranslucent) .. chunks
 end
@@ -2104,7 +2084,7 @@ function P3D.AnimationGroupListP3DChunk:create(Version)
 end
 
 function P3D.AnimationGroupListP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4
 	return pack("<IIIii", self.ChunkType, Len, Len + chunks:len(), self.Version, #self.Chunks) .. chunks
 end
@@ -2123,7 +2103,7 @@ function P3D.AnimationGroupP3DChunk:create(Version,Name,GroupId)
 end
 
 function P3D.AnimationGroupP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIis1ii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.GroupId, #self.Chunks) .. chunks
 end
@@ -2158,7 +2138,7 @@ function P3D.CompressedQuaternionChannelP3DChunk:GetFrameCount()
 end
 
 function P3D.CompressedQuaternionChannelP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local FramesN = self:GetFrameCount()
 	local values = {}
 	for i=1,FramesN do
@@ -2166,7 +2146,7 @@ function P3D.CompressedQuaternionChannelP3DChunk:Output()
 		values[#values + 1] = pack("hhhh", math.floor(value.W * 32767), math.floor(value.X * 32767), math.floor(value.Y * 32767), math.floor(value.X * 32767))
 	end
 	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
-	return pack("<IIIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. table.concat(values) .. chunks
+	return pack("<IIIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. concat(values) .. chunks
 end
 
 --Follow Camera Data Chunk
@@ -2184,7 +2164,7 @@ function P3D.FollowCameraDataP3DChunk:create(Index,Unknown,Angle,Distance,Look)
 end
 
 function P3D.FollowCameraDataP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4 + 4 + 4 + 12
 	return pack("<IIIiffffff", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Unknown, self.Angle, self.Distance, self.Look.X, self.Look.Y, self.Look.Z) .. chunks
 end
@@ -2203,7 +2183,7 @@ function P3D.SpriteP3DChunk:create(Name,NativeX,NativeY,Shader,ImageWidth,ImageH
 end
 
 function P3D.SpriteP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Shader:len() + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self.ImageCount, self.BlitBorder) .. chunks
 end
@@ -2262,7 +2242,7 @@ function P3D.ImageP3DChunk:create(Name,Version,Width,Height,Bpp,Palettized,HasAl
 end
 
 function P3D.ImageP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.Palettized, self.HasAlpha, self.Format) .. chunks
 end
@@ -2283,7 +2263,7 @@ function P3D.ImageDataP3DChunk:create(ImageData)
 end
 
 function P3D.ImageDataP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local ImageDataSize = self.ImageData:len()
 	local Len = 12 + 4 + ImageDataSize
 	return pack("<IIIic" .. ImageDataSize, self.ChunkType, Len, Len + chunks:len(), ImageDataSize, self.ImageData) .. chunks
@@ -2310,7 +2290,7 @@ function P3D.FrontendTextBibleP3DChunk:GetLanguageCount()
 end
 
 function P3D.FrontendTextBibleP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.Languages:len() + 1
 	return pack("<IIIs1is1", self.ChunkType, Len, Len + chunks:len(), self.Name, self:GetLanguageCount(), self.Languages) .. chunks
 end
@@ -2383,7 +2363,7 @@ function P3D.FrontendLanguageP3DChunk:GetEntryCount()
 end
 
 function P3D.FrontendLanguageP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local EntriesN = self:GetEntryCount()
 	local BufferSize = self.Buffer:len()
 	local Len = 12 + self.Name:len() + 1 + 1 + 4 + 4 + 4 + 4 * EntriesN + 4 * EntriesN + BufferSize
@@ -2393,7 +2373,7 @@ function P3D.FrontendLanguageP3DChunk:Output()
 	output[3] = pack("<" .. string.rep("I", EntriesN), table.unpack(self.Offsets))
 	output[4] = pack("<c" .. BufferSize, self.Buffer)
 	output[5] = chunks
-	return table.concat(output)
+	return concat(output)
 end
 
 --Trigger Volume Chunk
@@ -2412,7 +2392,7 @@ function P3D.TriggerVolumeP3DChunk:create(Name,IsRect,HalfExtents,Matrix)
 end
 
 function P3D.TriggerVolumeP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 12 + 64
 	return pack("<IIIs1ifffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsRect, self.HalfExtents.X, self.HalfExtents.Y, self.HalfExtents.Z, self.Matrix.M11, self.Matrix.M12, self.Matrix.M13, self.Matrix.M14, self.Matrix.M21, self.Matrix.M22, self.Matrix.M23, self.Matrix.M34, self.Matrix.M31, self.Matrix.M32, self.Matrix.M33, self.Matrix.M34, self.Matrix.M41, self.Matrix.M42, self.Matrix.M43, self.Matrix.M44) .. chunks
 end
@@ -2431,7 +2411,7 @@ function P3D.FrontendProjectP3DChunk:create(Name,Version,ResolutionX,ResolutionY
 end
 
 function P3D.FrontendProjectP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + self.Platform:len() + 1 + self.PagePath:len() + 1 + self.ResourcePath:len() + 1 + self.ScreenPath:len() + 1
 	return pack("<IIIs1iiis1s1s1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.ResolutionX, self.ResolutionY, self.Platform, self.PagePath, self.ResourcePath, self.ScreenPath) .. chunks
 end
@@ -2450,7 +2430,7 @@ function P3D.FrontendPageP3DChunk:create(Name,Version,ResolutionX,ResolutionY)
 end
 
 function P3D.FrontendPageP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4
 	return pack("<IIIs1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.ResolutionX, self.ResolutionY) .. chunks
 end
@@ -2469,7 +2449,7 @@ function P3D.FrontendLayerP3DChunk:create(Name,Version,Visible,Editable,Alpha)
 end
 
 function P3D.FrontendLayerP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Visible, self.Editable, self.Alpha) .. chunks
 end
@@ -2497,9 +2477,28 @@ function P3D.FrontendMultiTextP3DChunk:create(Name,Version,PositionX,PositionY,D
 end
 
 function P3D.FrontendMultiTextP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + self.TextStyleName:len() + 1 + 1 + 4 + 4 + 4 + 4
 	return pack("<IIIs1iiiiiiiBBBBifs1BBBBBiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.PositionX, self.PositionY, self.DimensionX, self.DimensionY, self.JustificationX, self.JustificationY, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Translucency, self.RotationValue, self.TextStyleName, self.ShadowEnabled, self.ShadowColour.B, self.ShadowColour.G, self.ShadowColour.R, self.ShadowColour.A, self.ShadowOffsetX, self.ShadowOffsetY, self.CurrentText) .. chunks
+end
+
+--Frontend Text Style Resource Chunk
+P3D.FrontendTextStyleResourceP3DChunk = P3D.P3DChunk:newChildClass("Frontend Text Style Resource")
+function P3D.FrontendTextStyleResourceP3DChunk:new(Data)
+	local o = P3D.FrontendTextStyleResourceP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Filename, o.InventoryName = unpack("<s1is1s1", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendTextStyleResourceP3DChunk:create(Name,Version,Filename,InventoryName)
+	local Len = 12 + Name:len() + 1 + 4 + Filename:len() + 1 + InventoryName:len() + 1
+	return P3D.FrontendTextStyleResourceP3DChunk:new{Raw = pack("<IIIs1is1s1", P3D.Identifiers.Frontend_Text_Style_Resource, Len, Len, Name, Version, Filename, InventoryName)}
+end
+
+function P3D.FrontendTextStyleResourceP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.Filename:len() + 1 + self.InventoryName:len() + 1
+	return pack("<IIIs1is1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Filename, self.InventoryName) .. chunks
 end
 
 --Frontend String Text Bible Chunk
@@ -2516,7 +2515,69 @@ function P3D.FrontendStringTextBibleP3DChunk:create(BibleName,StringId)
 end
 
 function P3D.FrontendStringTextBibleP3DChunk:Output()
-	local chunks = table.concat(self.Chunks)
+	local chunks = concat(self.Chunks)
 	local Len = 12 + self.BibleName:len() + 1 + self.StringId:len() + 1
 	return pack("<IIIs1s1", self.ChunkType, Len, Len + chunks:len(), self.BibleName, self.StringId) .. chunks
+end
+
+--Road Data Segment Chunk
+P3D.RoadDataSegmentP3DChunk = P3D.P3DChunk:newChildClass("Road Data Segment")
+function P3D.RoadDataSegmentP3DChunk:new(Data)
+	local o = P3D.RoadDataSegmentP3DChunk.parentClass.new(self, Data)
+	o.Position = {X=0,Y=0,Z=0}
+	o.Position2 = {X=0,Y=0,Z=0}
+	o.Position3 = {X=0,Y=0,Z=0}
+	o.Name, o.Unknown, o.Lanes, o.Unknown2, o.Position.X, o.Position.Y, o.Position.Z, o.Position2.X, o.Position2.Y, o.Position2.Z, o.Position3.X, o.Position3.Y, o.Position3.Z = unpack("<s1iiifffffffff", o.ValueStr)
+	return o
+end
+
+function P3D.RoadDataSegmentP3DChunk:create(Name,Unknown,Lanes,Unknown2,Position,Position2,Position3)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 12 + 12 + 12
+	return P3D.RoadDataSegmentP3DChunk:new{Raw = pack("<IIIs1iiifffffffff", P3D.Identifiers.Road_Data_Segment, Len, Len, Name, Unknown, Lanes, Unknown2, Position.X, Position.Y, Position.Z, Position2.X, Position2.Y, Position2.Z, Position3.X, Position3.Y, Position3.Z)}
+end
+
+function P3D.RoadDataSegmentP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 12 + 12 + 12
+	return pack("<IIIs1iiifffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.Lanes, self.Unknown2, self.Position.X, self.Position.Y, self.Position.Z, self.Position2.X, self.Position2.Y, self.Position2.Z, self.Position3.X, self.Position3.Y, self.Position3.Z) .. chunks
+end
+
+--Road Segment Chunk
+P3D.RoadSegmentP3DChunk = P3D.P3DChunk:newChildClass("Road Segment")
+function P3D.RoadSegmentP3DChunk:new(Data)
+	local o = P3D.RoadSegmentP3DChunk.parentClass.new(self, Data)
+	o.Transform = P3D.MatrixIdentity()
+	o.Unknown = P3D.MatrixIdentity()
+	o.Name, o.CubeShape, o.Transform.M11, o.Transform.M12, o.Transform.M13, o.Transform.M14, o.Transform.M21, o.Transform.M22, o.Transform.M23, o.Transform.M34, o.Transform.M31, o.Transform.M32, o.Transform.M33, o.Transform.M34, o.Transform.M41, o.Transform.M42, o.Transform.M43, o.Transform.M44, o.Unknown.M11, o.Unknown.M12, o.Unknown.M13, o.Unknown.M14, o.Unknown.M21, o.Unknown.M22, o.Unknown.M23, o.Unknown.M34, o.Unknown.M31, o.Unknown.M32, o.Unknown.M33, o.Unknown.M34, o.Unknown.M41, o.Unknown.M42, o.Unknown.M43, o.Unknown.M44 = unpack("<s1s1ffffffffffffffffffffffffffffffff", o.ValueStr)
+	return o
+end
+
+function P3D.RoadSegmentP3DChunk:create(Name,CubeShape,Transform,Unknown)
+	local Len = 12 + Name:len() + 1 + CubeShape:len() + 1 + 64 + 64
+	return P3D.RoadSegmentP3DChunk:new{Raw = pack("<IIIs1s1ffffffffffffffffffffffffffffffff", P3D.Identifiers.Road_Segment, Len, Len, Name, CubeShape, Transform.M11, Transform.M12, Transform.M13, Transform.M14, Transform.M21, Transform.M22, Transform.M23, Transform.M34, Transform.M31, Transform.M32, Transform.M33, Transform.M34, Transform.M41, Transform.M42, Transform.M43, Transform.M44, Unknown.M11, Unknown.M12, Unknown.M13, Unknown.M14, Unknown.M21, Unknown.M22, Unknown.M23, Unknown.M34, Unknown.M31, Unknown.M32, Unknown.M33, Unknown.M34, Unknown.M41, Unknown.M42, Unknown.M43, Unknown.M44)}
+end
+
+function P3D.RoadSegmentP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + self.CubeShape:len() + 1 + 64 + 64
+	return pack("<IIIs1s1ffffffffffffffffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.CubeShape, self.Transform.M11, self.Transform.M12, self.Transform.M13, self.Transform.M14, self.Transform.M21, self.Transform.M22, self.Transform.M23, self.Transform.M34, self.Transform.M31, self.Transform.M32, self.Transform.M33, self.Transform.M34, self.Transform.M41, self.Transform.M42, self.Transform.M43, self.Transform.M44, self.Unknown.M11, self.Unknown.M12, self.Unknown.M13, self.Unknown.M14, self.Unknown.M21, self.Unknown.M22, self.Unknown.M23, self.Unknown.M34, self.Unknown.M31, self.Unknown.M32, self.Unknown.M33, self.Unknown.M34, self.Unknown.M41, self.Unknown.M42, self.Unknown.M43, self.Unknown.M44) .. chunks
+end
+
+--Road Chunk
+P3D.RoadP3DChunk = P3D.P3DChunk:newChildClass("Road")
+function P3D.RoadP3DChunk:new(Data)
+	local o = P3D.RoadP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Unknown, o.StartIntersectionLocatorNode, o.EndIntersectionLocatorNode, o.MaximumCars, o.Speed, o.Intelligence, o.Shortcut, o.Unknown4 = unpack("<s1is1s1iBBBB", o.ValueStr)
+	return o
+end
+
+function P3D.RoadP3DChunk:create(Name,Unknown,StartIntersectionLocatorNode,EndIntersectionLocatorNode,MaximumCars,Speed,Intelligence,Shortcut,Unknown4)
+	local Len = 12 + Name:len() + 1 + 4 + StartIntersectionLocatorNode:len() + 1 + EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
+	return P3D.RoadP3DChunk:new{Raw = pack("<IIIs1is1s1iBBBB", P3D.Identifiers.Road, Len, Len, Name, Unknown, StartIntersectionLocatorNode, EndIntersectionLocatorNode, MaximumCars, Speed, Intelligence, Shortcut, Unknown4)}
+end
+
+function P3D.RoadP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.StartIntersectionLocatorNode:len() + 1 + self.EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
+	return pack("<IIIs1is1s1iBBBB", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.StartIntersectionLocatorNode, self.EndIntersectionLocatorNode, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut, self.Unknown4) .. chunks
 end
