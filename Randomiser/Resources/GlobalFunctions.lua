@@ -4,6 +4,11 @@ GetPath = function ()
     return FixSlashes(OriginalGetPath(), false, true)
 end
 
+function trim(s)
+   local n = s:find"%S"
+   return n and s:match(".*%S", n) or ""
+end
+
 function ShuffleTbl(tbl)
 	local tblN = #tbl
 	local j
@@ -154,10 +159,7 @@ function DebugPrint(msg, level)
 	if Settings.DebugLevel < level then
 		return false
 	end
-	local currTime = os.date("*t")
-	local currTimeStr = string.format("[%02d-%02d-%02d %02d:%02d:%02d] ", currTime.year, currTime.month, currTime.day, currTime.hour, currTime.min, currTime.sec)
-	local prefix = "<Randomiser v" .. ModVersion .. "> "
-	print(currTimeStr .. prefix .. msg)
+	print(ModName, ModVersion, msg)
 	return true
 end
 

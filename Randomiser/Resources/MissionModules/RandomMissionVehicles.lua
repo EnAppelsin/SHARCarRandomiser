@@ -97,7 +97,7 @@ if Settings.RandomMissionVehicles then
 			if #TmpDriverPool == 0 then
 				TmpDriverPool = {table.unpack(RandomPedPool)}
 			end
-			MissionDrivers[#MissionDrivers + 1] = MissionDrivers
+			MissionDrivers[#MissionDrivers + 1] = driverName
 			for k in pairs(CarDrivers) do
 				if k == orig then
 					return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. driverName .. "\");"

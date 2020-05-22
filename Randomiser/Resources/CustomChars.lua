@@ -11,12 +11,12 @@ if IsModEnabled("RandomiserChars") then
 			if not endsWith(Name, "_m") then
 				DebugPrint("Could not load custom char " .. Name .. " due to missing invalid file name. File names must end \"_m\".")
 			else
-				local CompositeDrawableName = GetCompositeDrawableName(ReadFile(Path)):sub(1, -3)
+				local CompositeDrawableName = GetCompositeDrawableName(ReadFile(Path))
 				if CompositeDrawableName == nil then
 					DebugPrint("Could not load custom char " .. Name .. " due to missing Composite Drawable chunk.")
 				else
 					RandomCharP3DPool[#RandomCharP3DPool + 1] = Path
-					RandomPedPool[#RandomPedPool + 1] = CompositeDrawableName
+					RandomPedPool[#RandomPedPool + 1] = P3D.CleanP3DString(CompositeDrawableName):sub(1, -3)
 					CustomChars[Name] = Path
 					DebugPrint("Loaded custom char " .. Name .. " with Composite Drawable " .. CompositeDrawableName)
 				end

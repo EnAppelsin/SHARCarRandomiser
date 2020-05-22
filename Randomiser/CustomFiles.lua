@@ -1,4 +1,3 @@
-ModPath = GetModPath()
 Settings = GetSettings()
 
 Paths = {}
@@ -9,14 +8,22 @@ dofile(Paths.Resources .. "GlobalArrays.lua")
 dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
-dofile(Paths.Resources .. "lib/P3DChunk.lua")
+dofile(Paths.Resources .. "lib/P3DFunctions.lua")
 
 GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
+local ExcludedChars = {["npd_m"]=true,["ndr_m"]=true,["nps_m"]=true}
 for i=#RandomCharP3DPool,1,-1 do
-	if not endsWith(RemoveFileExtension(GetFileName(RandomCharP3DPool[i])), "_m") then
+	local fName = RemoveFileExtension(GetFileName(RandomCharP3DPool[i]))
+	if fName:sub(-2) ~= "_m" or ExcludedChars[fName] then
 		table.remove(RandomCharP3DPool, i)
+	else
+		local compName = P3D.CleanP3DString(GetCompositeDrawableName(ReadFile(RandomCharP3DPool[i])))
+		if compName:sub(-2) == "_h" then
+			RandomPedPool[#RandomPedPool + 1] = compName:sub(1, -3)
+		end
 	end
 end
+RandomPedPoolN = #RandomPedPool
 
 if Settings.SpeedrunMode then
 	--Force on
@@ -57,16 +64,16 @@ end
 
 DebugPrint("Debug settings enabled: " .. (Settings.UseDebugSettings and "true" or "false"))
 
-if #RandomCarPoolPlayer < 5 and SettingRandomPlayerVehicles then
+if #RandomCarPoolPlayer < 5 and Settings.RandomPlayerVehicles then
 	Alert("You have chosen less than 5 cars for the random player pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolTraffic < 5 and SettingRandomTraffic then
+elseif #RandomCarPoolTraffic < 5 and Settings.RandomTraffic then
 	Alert("You have chosen less than 5 cars for the random traffic pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolMission < 5 and SettingRandomMissionVehicles then
+elseif #RandomCarPoolMission < 5 and Settings.RandomMissionVehicles then
 	Alert("You have chosen less than 5 cars for the random mission pool. You must choose at least 5 cars.")
 	os.exit()
-elseif #RandomCarPoolChase < 5 and SettingRandomChase then
+elseif #RandomCarPoolChase < 5 and Settings.RandomChase then
 	Alert("You have chosen less than 5 cars for the random chase pool. You must choose at least 5 cars.")
 	os.exit()
 end
@@ -87,16 +94,6 @@ if Settings.VerboseDebug then
 	end
 end
 
--- Hijack (for now) ReadFile to decompress P3Ds
-local OldReadFile = ReadFile
-ReadFile = function(Path, ...)
-	local File = OldReadFile(Path, ...)
-	if Path:sub(-3) == "p3d" then
-		return DecompressP3D(File)
-	end
-	return File
-end
-
 DebugPrint("Randomiser Settings", 2)
 for settingName, settingValue in pairs(Settings) do
 	DebugPrint("- " .. settingName .. " = " .. tostring(settingValue), 2)
@@ -113,10 +110,6 @@ end
 dofile(Paths.Resources .. "RandomCarTune.lua")
 if Settings.RandomDialogue then
 	dofile(Paths.Resources .. "RandomDialogue.lua")
-end
-
-if Settings.RandomMissions then
-	dofile(Paths.Resources .. "RandomMissions.lua")
 end
 
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")

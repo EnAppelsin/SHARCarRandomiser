@@ -7,9 +7,8 @@ local Path = "/GameData/" .. GetPath()
 -- Only shuffle things once just in case
 if Cache.SRR2 ~= nil then
 	Output(Cache.SRR2)
+	return
 end
-
-local Original = ReadFile(Path)
 
 local GameplaySettings = 
 {
@@ -30,7 +29,7 @@ local GameplaySettings =
 [0x4000]=Settings.BoostHP,
 [0x8000]=Settings.RemoveOutOfCar,
 [0x10000]=Settings.RandomStaticCars,
-[0x20000]=Settings.SaveChoiceRSC
+[0x20000]=Settings.SaveChoiceRSC,
 }
 
 local GraphicalSettings =
@@ -43,7 +42,7 @@ local GraphicalSettings =
 [0x20]=Settings.RandomMissionCharacters,
 [0x40]=Settings.RandomCarScale,
 [0x80]=Settings.RandomCarSounds,
-[0x100]=Settings.RandomPedestrians
+[0x100]=Settings.RandomPedestrians,
 }
 
 local ChaosSettings = 
@@ -78,65 +77,37 @@ for k, v in pairs(ChaosSettings) do
 	end
 end
 
--- Find bible
-local BiblePos, BibleLen = FindSubchunk(Original, TEXT_BIBLE_CHUNK)
-local Bible = Original:sub(BiblePos, BiblePos + BibleLen - 1)
-local EnglishPos, EnglishLen = FindSubchunk(Bible, LANGUAGE_CHUNK)
-local English = Bible:sub(EnglishPos, EnglishPos + EnglishLen - 1)
+local Values = os.date("[%Y-%m-%d]") .. "\n" .. ModName .. " v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)
 
--- Random Text Support
-if Settings.RandomText then
-	local ENTRIES = GetP3DInt4(English, 71)
-	
-	-- Read offsets as ints into an array
-	local Offsets = {}
-	for i = 1, ENTRIES do
-		Offsets[#Offsets + 1] = GetP3DInt4(English, 83 + 4 * ENTRIES + 4 * (i - 1))
+local Chunk = P3D.P3DChunk:new{Raw = ReadFile(Path)}
+local BibleIdx = Chunk:GetChunkIndex(P3D.Identifiers.Frontend_Text_Bible)
+if not BibleIdx then return end
+local BibleChunk = P3D.FrontendTextBibleP3DChunk:new{Raw = Chunk:GetChunkAtIndex(BibleIdx)}
+for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
+	local LanguageChunk = P3D.FrontendLanguageP3DChunk:new{Raw = BibleChunk:GetChunkAtIndex(idx)}
+	if Settings.RandomText then
+		for i=#LanguageChunk.Offsets,2,-1 do
+			local j = math.random(i)
+			LanguageChunk.Offsets[i], LanguageChunk.Offsets[j] = LanguageChunk.Offsets[j], LanguageChunk.Offsets[i]
+		end
+		if math.random(20) == 1 then
+			local ucs2 = {}
+			for i=1,#LanguageChunk.Buffer,2 do
+				local s = string.unpack("<H", LanguageChunk.Buffer, i)
+				local case = math.random(2)
+				if case == 1 and s >= 65 and s <= 90 then
+					s = s + 32
+				elseif case == 2 and s >= 97 and s <= 122 then
+					s = s - 32
+				end
+				ucs2[#ucs2 + 1] = s
+			end
+			LanguageChunk.Buffer = string.pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
+		end
 	end
-	
-	-- Shuffle array
-	for i = #Offsets, 2, -1 do
-		local j = math.random(i)
-		Offsets[i], Offsets[j] = Offsets[j], Offsets[i]
-	end
-	
-	-- Recreate binary string of offsets
-	local StrOffsets = ""
-	for i = 1, ENTRIES do
-		StrOffsets = StrOffsets .. IntToString4(Offsets[i])
-	end
-	
-	English = English:sub(1, 82 + 4*ENTRIES) .. StrOffsets .. English:sub(83 + 8*ENTRIES)
+	LanguageChunk:AddValue("RandoSettings", Values)
+	BibleChunk:SetChunkAtIndex(idx, LanguageChunk:Output())
 end
-
--- Add the settings string
-
-local STRING = AsciiToUTF16(os.date("[%Y-%m-%d]") .. "\nRandomiser v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)) .. "\0\0"
-
--- Increment number of entires by 1
-English = AddP3DInt4(English, 71, 1)
--- Hash for String ID "-" (yes it's "-" itself)
-local STRING_ID = "\x2D\x00\x00\x00"
-English = English:sub(1, 82) .. STRING_ID .. English:sub(83)
--- New number entries with our new '-' entry
-local N_ENTRIES = GetP3DInt4(English, 71)
-
--- Set the location of the "-" string to the end of the buffer
-English = English:sub(1, 82 + 4*N_ENTRIES) .. IntToString4(GetP3DInt4(English, 79)) .. English:sub(83 + 4*N_ENTRIES)
-English = English .. STRING
-
--- Update lengths
-English = AddP3DInt4(English, 5, STRING:len())
-English = AddP3DInt4(English, 9, STRING:len())
-English = AddP3DInt4(English, 79, STRING:len())
-
--- Update parent chunks
-Bible = Bible:sub(1, EnglishPos - 1) .. English .. Bible:sub(EnglishPos + EnglishLen)
-Bible = AddP3DInt4(Bible, 9, STRING:len())
-
-Original = Original:sub(1, BiblePos - 1) .. Bible .. Original:sub(BiblePos + BibleLen)
-Original = AddP3DInt4(Original, 9, STRING:len())
-
-Cache.SRR2 = Original
-
-Output(Original)
+Chunk:SetChunkAtIndex(BibleIdx, BibleChunk:Output())
+Cache.SRR2 = Chunk:Output()
+Output(Cache.SRR2)

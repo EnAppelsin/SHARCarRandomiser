@@ -126,7 +126,7 @@ if Settings.RandomItems then
 			local Ped
 			for i=1,#RandomPedPool do
 				Ped = RandomPedPool[i]
-				if CustomChars[Ped] then
+				if CustomChars and CustomChars[Ped] then
 					tmp[Ped .. "_h"] = RemoveFileExtension(FixSlashes(CustomChars[Ped]:sub(11), true, false))
 				else
 					tmp[Ped .. "_h"] = "art\\chars\\" .. Ped:sub(1, 6) .. "_m"
@@ -217,6 +217,7 @@ if Settings.RandomItems then
 			end
 		end)
 		for i=1,#items do
+			DebugPrint("Adding item load: " .. items[i] .. ".")
 			LoadFile = LoadFile .. "\r\nLoadP3DFile(\"" .. items[i] .. ".p3d\");"
 		end
 		return LoadFile, InitFile
