@@ -20,16 +20,8 @@ RandomCarPoolN = #RandomCarPool
 RandomDialoguePoolN = 0
 RCFDialoguePoolN = 0
 
-if IsHackLoaded("FileSystemRCFs") then
-	print("File system RCFs")
-	cartunespt = ReadFile("/GameData/sound/scripts/car_tune.spt"):gsub("SetEngineClipName %( \"tt\" %)", "SetEngineClipName ( \"snake_car\" )"):gsub("SetEngineIdleClipName %( \"tt\" %)", "SetEngineIdleClipName ( \"snake_car\" )"):gsub("\r\n    SetOverlayClipName %( \"\" %)", ""):gsub("\r\n    SetOverlayClipName %( \"generator\" %)", "")
-	carsoundspt = ReadFile("/GameData/sound/scripts/carsound.spt")
-	dialogspt = ReadFile("/GameData/sound/scripts/dialog.spt")
-else
-	cartunespt = ReadFile(Paths.Resources .. "car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-	carsoundspt = ReadFile(Paths.Resources .. "carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-	dialogspt = ReadFile(Paths.Resources .. "dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-end
+cartunespt = ReadFile("/GameData/sound/scripts/car_tune.spt"):gsub("SetEngineClipName %( \"tt\" %)", "SetEngineClipName ( \"snake_car\" )"):gsub("SetEngineIdleClipName %( \"tt\" %)", "SetEngineIdleClipName ( \"snake_car\" )"):gsub("\r\n    SetOverlayClipName %( \"\" %)", ""):gsub("\r\n    SetOverlayClipName %( \"generator\" %)", "")
+carsoundspt = ReadFile("/GameData/sound/scripts/carsound.spt")
 
 --Random Stat Min/Max Variables
 if Settings.RandomStats then

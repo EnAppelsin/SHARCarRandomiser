@@ -29,42 +29,63 @@ if Settings.RandomDialogue and (RandomDialoguePoolN > 0 or RCFDialoguePoolN > 0)
 		Output(ReadFileOffset(DataEntry.Path, DataEntry.Position + 1, DataEntry.Size))
 	end
 elseif Settings.RandomMissions and Path:match("L%d") then
+	if Exists(Path, true, false) then
+		--File exists, leave it
+		return
+	else
+		for i = 1, 7 do
+			local tmp = Path:gsub("L(%d)", "L%1M" .. i)
+			if Exists(tmp, true, false) then
+				DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+				Redirect(tmp)
+				return
+			else
+				local tmp = Path:gsub("L(%d)", "L%1R" .. i)
+				if Exists(tmp, true, false) then
+					DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+					Redirect(tmp)
+					return
+				else
+					local tmp = Path:gsub("L(%d)", "L%1B" .. i)
+					if Exists(tmp, true, false) then
+						DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+						Redirect(tmp)
+						return	
+					end
+				end
+			end
+		end
+	end
 	if IsModEnabled("RandomiserDialogue") then
 		local RedirectPath = Path:gsub("/GameData/", "/GameData/RandomDialogue/")
 		if Exists(RedirectPath, true, false) then
 			DebugPrint("Redirecting " .. Path .. " to " .. RedirectPath)
 			Redirect(RedirectPath)
 		else
-			local redirected = false
-				for i = 1, 7 do
-					local tmp = RedirectPath:gsub("L(%d)", "L%1M" .. i)
+			for i = 1, 7 do
+				local tmp = RedirectPath:gsub("L(%d)", "L%1M" .. i)
+				if Exists(tmp, true, false) then
+					DebugPrint("Redirecting " .. Path .. " to " .. tmp)
+					Redirect(tmp)
+					return
+				else
+					local tmp = RedirectPath:gsub("L(%d)", "L%1R" .. i)
 					if Exists(tmp, true, false) then
 						DebugPrint("Redirecting " .. Path .. " to " .. tmp)
 						Redirect(tmp)
-						redirected = true
-						break
+						return
 					else
-						local tmp = RedirectPath:gsub("L(%d)", "L%1R" .. i)
+						local tmp = RedirectPath:gsub("L(%d)", "L%1B" .. i)
 						if Exists(tmp, true, false) then
 							DebugPrint("Redirecting " .. Path .. " to " .. tmp)
 							Redirect(tmp)
-							redirected = true
-							break
-						else
-							local tmp = RedirectPath:gsub("L(%d)", "L%1B" .. i)
-							if Exists(tmp, true, false) then
-								DebugPrint("Redirecting " .. Path .. " to " .. tmp)
-								Redirect(tmp)
-								redirected = true
-								break	
-							end
+							return
 						end
 					end
 				end
-			if not redirected then
-				DebugPrint("Redirecting " .. Path .. " to empty.rsd")
-				Redirect(Paths.Resources .. "empty.rsd")
 			end
+			DebugPrint("Redirecting " .. Path .. " to empty.rsd")
+			Redirect(Paths.Resources .. "empty.rsd")
 		end
 	else
 		DebugPrint("Redirecting " .. Path .. " to empty.rsd")

@@ -112,10 +112,6 @@ if Settings.RandomDialogue then
 	dofile(Paths.Resources .. "RandomDialogue.lua")
 end
 
-if Settings.RandomMissions then
-	dofile(Paths.Resources .. "RandomMissions.lua")
-end
-
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
 DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
 DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission pool")

@@ -44,11 +44,6 @@ if IsModEnabled("RandomiserDialogue") then
 			os.exit()
 		end
 	end
-elseif not ReadFileOffset then
-	if not Confirm("You have Random Dialogue enabled without the RandomiserDialogue framework. Random Dialogue will not work without this.\n\nTo continue loading the game press OK, to close press Cancel.") then
-		os.exit()
-	end
-	Settings.RandomDialogue = false
 end
 
 local function LoadDialogueFromRCF(Path)
