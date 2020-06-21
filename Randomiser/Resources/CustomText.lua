@@ -43,6 +43,7 @@ local GraphicalSettings =
 [0x40]=Settings.RandomCarScale,
 [0x80]=Settings.RandomCarSounds,
 [0x100]=Settings.RandomPedestrians,
+[0x200]=Settings.SuperRandomDialogue,
 }
 
 local ChaosSettings = 
@@ -83,6 +84,10 @@ local Chunk = P3D.P3DChunk:new{Raw = ReadFile(Path)}
 local BibleIdx = Chunk:GetChunkIndex(P3D.Identifiers.Frontend_Text_Bible)
 if not BibleIdx then return end
 local BibleChunk = P3D.FrontendTextBibleP3DChunk:new{Raw = Chunk:GetChunkAtIndex(BibleIdx)}
+local RandomCase = math.random(20) == 1
+if RandomCase then
+	DebugPrint("Random Case Easter Egg")
+end
 for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
 	local LanguageChunk = P3D.FrontendLanguageP3DChunk:new{Raw = BibleChunk:GetChunkAtIndex(idx)}
 	if Settings.RandomText then
@@ -90,20 +95,20 @@ for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
 			local j = math.random(i)
 			LanguageChunk.Offsets[i], LanguageChunk.Offsets[j] = LanguageChunk.Offsets[j], LanguageChunk.Offsets[i]
 		end
-		if math.random(20) == 1 then
-			local ucs2 = {}
-			for i=1,#LanguageChunk.Buffer,2 do
-				local s = string.unpack("<H", LanguageChunk.Buffer, i)
-				local case = math.random(2)
-				if case == 1 and s >= 65 and s <= 90 then
-					s = s + 32
-				elseif case == 2 and s >= 97 and s <= 122 then
-					s = s - 32
-				end
-				ucs2[#ucs2 + 1] = s
+	end
+	if RandomCase then
+		local ucs2 = {}
+		for i=1,#LanguageChunk.Buffer,2 do
+			local s = string.unpack("<H", LanguageChunk.Buffer, i)
+			local case = math.random(2)
+			if case == 1 and s >= 65 and s <= 90 then
+				s = s + 32
+			elseif case == 2 and s >= 97 and s <= 122 then
+				s = s - 32
 			end
-			LanguageChunk.Buffer = string.pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
+			ucs2[#ucs2 + 1] = s
 		end
+		LanguageChunk.Buffer = string.pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
 	end
 	LanguageChunk:AddValue("RandoSettings", Values)
 	BibleChunk:SetChunkAtIndex(idx, LanguageChunk:Output())

@@ -86,12 +86,12 @@ local function LoadDialogueFromRCF(Path)
 end
 DebugPrint("Loading RCF dialog files")
 local StartTime = GetTime()
-LoadDialogueFromRCF("/GameData/dialog.rcf")
-LoadDialogueFromRCF("/GameData/dialogs.rcf")
-LoadDialogueFromRCF("/GameData/dialogf.rcf")
-LoadDialogueFromRCF("/GameData/dialogg.rcf")
+if Settings.DialogueIncludeEnglish then LoadDialogueFromRCF("/GameData/dialog.rcf") end
+if Settings.DialogueIncludeSpanish then LoadDialogueFromRCF("/GameData/dialogs.rcf") end
+if Settings.DialogueIncludeFrench then LoadDialogueFromRCF("/GameData/dialogf.rcf") end
+if Settings.DialogueIncludeGerman then LoadDialogueFromRCF("/GameData/dialogg.rcf") end
 local EndTime = GetTime()
-DebugPrint("Loaded in " .. (EndTime - StartTime) * 1000 .. "ms")
+DebugPrint("Loaded " .. #RCFDialoguePool .. " files in " .. (EndTime - StartTime) * 1000 .. "ms")
 
 RandomDialoguePoolN = #RandomDialoguePool
 RCFDialoguePoolN = #RCFDialoguePool
