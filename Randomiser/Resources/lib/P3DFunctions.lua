@@ -320,6 +320,17 @@ function ReplaceCar(Original, Replace)
 			OldName = CompDrawableChunk.Name
 			CompDrawableChunk.Name = NewName
 			OriginalP3D:SetChunkAtIndex(idx, CompDrawableChunk:Output())
+		elseif id == P3D.Identifiers.Multi_Controller then
+			local MultiControllerChunk = P3D.MultiControllerP3DChunk:new{Raw = OriginalP3D:GetChunkAtIndex(idx)}
+			MultiControllerChunk.Name = NewName
+			OriginalP3D:SetChunkAtIndex(idx, MultiControllerChunk:Output())
+		end
+	end
+	for idx in OriginalP3D:GetChunkIndexes(P3D.Identifiers.Old_Frame_Controller) do
+		local OldFrameControllerChunk = P3D.OldFrameControllerP3DChunk:new{Raw = OriginalP3D:GetChunkAtIndex(idx)}
+		if OldFrameControllerChunk.HierarchyName == OldName then
+			OldFrameControllerChunk.HierarchyName = NewName
+			OriginalP3D:SetChunkAtIndex(idx, OldFrameControllerChunk:Output())
 		end
 	end
 	

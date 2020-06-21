@@ -9,7 +9,7 @@ local function IsValidDialogueOGGVorbis(OGGPath)
 	return Channels == 1 and SampleRate == 24000
 end
 
-if IsModEnabled("RandomiserDialogue") then
+if Settings.DialogueIncludeFramework and IsModEnabled("RandomiserDialogue") then
 	if Exists("/GameData/RandomDialogue", false, true) then
 		DebugPrint("Loading RandomiserDialogue")
 		local extensions = {".rsd"}
