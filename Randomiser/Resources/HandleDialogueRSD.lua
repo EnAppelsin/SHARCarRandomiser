@@ -26,7 +26,7 @@ if Settings.RandomDialogue and (RandomDialoguePoolN > 0 or RCFDialoguePoolN > 0)
 				
 				local i = 0
 				while i < blockCount do
-					local blocks = math.random(Settings.SuperRandomDialogueMinBlockLength, Settings.SuperRandomDialogueMaxBlockLength)
+					local blocks = math.random(Settings.SuperRandomDialogueMinBlockLength, math.max(Settings.SuperRandomDialogueMinBlockLength + 1, Settings.SuperRandomDialogueMaxBlockLength))
 					DataEntry = GetRandomFromTbl(RCFDialoguePool)
 					local offset = 20 * math.random(0, 10)
 					data[#data + 1] = ReadFileOffset(DataEntry.Path, DataEntry.Position + 1 + 2048 + offset, math.min(20*blocks, DataEntry.Size - 2048 - offset))
@@ -61,7 +61,7 @@ if Settings.RandomDialogue and (RandomDialoguePoolN > 0 or RCFDialoguePoolN > 0)
 			
 			local i = 0
 			while i < blockCount do
-				local blocks = math.random(Settings.SuperRandomDialogueMinBlockLength, Settings.SuperRandomDialogueMaxBlockLength)
+				local blocks = math.random(Settings.SuperRandomDialogueMinBlockLength, math.max(Settings.SuperRandomDialogueMinBlockLength + 1, Settings.SuperRandomDialogueMaxBlockLength))
 				DataEntry = GetRandomFromTbl(RCFDialoguePool)
 				local offset = 20 * math.random(0, 10)
 				data[#data + 1] = ReadFileOffset(DataEntry.Path, DataEntry.Position + 1 + 2048 + offset, math.min(20*blocks, DataEntry.Size - 2048 - offset))

@@ -95,8 +95,7 @@ if Exists("/GameData/" .. Path, true, false) then
 								local SkinChunk = P3D.SkinP3DChunk:new{Raw = P3DFile:GetChunkAtIndex(idx)}
 								for opgIdx in SkinChunk:GetChunkIndexes(P3D.Identifiers.Old_Primitive_Group) do
 									local opg = P3D.OldPrimitiveGroupP3DChunk:new{Raw = SkinChunk:GetChunkAtIndex(opgIdx)}
-									if P3D.CleanP3DString(opg.ShaderName) == ShaderNAme then
-										opg.Name = "new_swatches"
+									if P3D.CleanP3DString(opg.ShaderName) == ShaderName then
 										opg.ShaderName = "new_swatches"
 										SkinChunk:SetChunkAtIndex(opgIdx, opg:Output())
 									end
