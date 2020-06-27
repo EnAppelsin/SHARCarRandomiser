@@ -28,14 +28,18 @@ if Settings.RandomWaypoints then
 	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, IsRace)
 		if not IsRace then
 			Waypoints = {}
-			for waypoint in InitFile:gmatch("AddStageWaypoint%s*%(%s*\"([^\n]+)\"") do
+			for waypoint in InitFile:gmatch("AddStageWaypoint%s*%(%s*\"([^\n]-)\"") do
 				Waypoints[waypoint] = true
 			end
-			for waypoint in InitFile:gmatch("AddCollectible%s*%(%s*\"([^\n]+)\"") do
+			for waypoint in InitFile:gmatch("AddCollectible%s*%(%s*\"([^\n]-)\"") do
 				Waypoints[waypoint] = true
 			end
 			InitFile = InitFile:gsub("SetStageTime%s*%(%s*%d*%s*%);", "")
 			InitFile = InitFile:gsub("AddStageTime%s*%(%s*%d*%s*%);", "")
+			local types = {["followdistance"] = true, ["timeout"] = true}
+			InitFile = InitFile:gsub("AddCondition%s*%(%s*\"([^\n]-)\"%s*%);.-CloseCondition%s*%(%s*%);", function(type)
+				if types[type] then return "" end
+			end)
 		end
 		return LoadFile, InitFile
 	end
