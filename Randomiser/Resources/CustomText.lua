@@ -57,6 +57,9 @@ local ChaosSettings =
 [0x40]=Settings.RandomBonusMissions,
 [0x80]=Settings.RandomLevelMissions,
 [0x100]=Settings.RandomText,
+[0x100]=Settings.RandomLapCount,
+[0x100]=Settings.RandomWaypoints,
+[0x100]=Settings.RandomUFOs,
 }
 
 local GameplayN = 0

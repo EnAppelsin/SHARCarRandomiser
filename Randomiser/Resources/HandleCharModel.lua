@@ -80,22 +80,23 @@ if Exists("/GameData/" .. Path, true, false) then
 					if Path:match("art/chars/" .. model .. "%.p3d") then
 						local Original = ReadFile("/GameData/" .. Path)
 						local P3DFile = P3D.P3DChunk:new{Raw = Original}
-						local ShaderName
+						local Shaders = nil
 						for idx, id in P3DFile:GetChunkIndexes(P3D.Identifiers.Shader) do
 							local ShaderChunk = P3D.ShaderP3DChunk:new{Raw = P3DFile:GetChunkAtIndex(idx)}
 							if P3D.CleanP3DString(ShaderChunk:GetTextureParameter("TEX")) == "char_swatches_lit.bmp" then
-								ShaderName = ShaderChunk.Name
+								Shaders = Shaders or {}
+								Shaders[P3D.CleanP3DString(ShaderChunk.Name)] = true
 								ShaderChunk.Name = "new_swatches"
 								P3DFile:SetChunkAtIndex(idx, ShaderChunk:Output())
 								break
 							end
 						end
-						if ShaderName then
+						if Shaders then
 							for idx in P3DFile:GetChunkIndexes(P3D.Identifiers.Skin) do
 								local SkinChunk = P3D.SkinP3DChunk:new{Raw = P3DFile:GetChunkAtIndex(idx)}
 								for opgIdx in SkinChunk:GetChunkIndexes(P3D.Identifiers.Old_Primitive_Group) do
 									local opg = P3D.OldPrimitiveGroupP3DChunk:new{Raw = SkinChunk:GetChunkAtIndex(opgIdx)}
-									if P3D.CleanP3DString(opg.ShaderName) == ShaderName then
+									if Shaders[P3D.CleanP3DString(opg.ShaderName)] then
 										opg.ShaderName = "new_swatches"
 										SkinChunk:SetChunkAtIndex(opgIdx, opg:Output())
 									end
