@@ -1601,6 +1601,39 @@ function P3D.LocatorP3DChunk:new(Data)
 	return o
 end
 
+function P3D.LocatorP3DChunk:createType0(Name, Position, Event, Parameter)
+	local DataLen = Parameter and 2 or 1
+	local Len = 12 + Name:len() + 1 + 4 + 4 + DataLen * 4 + 12 + 4
+	local tbl = {}
+	tbl[1] = Name
+	tbl[2] = 0
+	tbl[3] = DataLen
+	tbl[4] = Event
+	local i = 5
+	if Parameter then
+		tbl[5] = Parameter
+		i = 6
+	end
+	tbl[i] = Position.X
+	tbl[i + 1] = Position.Y
+	tbl[i + 2] = Position.Z
+	tbl[i + 3] = 0
+	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iii" .. (Parameter and "i" or "") .. "fffi", P3D.Identifiers.Locator, Len, Len, table.unpack(tbl))}
+end
+
+function P3D.LocatorP3DChunk:createType3(Name, Position, Rotation, ParkedCar, FreeCar)
+	ParkedCar = (ParkedCar == true or ParkedCar == 1) and 1 or 0
+	local DataLen = 2
+	if FreeCar then
+		FreeCar = FreeCar .. string.rep("\0", 4 - FreeCar:len() % 4)
+		DataLen = DataLen + FreeCar:len() / 4
+	else
+		FreeCar = ""
+	end
+	local Len = 12 + Name:len() + 1 + 4 + 4 + DataLen * 4 + 12 + 4
+	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iific" .. FreeCar:len() .. "fffi", P3D.Identifiers.Locator, Len, Len, Name, 3, DataLen, Rotation, ParkedCar, FreeCar, Position.X, Position.Y, Position.Z, 0)}
+end
+
 function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2)
 	local dataTbl = {UnknownStr1}
 	for i=1,4 - UnknownStr1:len() % 4 do
@@ -1624,6 +1657,18 @@ function P3D.LocatorP3DChunk:GetType0Data()
 	local Parameter = nil
 	if self.DataLen >= 2 then Parameter = unpack("<I", self.ValueStr, idx) end
 	return Event, Parameter
+end
+
+function P3D.LocatorP3DChunk:GetType3Data()
+	local Rotation, idx = unpack("<f", self.ValueStr, self.Name:len() + 1 + 4 + 4 + 1)
+	local ParkedCar, FreeCar
+	if self.DataLen >= 2 then
+		ParkedCar = unpack("<I", self.ValueStr, idx)
+		if self.DataLen > 2 then
+			FreeCar = unpack("<c" .. 4 * (self.DataLen - 2), self.ValueStr, idx)
+		end
+	end
+	return Rotation, ParkedCar, FreeCar
 end
 
 function P3D.LocatorP3DChunk:GetType9Data()
@@ -2182,25 +2227,18 @@ function P3D.SpriteP3DChunk:create(Name,NativeX,NativeY,Shader,ImageWidth,ImageH
 	return P3D.SpriteP3DChunk:new{Raw = pack("<IIIs1iis1iiii", P3D.Identifiers.Sprite, Len, Len, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight, ImageCount, BlitBorder)}
 end
 
+function P3D.SpriteP3DChunk:GetImageCount()
+	local NumImages = 0
+	for idx in self:GetChunkIndexes(P3D.Identifiers.Image) do
+		NumImages = NumImages + 1
+	end
+	return NumImages
+end
+
 function P3D.SpriteP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Shader:len() + 1 + 4 + 4 + 4 + 4
-	return pack("<IIIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self.ImageCount, self.BlitBorder) .. chunks
-end
-
-function P3D.SpriteP3DChunk:RemoveChunkAtIndex(idx)
-	local ID = self.ChunkTypes[idx]
-	P3D.SpriteP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
-	if ID == P3D.Identifiers.Image then
-		self.ImageCount = self.ImageCount - 1
-	end
-end
-
-function P3D.SpriteP3DChunk:AddChunk(ChunkData, idx)
-	local _, ID = P3D.SpriteP3DChunk.parentClass.AddChunk(self, ChunkData, idx)
-	if ID == P3D.Identifiers.Image then
-		self.ImageCount = self.ImageCount + 1
-	end
+	return pack("<IIIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self:GetImageCount(), self.BlitBorder) .. chunks
 end
 
 --Image Chunk

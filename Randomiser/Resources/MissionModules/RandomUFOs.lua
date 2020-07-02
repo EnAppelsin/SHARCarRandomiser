@@ -1,35 +1,31 @@
 local args = {...}
 local tbl = args[1]
 if Settings.RandomUFOs then
-	if not RoadPositions then
-		local startTime = GetTime()
-		RoadPositions = {}
-		for i=1,7 do
-			GetRoads(RoadPositions, i)
-			local tbl = RoadPositions["L" .. i]
-			local total = 0
-			for j=1,#tbl do
-				local road = tbl[j]
-				total = total + road.Length
-			end
-			RoadPositions["L" .. i .. "Total"] = total
-		end
-		local endTime = GetTime()
-		DebugPrint("Found " .. #RoadPositions.L1 .. " L1, " .. #RoadPositions.L2 .. " L2, " .. #RoadPositions.L3 .. " L3, " .. #RoadPositions.L4 .. " L4, " .. #RoadPositions.L5 .. " L5, " .. #RoadPositions.L6 .. " L6, " .. #RoadPositions.L7 .. " L7 in " .. (endTime - startTime) * 1000 .. "ms")
-	end
+	GetRoads()
 	
 	local sort = 5
 	local Level = {}
 	if not tbl.Level[sort] then
-		tbl.Level[sort] = Mission
+		tbl.Level[sort] = Level
 	else
 		Level = tbl.Level[sort]
 	end
 	
-	function Level.RandomUFO(LoadFile, InitFile, Level, Path)
-		UFOs = {}
+	function Level.RandomUFOs(LoadFile, InitFile, Level, Path)
+		UFO = nil
 		for ufo in InitFile:gmatch("AddFlyingActorByLocator%s*%(%s*\"[^\n]-\"%s*,%s*\"[^\n]-\"%s*,%s*\"([^\n]-)\"") do
-			UFOs[ufo] = true
+			UFO = ufo
+		end
+		if not UFO then
+			LoadFile = LoadFile .. [[
+LoadP3DFile("art\missions\level07\ufo.p3d");
+LoadP3DFile("art\missions\level07\ufobeam.p3d");]]
+			InitFile = InitFile .. [[
+PreallocateActors( "spaceship", "1" );
+AddFlyingActorByLocator("spaceship","Planet Express Ship","l]]
+			InitFile = InitFile .. Level .. [[_spaceship","NEVER_DESPAWN");
+AddBehaviour( "Planet Express Ship", "UFO_BEAM_ALWAYS_ON", "UfoBeam" );]]
+			UFO = "l" .. Level .. "_spaceship"
 		end
 		return LoadFile, InitFile
 	end

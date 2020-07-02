@@ -368,7 +368,7 @@ end
 --End Image
 
 --Roads
-function GetRoads(RoadPositions, Level)
+local function GetLevelRoads(RoadPositions, Level)
 	if not RoadPositions["L" .. Level] then RoadPositions["L" .. Level] = {} end
 	local tbl = RoadPositions["L" .. Level]
 	local P3DFile = P3D.P3DChunk:new{Raw = ReadFile("/GameData/art/L" .. Level .. "_TERRA.p3d")}
@@ -407,6 +407,25 @@ function GetRoads(RoadPositions, Level)
 				end
 			end
 		end
+	end
+end
+
+function GetRoads()
+	if not RoadPositions then
+		local startTime = GetTime()
+		RoadPositions = {}
+		for i=1,7 do
+			GetLevelRoads(RoadPositions, i)
+			local tbl = RoadPositions["L" .. i]
+			local total = 0
+			for j=1,#tbl do
+				local road = tbl[j]
+				total = total + road.Length
+			end
+			RoadPositions["L" .. i .. "Total"] = total
+		end
+		local endTime = GetTime()
+		DebugPrint("Found " .. #RoadPositions.L1 .. " L1, " .. #RoadPositions.L2 .. " L2, " .. #RoadPositions.L3 .. " L3, " .. #RoadPositions.L4 .. " L4, " .. #RoadPositions.L5 .. " L5, " .. #RoadPositions.L6 .. " L6, " .. #RoadPositions.L7 .. " L7 in " .. (endTime - startTime) * 1000 .. "ms")
 	end
 end
 --End Roads
