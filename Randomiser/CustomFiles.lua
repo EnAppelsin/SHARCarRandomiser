@@ -108,8 +108,13 @@ if Settings.CustomChars then
 end
 
 dofile(Paths.Resources .. "RandomCarTune.lua")
+
 if Settings.RandomDialogue then
 	dofile(Paths.Resources .. "RandomDialogue.lua")
+end
+
+if Settings.RandoPickupStars then
+	dofile(Paths.Resources .. "InitStars.lua")
 end
 
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")

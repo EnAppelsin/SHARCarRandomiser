@@ -18,5 +18,5 @@ if MissionModules.Level then
 		DebugPrint("Level Load File:\r\n" .. LoadFile)
 		DebugPrint("Level Init File:\r\n" .. InitFile)
 	end
-	Output(LoadFile)
+	Output(LoadFile.."\n"..'LoadP3DFile("art\\wrench0.p3d");')
 end
