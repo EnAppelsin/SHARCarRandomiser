@@ -17,7 +17,7 @@ Questions about the mod or development can be asked on our [Discord Server](http
 
 ## Settings
 ### Randomisations
-#### Random charactrer animations
+#### Random character animations
 Off by default
 This will randomise each characters animation set.
 #### Random pickup stars
