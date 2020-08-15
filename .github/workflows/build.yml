@@ -4,9 +4,7 @@ name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -23,14 +21,14 @@ jobs:
         path: randomiser
 
     # Runs a single command using the runners shell
-    - name: Cache Mod Launcher
+    - name: Cache mod launcher
       id: cache-mod-launcher
       uses: actions/cache@v2
       with:
         key: ${{ runner.os }}-shar-mod-launcher
         path: './mod-launcher'
       
-    - name: Download Mod Launcher
+    - name: Download mod launcher
       if: steps.cache-mod-launcher.outputs.cache-hit != 'true'
       uses: carlosperate/download-file-action@v1.0.3
       id: download-mod-launcher
@@ -39,22 +37,18 @@ jobs:
         file-name: 'launcher.zip'
         location: './'
       
-    - name: Extract Mod Launcher
+    - name: Extract mod launcher
       if: steps.cache-mod-launcher.outputs.cache-hit != 'true'
       run: |
         Expand-Archive -LiteralPath '.\launcher.zip' -DestinationPath '.\mod-launcher'
         
-    - name: Compile Mod
+    - name: Compile mod
       run: |
-        ls
-        ls .\mod-launcher
-        ls .\randomiser
         & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\" | Out-String
-        ls
         
-    - name: Upload Result
+    - name: Upload result
       uses: actions/upload-artifact@v2
       with:
-        name: mod
+        name: Randomiser Mod
         path: Randomiser.lmlm
       
