@@ -15,9 +15,20 @@ if Settings.RandomPlayerVehicles then
 		Mission = tbl.Mission[sort]
 	end
 	
+	-- Handle seeded mode
+	if Settings.IsSeeded then
+		Seed.RandomPlayerVehicles = { Level = {}, Mission = {} }
+		Seed.RandomPlayerVehicles.Level = Seed.MakeChoices(RandomCarPoolPlayer, 7)
+		Seed.RandomPlayerVehicles.Mission = Seed.MakeChoices(RandomCarPoolPlayer, 7, 15)
+	end
+	
 	function Level.RandomPlayerVehicles(LoadFile, InitFile, Level, Path)
 		LastLevel = nil
-		RandomCar = math.random(#RandomCarPoolPlayer)
+		if Settings.IsSeeded then
+			RandomCar = Seed.GetChoice(Seed.RandomPlayerVehicles.Level, Level)
+		else
+			RandomCar = math.random(#RandomCarPoolPlayer)
+		end
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
 		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomLevelCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomLevelCar.txt")
@@ -33,14 +44,25 @@ if Settings.RandomPlayerVehicles then
 		return LoadFile, InitFile
 	end
 	
-	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path)
+	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path, isRace)
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
-				RandomCar = math.random(#RandomCarPoolPlayer)
+				RandomCar = nil
 			end
 			LastLevel = Path
 		else
-			RandomCar = math.random(#RandomCarPoolPlayer)
+			RandomCar = nil
+		end
+		if RandomCar == nil then
+			if Settings.IsSeeded then
+				local MissIdx = Mission + 1
+				if isRace then
+					MissIdx = MissIdx + 10
+				end
+				RandomCar = Seed.GetChoice(Seed.RandomPlayerVehicles.Mission, Level, MissIdx)
+			else
+				RandomCar = math.random(#RandomCarPoolPlayer)
+			end
 		end
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
 		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomMissionCar.txt", true, false) then
