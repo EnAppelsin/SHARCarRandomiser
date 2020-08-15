@@ -49,7 +49,7 @@ jobs:
         ls
         ls .\mod-launcher
         ls .\randomiser
-        & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\"
+        & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\" | Out-String
         ls
         
     - name: Upload Result
