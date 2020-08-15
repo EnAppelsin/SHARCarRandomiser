@@ -47,8 +47,10 @@ jobs:
     - name: Compile Mod
       run: |
         ls
+        ls .\mod-launcher
         ls .\randomiser
         & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\"
+        ls
         
     - name: Upload Result
       uses: actions/upload-artifact@v2
