@@ -1,0 +1,56 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+  pull_request:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      with:
+        path: randomiser
+
+    # Runs a single command using the runners shell
+    - name: Cache Mod Launcher
+      id: cache-mod-launcher
+      uses: actions/cache@v2
+      with:
+        key: ${{ runner.os }}-shar-mod-launcher
+        path: './mod-launcher'
+      
+    - name: Download Mod Launcher
+      if: steps.cache-mod-launcher.outputs.cache-hit != 'true'
+      uses: carlosperate/download-file-action@v1.0.3
+      id: download-mod-launcher
+      with:
+        file-url: "https://cdn.donutteam.com/Downloads/Tools/Lucas'%20Simpsons%20Hit%20&%20Run%20Mod%20Launcher%201.25.1.zip"
+        file-name: 'launcher.zip'
+        location: './'
+      
+    - name: Extract Mod Launcher
+      if: steps.cache-mod-launcher.outputs.cache-hit != 'true'
+      run: |
+        Expand-Archive -LiteralPath '.\launcher.zip' -DestinationPath '.\mod-launcher'
+        
+    - name: Compile Mod
+      run: |
+        & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\"
+        
+    - name: Upload Result
+      uses: actions/upload-artifact@v2
+      with:
+        name: mod
+        path: Randomiser.lmlm
+      
