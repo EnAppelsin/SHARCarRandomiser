@@ -68,3 +68,20 @@ jobs:
           randomiser/RandomiserChars
           randomiser/RandomiserDialogue
           
+  release:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./
+      - name: Create archive
+        run: |
+          mv  "./Randomiser mod/Randomiser.lmlm" .
+          zip -r Randomiser.zip "./Randomiser.lmlm" "./Additional frameworks"
+      - uses: eine/tip@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ./Randomiser.zip
+          tag: auto-build-${{ github.ref }}
