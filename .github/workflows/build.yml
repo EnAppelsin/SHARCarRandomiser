@@ -75,9 +75,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           path: ./
+      - name: Create archive
+          run: |
+            zip Randomiser.zip "./Randomiser mod/Randomiser.lmlm" "./Additional frameworks"
       - uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ./*
+            ./Randomiser.zip
           tag: auto-build-${{ github.ref }}
