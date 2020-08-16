@@ -3,6 +3,14 @@ MissionModules.Level = {}
 MissionModules.Mission = {}
 MissionModules.SundayDrive = {}
 
+MissionType = 
+{
+	Normal = 1,
+	Race = 2,
+	BonusMission = 3,
+	GamblingRace = 4
+}
+
 local ModuleFiles = {}
 GetFiles(ModuleFiles, Paths.MissionModules, {".lua"}, 1)
 for i=1, #ModuleFiles do

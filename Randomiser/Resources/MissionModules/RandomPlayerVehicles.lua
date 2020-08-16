@@ -44,7 +44,7 @@ if Settings.RandomPlayerVehicles then
 		return LoadFile, InitFile
 	end
 	
-	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path, isRace)
+	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path, Type)
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
 				RandomCar = nil
@@ -56,8 +56,12 @@ if Settings.RandomPlayerVehicles then
 		if RandomCar == nil then
 			if Settings.IsSeeded then
 				local MissIdx = Mission + 1
-				if isRace then
+				if Type == MissionType.Race then
 					MissIdx = MissIdx + 10
+				elseif Type == MissionType.BonusMission then
+					MissIdx = 9
+				elseif Type == MissionType.GamblingRage then
+					MissIdx = 15
 				end
 				RandomCar = Seed.GetChoice(Seed.RandomPlayerVehicles.Mission, Level, MissIdx)
 			else

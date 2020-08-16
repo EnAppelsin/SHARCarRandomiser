@@ -50,8 +50,8 @@ if Settings.RandomWaypoints then
 		return LoadFile, InitFile
 	end
 	
-	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, IsRace)
-		if not IsRace then
+	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, Type)
+		if Type ~= MissionType.Race and Type ~= MissionType.GamblingRace then
 			Waypoints = {}
 			local WaypointN = GetWaypoints(InitFile)
 			if WaypointN > 0 then
