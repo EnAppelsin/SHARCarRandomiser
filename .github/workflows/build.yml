@@ -76,8 +76,8 @@ jobs:
         with:
           path: ./
       - name: Create archive
-          run: |
-            zip Randomiser.zip "./Randomiser mod/Randomiser.lmlm" "./Additional frameworks"
+        run: |
+          zip Randomiser.zip "./Randomiser mod/Randomiser.lmlm" "./Additional frameworks"
       - uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
