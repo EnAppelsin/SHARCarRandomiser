@@ -54,11 +54,17 @@ end
 function Seed.GetChoice(choices, idx1, idx2)
 	if idx2 == nil then
 		local rv = choices.Choices[idx1][choices.Attempt[idx1]]
-		choices.Attempt[idx1] = (choices.Attempt[idx1] + 1) % MAX_ATTEMPTS
+		choices.Attempt[idx1] = choices.Attempt[idx1] + 1
+		if choices.Attempt[idx1] > MAX_ATTEMPTS then
+			choices.Attempt[idx1] = 1
+		end
 		return rv
 	else
 		local rv = choices.Choices[idx1][idx2][choices.Attempt[idx1][idx2]]
-		choices.Attempt[idx1][idx2] = (choices.Attempt[idx1][idx2] + 1) % MAX_ATTEMPTS
+		choices.Attempt[idx1][idx2] = choices.Attempt[idx1][idx2] + 1
+		if choices.Attempt[idx1][idx2] > MAX_ATTEMPTS then
+			choices.Attempt[idx1][idx2] = 1
+		end
 		return rv
 	end
 end
