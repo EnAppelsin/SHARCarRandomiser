@@ -79,5 +79,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            ./artifact/*
+            ./*
           tag: auto-build-${{ github.ref }}
