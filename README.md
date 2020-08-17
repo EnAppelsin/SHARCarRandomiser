@@ -17,6 +17,12 @@ Questions about the mod or development can be asked on our [Discord Server](http
 
 ## Settings
 ### Randomisations
+#### Random character animations
+Off by default
+This will randomise each characters animation set.
+#### Random pickup stars
+On by default
+This will randomise the colour of each items pickup star
 #### Random couch character
 On by default.  
 If this is checked, you will get a random character sitting on the couch in the main menu.
