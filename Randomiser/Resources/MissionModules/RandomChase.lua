@@ -15,6 +15,11 @@ if Settings.RandomChase then
 		Mission = tbl.Mission[sort]
 	end
 	
+	if Settings.IsSeeded and Settings.RandomChaseAmount then
+		Seed.AddSpoiler("RandomChoiceAmount = ")
+		Seed.RandomChaseAmount = Seed.MakeChoices(5, 7)
+	end
+	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
 		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
 		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then
@@ -32,7 +37,12 @@ if Settings.RandomChase then
 			InitFile = InitFile:gsub("CreateChaseManager%s*%(%s*\"[^\n]-\"", "CreateChaseManager(\"" .. RandomChase .."\"", 1)
 		end
 		if Settings.RandomChaseAmount then
-			local chaseAmount = math.random(1, 5)
+			local chaseAmount
+			if Settings.IsSeeded then
+				chaseAmount = Seed.GetChoice(Seed.RandomChaseAmount, Level)
+			else
+				chaseAmount = math.random(1, 5)
+			end
 			InitFile = InitFile:gsub("SetNumChaseCars%s*%(%s*\"[^\n]-\"", "SetNumChaseCars(\"" .. chaseAmount .."\"", 1)
 			DebugPrint("Random chase amount -> " .. chaseAmount)
 		end
