@@ -16,7 +16,7 @@ if Settings.RandomChase then
 	end
 	
 	if Settings.IsSeeded and Settings.RandomChaseAmount then
-		Seed.AddSpoiler("RandomChoiceAmount = ")
+		Seed.AddSpoiler("RandomChaseAmount = ")
 		Seed.RandomChaseAmount = Seed.MakeChoices(5, 7)
 	end
 	
