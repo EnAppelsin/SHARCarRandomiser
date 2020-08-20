@@ -35,6 +35,8 @@ function Seed.MakeChoices(choicetbl, idx1, idx2)
 		mkrand = function()
 			return math.random(choicetbl), ""
 		end
+	elseif type(choicetbl) == "function" then
+		mkrand = choicetbl
 	else
 		mkrand = function()
 			local r =  math.random(#choicetbl)
