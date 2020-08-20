@@ -9,6 +9,11 @@ if Settings.RandomTraffic then
 		Level = tbl.Level[sort]
 	end
 	
+	if Settings.IsSeeded then
+		Seed.AddSpoiler("RandomTrafficParked = ")
+		Seed.RandomTrafficParked = Seed.MakeChoices(3, 7)
+	end
+	
 	function Level.RandomTraffic(LoadFile, InitFile, Level, Path)
 		TrafficCars = {}
 		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
@@ -48,7 +53,13 @@ if Settings.RandomTraffic then
 				end
 			end
 			local parked = ""
-			if math.random(3) == 1 then
+			local parked_check
+			if Settings.IsSeeded then
+				parked_check = Seed.GetChoice(Seed.RandomTrafficParked, Level)
+			else
+				parked_check = math.random(3)
+			end
+			if parked_check == 1 then
 				parked = ",1"
 			end
 			InitFile = InitFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. parked .. " );"
