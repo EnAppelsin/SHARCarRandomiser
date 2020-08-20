@@ -17,8 +17,10 @@ if Settings.RandomPlayerVehicles then
 	
 	-- Handle seeded mode
 	if Settings.IsSeeded then
-		Seed.RandomPlayerVehicles = { Level = {}, Mission = {} }
+		Seed.RandomPlayerVehicles = {}
+		Seed.AddSpoiler("RandomPlayerVehicles.Level = ")
 		Seed.RandomPlayerVehicles.Level = Seed.MakeChoices(RandomCarPoolPlayer, 7)
+		Seed.AddSpoiler("RandomPlayerVehicles.Mission = ")
 		Seed.RandomPlayerVehicles.Mission = Seed.MakeChoices(RandomCarPoolPlayer, 7, 15)
 	end
 	

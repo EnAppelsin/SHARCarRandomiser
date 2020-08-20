@@ -52,16 +52,17 @@ if Settings.SpeedrunMode then
 end
 
 -- FOr now!!
-Settings.IsSeeded = true
-Seed.Init()
+if Settings.IsSeeded then
+	Seed.Init()
+end
 
 dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
 
 
 -- Seed.NonModuleSeed
-Seed.AddSpoiler("Test = %s", "memes")
-Seed.PrintSpoiler()
-
+if Settings.IsSeeded then
+	Seed.PrintSpoiler()
+end
 Cache = {}
 
 if Settings.UseDebugSettings then

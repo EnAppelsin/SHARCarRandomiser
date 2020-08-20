@@ -26,14 +26,30 @@ function Seed.Base64dec(s)
 end
 
 function Seed.MakeChoices(choicetbl, idx1, idx2)
+	local mkrand = nil
+	if choicetbl == nil then
+		mkrand = function()
+			return math.random(), ""
+		end
+	elseif type(choicetbl) == "number" then
+		mkrand = function()
+			return math.random(choicetbl), ""
+		end
+	else
+		mkrand = function()
+			local r =  math.random(#choicetbl)
+			return r, string.format(" (%s)", choicetbl[r])
+		end
+	end
 	local tbl = { Attempt = {}, Choices = {} }
 	for i1=1,idx1 do
 		if idx2 == nil then 
 			tbl.Choices[i1] = {}
 			tbl.Attempt[i1] = 1
 			for m=1,MAX_ATTEMPTS do
-				tbl.Choices[i1][m] = math.random(#choicetbl)
-				Seed.AddSpoiler("[%d][%d] = %d (%s)", i1, m, tbl.Choices[i1][m], choicetbl[tbl.Choices[i1][m]])
+				local txt
+				tbl.Choices[i1][m], txt = mkrand()
+				Seed.AddSpoiler("[%d][%d] = %d%s", i1, m, tbl.Choices[i1][m], txt)
 			end
 		else
 			tbl.Choices[i1] = {}
@@ -42,8 +58,8 @@ function Seed.MakeChoices(choicetbl, idx1, idx2)
 				tbl.Choices[i1][i2] = {}
 				tbl.Attempt[i1][i2] = 1
 				for m=1,MAX_ATTEMPTS do
-					tbl.Choices[i1][i2][m] = math.random(#choicetbl)
-					Seed.AddSpoiler("[%d][%d][%d] = %d (%s)", i1, i2, m, tbl.Choices[i1][i2][m], choicetbl[tbl.Choices[i1][i2][m]])
+					tbl.Choices[i1][i2][m] = mkrand()
+					Seed.AddSpoiler("[%d][%d][%d] = %d%s", i1, i2, m, tbl.Choices[i1][i2][m], txt)
 				end
 			end
 		end
@@ -90,7 +106,7 @@ function Seed.Init()
 end
 
 function Seed.AddSpoiler(f, ...)
-	table.insert(Seed.Spoiler, string.format(f, ...))
+	Seed.Spoiler[#Seed.Spoiler + 1] = string.format(f, ...)
 end
 
 function Seed.PrintSpoiler()
