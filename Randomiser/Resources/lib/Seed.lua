@@ -37,6 +37,7 @@ function Seed.MissionToIndex(Mission, Type)
 	elseif Type == MissionType.GamblingRace then
 		MissIdx = 15
 	end
+	return MissIdx
 end
 
 function Seed.MakeChoices(choice, idx1, idx2)
@@ -99,6 +100,54 @@ function Seed.GetChoice(choices, idx1, idx2)
 			choices.Attempt[idx1][idx2] = 1
 		end
 		return rv
+	end
+end
+
+function Seed.CacheFullMission(mission_func)
+	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
+	local tbl = {}
+	for i=1,Seed.MAX_LEVELS do
+		local path = string.format("/GameData/scripts/missions/level%02d/", i)
+		local files = {}
+		GetFiles(files, path, {".mfk"})
+		for j=1,#files do
+			local Path = files[j]
+			local prefix, mission = Path:match("([bsg]?[rm])(%d)l")
+			if prefix == nil or mission == nil then 
+				goto continue
+			end
+			Seed.AddSpoiler("Caching mission: %s", Path)			
+			tbl[Path] = {}
+			mission = tonumber(mission)
+			local misstype
+			if prefix == "m" then
+				misstype = MissionType.Normal
+			elseif prefix == "sr" then
+				misstype = MissionType.Race
+			elseif prefix == "bm" then
+				misstype = MissionType.BonusMission
+			elseif prefix == "gr" then
+				misstype = MissionType.GamblingRace
+			else
+				error("unknown mission script type")
+			end
+			local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+			local InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
+			local old_DebugPrint = DebugPrint
+			DebugPrint = function(msg, level)
+				Seed.AddSpoiler(msg)
+			end
+			tbl[Path].LoadFile, tbl[Path].InitFile = mission_func(LoadFile, InitFile, i, mission, Path, misstype)
+			DebugPrint = old_DebugPrint
+			::continue::
+		end
+	end
+	return tbl
+end
+
+function Seed.ReturnFullMission(tbl)
+	return function(LoadFile, InitFile, Level, Mission, Path)
+		return tbl[Path].LoadFile, tbl[Path].InitFile
 	end
 end
 

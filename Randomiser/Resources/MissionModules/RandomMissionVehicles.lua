@@ -30,8 +30,8 @@ if Settings.RandomMissionVehicles then
 		LastLevelMV = nil
 		return LoadFile, InitFile
 	end
-	
-	function Mission.RandomMissionVehicldes(LoadFile, InitFile, Level, Mission, Path)
+		
+	local function Mission_RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
 		DebugPrint("Checking for sub level cars in " .. Level .. "|" .. Mission)
 		local randomise = not Settings.SaveChoiceMV or LastLevelMV == nil or LastLevelMV ~= Path
 		LastLevelMV = Path
@@ -106,5 +106,13 @@ if Settings.RandomMissionVehicles then
 			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
 		end)
 		return LoadFile, InitFile
+	end
+	
+	if Settings.IsSeeded then
+		Seed.AddSpoiler("-- RandomMissionVehicles --")
+		Seed.RandomMissionVehicles = Seed.CacheFullMission(Mission_RandomMissionVehicles)
+		Mission.RandomMissionVehicles = Seed.ReturnFullMission(Seed.RandomMissionVehicles)
+	else
+		Mission.RandomMissionVehicles = Mission_RandomMissionVehicles
 	end
 end
