@@ -9,7 +9,7 @@ if Settings.RandomPedestrians then
 		Level = tbl.Level[sort]
 	end
 	
-	function Level.RandomPedestrians(LoadFile, InitFile, Level, Path)
+	local function Level_RandomPedestrians(LoadFile, InitFile, Level, Path)
 		local TmpPedPool = {table.unpack(RandomPedPool)}
 		local groups = {}
 		for group in InitFile:gmatch("CreatePedGroup%s*%(%s*(%d)%s*%);") do
@@ -60,5 +60,13 @@ if Settings.RandomPedestrians then
 		end
 		DebugPrint("Random pedestrians for level -> " .. table.concat(LevelPedestrians, ", "))
 		return LoadFile, InitFile
+	end
+	
+	if Settings.IsSeeded then
+		Seed.AddSpoiler("-- RandomPedestrians --")
+		Seed.RandomPedestrians = Seed.CacheFullLevel(Level_RandomPedestrians)
+		Level.RandomPedestrians = Seed.ReturnFullLevel(Seed.RandomPedestrians)
+	else
+		Level.RandomPedestrians = Level_RandomPedestrians
 	end
 end

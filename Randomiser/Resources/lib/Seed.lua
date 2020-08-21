@@ -103,6 +103,31 @@ function Seed.GetChoice(choices, idx1, idx2)
 	end
 end
 
+function Seed.CacheFullLevel(level_func)
+	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
+	local tbl = {}
+	for i=1,Seed.MAX_LEVELS do
+		tbl[i] = {}
+		Seed.AddSpoiler("Caching level: %s", i)			
+		local Path = string.format("/GameData/scripts/missions/level%02d/level.mfk", i)
+		local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+		local InitFile = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+		local old_DebugPrint = DebugPrint
+		DebugPrint = function(msg, level)
+			Seed.AddSpoiler(msg)
+		end
+		tbl[i].LoadFile, tbl[i].InitFile = level_func(LoadFile, InitFile, i, Path)
+		DebugPrint = old_DebugPrint
+	end
+	return tbl
+end
+
+function Seed.ReturnFullLevel(tbl)
+	return function(LoadFile, InitFile, Level, Path)
+		return tbl[Level].LoadFile, tbl[Level].InitFile
+	end
+end
+
 function Seed.CacheFullMission(mission_func)
 	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
 	local tbl = {}
