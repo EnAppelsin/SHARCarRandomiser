@@ -15,7 +15,7 @@ local ModuleFiles = {}
 GetFiles(ModuleFiles, Paths.MissionModules, {".lua"}, 1)
 for i=1, #ModuleFiles do
 	DebugPrint("Loading module: " .. ModuleFiles[i], 2)
-	loadfile(ModuleFiles[i])(MissionModules)
+	assert(loadfile(ModuleFiles[i]))(MissionModules)
 end
 
 LevelMin = 0
