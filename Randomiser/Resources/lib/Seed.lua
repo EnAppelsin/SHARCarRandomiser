@@ -54,7 +54,7 @@ function Seed.MakeChoices(choice, idx1, idx2)
 	else
 		mkrand = function()
 			local r =  math.random(#choice)
-			return r, string.format(" (%s)", choice[r])
+			return r, string.format("(%s)", choice[r])
 		end
 	end
 	local tbl = { Attempt = {}, Choices = {} }
@@ -65,7 +65,7 @@ function Seed.MakeChoices(choice, idx1, idx2)
 			for m=1,MAX_ATTEMPTS do
 				local txt
 				tbl.Choices[i1][m], txt = mkrand()
-				Seed.AddSpoiler("[%d][%d] = %s%s", i1, m, tbl.Choices[i1][m], txt)
+				Seed.AddSpoiler("[%d][%d] = %s %s", i1, m, tbl.Choices[i1][m], txt)
 			end
 		else
 			tbl.Choices[i1] = {}
@@ -74,8 +74,9 @@ function Seed.MakeChoices(choice, idx1, idx2)
 				tbl.Choices[i1][i2] = {}
 				tbl.Attempt[i1][i2] = 1
 				for m=1,MAX_ATTEMPTS do
-					tbl.Choices[i1][i2][m] = mkrand()
-					Seed.AddSpoiler("[%d][%d][%d] = %s%s", i1, i2, m, tbl.Choices[i1][i2][m], txt)
+					local txt
+					tbl.Choices[i1][i2][m], txt = mkrand()
+					Seed.AddSpoiler("[%d][%d][%d] = %s %s", i1, i2, m, tbl.Choices[i1][i2][m], txt)
 				end
 			end
 		end

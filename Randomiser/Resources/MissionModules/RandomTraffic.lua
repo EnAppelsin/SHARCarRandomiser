@@ -10,18 +10,36 @@ if Settings.RandomTraffic then
 	end
 	
 	if Settings.IsSeeded then
+		Seed.AddSpoiler("RandomTraffic = ")
+		Seed.RandomTraffic = Seed.MakeChoices(function()
+			local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
+			local Cars = ""
+			local TrafficCars = {}
+			for i = 1, math.min(5, #TmpCarPool) do
+				local carName = GetRandomFromTbl(TmpCarPool, true)
+				table.insert(TrafficCars, carName)
+				Cars = Cars .. carName .. ", "
+			end
+			return { TrafficCars, Cars }, Cars
+		end, Seed.MAX_LEVELS)
 		Seed.AddSpoiler("RandomTrafficParked = ")
 		Seed.RandomTrafficParked = Seed.MakeChoices(3, Seed.MAX_LEVELS)
 	end
 	
 	function Level.RandomTraffic(LoadFile, InitFile, Level, Path)
 		TrafficCars = {}
-		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
-		for i = 1, math.min(5, #TmpCarPool) do
-			local carName = GetRandomFromTbl(TmpCarPool, true)
-			table.insert(TrafficCars, carName)
-			Cars = Cars .. carName .. ", "
+		if Settings.IsSeeded then
+			local tbl = Seed.GetChoice(Seed.RandomTraffic, Level)
+			TrafficCars = {table.unpack(tbl[1])}
+			Cars = tbl[2]
+		else
+			local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
+			for i = 1, math.min(5, #TmpCarPool) do
+				local carName = GetRandomFromTbl(TmpCarPool, true)
+				table.insert(TrafficCars, carName)
+				Cars = Cars .. carName .. ", "
+			end
 		end
 		for i = 1, #TrafficCars do
 			local carName = TrafficCars[i]

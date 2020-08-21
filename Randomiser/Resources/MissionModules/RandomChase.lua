@@ -15,19 +15,19 @@ if Settings.RandomChase then
 		Mission = tbl.Mission[sort]
 	end
 	
-	if Settings.IsSeeded 
+	if Settings.IsSeeded then
 		if Settings.RandomChaseAmount then
 			Seed.AddSpoiler("RandomChaseAmount = ")
 			Seed.RandomChaseAmount = Seed.MakeChoices(5, Seed.MAX_LEVELS)
 		end
 		Seed.AddSpoiler("RandomChase = ")
 		Seed.RandomChase = Seed.MakeChoices(function()
-			RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
+			return GetRandomFromTbl(RandomCarPoolChase, false)
 		end, Seed.MAX_LEVELS)
 	end
 	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
-		if Settings.IsSeeded 
+		if Settings.IsSeeded then
 			RandomChase = Seed.GetChoice(Seed.RandomChase, Level)
 		else
 			RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
