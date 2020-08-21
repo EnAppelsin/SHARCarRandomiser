@@ -25,22 +25,22 @@ function Seed.Base64dec(s)
 	return base64dec(s .. "=", Seed._bs, Seed._bsi)
 end
 
-function Seed.MakeChoices(choicetbl, idx1, idx2)
+function Seed.MakeChoices(choice, idx1, idx2)
 	local mkrand = nil
-	if choicetbl == nil then
+	if choice == nil then
 		mkrand = function()
 			return math.random(), ""
 		end
-	elseif type(choicetbl) == "number" then
+	elseif type(choice) == "number" then
 		mkrand = function()
-			return math.random(choicetbl), ""
+			return math.random(choice), ""
 		end
-	elseif type(choicetbl) == "function" then
-		mkrand = choicetbl
+	elseif type(choice) == "function" then
+		mkrand = choice
 	else
 		mkrand = function()
-			local r =  math.random(#choicetbl)
-			return r, string.format(" (%s)", choicetbl[r])
+			local r =  math.random(#choice)
+			return r, string.format(" (%s)", choice[r])
 		end
 	end
 	local tbl = { Attempt = {}, Choices = {} }
