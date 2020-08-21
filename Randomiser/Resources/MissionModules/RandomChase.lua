@@ -15,13 +15,23 @@ if Settings.RandomChase then
 		Mission = tbl.Mission[sort]
 	end
 	
-	if Settings.IsSeeded and Settings.RandomChaseAmount then
-		Seed.AddSpoiler("RandomChaseAmount = ")
-		Seed.RandomChaseAmount = Seed.MakeChoices(5, Seed.MAX_LEVELS)
+	if Settings.IsSeeded 
+		if Settings.RandomChaseAmount then
+			Seed.AddSpoiler("RandomChaseAmount = ")
+			Seed.RandomChaseAmount = Seed.MakeChoices(5, Seed.MAX_LEVELS)
+		end
+		Seed.AddSpoiler("RandomChase = ")
+		Seed.RandomChase = Seed.MakeChoices(function()
+			RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
+		end, Seed.MAX_LEVELS)
 	end
 	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
-		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
+		if Settings.IsSeeded 
+			RandomChase = Seed.GetChoice(Seed.RandomChase, Level)
+		else
+			RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
+		end
 		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then
 			local staticName = ReadFile("/GameData/RandomiserSettings/RandomChaseCar.txt")
 			if staticName:len() > 0 then
