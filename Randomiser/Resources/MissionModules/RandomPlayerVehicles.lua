@@ -19,9 +19,9 @@ if Settings.RandomPlayerVehicles then
 	if Settings.IsSeeded then
 		Seed.RandomPlayerVehicles = {}
 		Seed.AddSpoiler("RandomPlayerVehicles.Level = ")
-		Seed.RandomPlayerVehicles.Level = Seed.MakeChoices(RandomCarPoolPlayer, 7)
+		Seed.RandomPlayerVehicles.Level = Seed.MakeChoices(RandomCarPoolPlayer, Seed.MAX_LEVELS)
 		Seed.AddSpoiler("RandomPlayerVehicles.Mission = ")
-		Seed.RandomPlayerVehicles.Mission = Seed.MakeChoices(RandomCarPoolPlayer, 7, 15)
+		Seed.RandomPlayerVehicles.Mission = Seed.MakeChoices(RandomCarPoolPlayer, Seed.MAX_LEVELS, Seed.MAX_MISSIONS)
 	end
 	
 	function Level.RandomPlayerVehicles(LoadFile, InitFile, Level, Path)
@@ -56,16 +56,8 @@ if Settings.RandomPlayerVehicles then
 			RandomCar = nil
 		end
 		if RandomCar == nil then
-			if Settings.IsSeeded then
-				local MissIdx = Mission + 1
-				if Type == MissionType.Race then
-					MissIdx = MissIdx + 10
-				elseif Type == MissionType.BonusMission then
-					MissIdx = 9
-				elseif Type == MissionType.GamblingRage then
-					MissIdx = 15
-				end
-				RandomCar = Seed.GetChoice(Seed.RandomPlayerVehicles.Mission, Level, MissIdx)
+			if Settings.IsSeeded then			
+				RandomCar = Seed.GetChoice(Seed.RandomPlayerVehicles.Mission, Level, Seed.MissionToIndex(Mission, Type))
 			else
 				RandomCar = math.random(#RandomCarPoolPlayer)
 			end

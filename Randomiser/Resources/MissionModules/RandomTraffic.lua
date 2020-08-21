@@ -11,7 +11,7 @@ if Settings.RandomTraffic then
 	
 	if Settings.IsSeeded then
 		Seed.AddSpoiler("RandomTrafficParked = ")
-		Seed.RandomTrafficParked = Seed.MakeChoices(3, 7)
+		Seed.RandomTrafficParked = Seed.MakeChoices(3, Seed.MAX_LEVELS)
 	end
 	
 	function Level.RandomTraffic(LoadFile, InitFile, Level, Path)

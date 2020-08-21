@@ -17,7 +17,7 @@ if Settings.RandomChase then
 	
 	if Settings.IsSeeded and Settings.RandomChaseAmount then
 		Seed.AddSpoiler("RandomChaseAmount = ")
-		Seed.RandomChaseAmount = Seed.MakeChoices(5, 7)
+		Seed.RandomChaseAmount = Seed.MakeChoices(5, Seed.MAX_LEVELS)
 	end
 	
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)

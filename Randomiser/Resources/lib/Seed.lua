@@ -1,6 +1,9 @@
 Seed = {}
 Seed.Spoiler = {}
 
+Seed.MAX_LEVELS = 7
+Seed.MAX_MISSIONS = 15
+
 local MAX_ATTEMPTS = 5
 
 -- Special Base64 Array to avoid "similar" letters
@@ -23,6 +26,17 @@ end
 
 function Seed.Base64dec(s)
 	return base64dec(s .. "=", Seed._bs, Seed._bsi)
+end
+
+function Seed.MissionToIndex(Mission, Type)
+	local MissIdx = Mission + 1
+	if Type == MissionType.Race then
+		MissIdx = MissIdx + 10
+	elseif Type == MissionType.BonusMission then
+		MissIdx = 9
+	elseif Type == MissionType.GamblingRace then
+		MissIdx = 15
+	end
 end
 
 function Seed.MakeChoices(choice, idx1, idx2)
