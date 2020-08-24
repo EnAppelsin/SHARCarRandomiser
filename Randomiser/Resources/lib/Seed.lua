@@ -4,7 +4,8 @@ Seed.Spoiler = {}
 Seed.MAX_LEVELS = 7
 Seed.MAX_MISSIONS = 15
 
-local MAX_ATTEMPTS = 5
+local MAX_ATTEMPTS_MISSIONS = 5
+local MAX_ATTEMPTS_LEVELS = 1
 
 -- Special Base64 Array to avoid "similar" letters
 Seed._bs = { [0] =
@@ -63,7 +64,7 @@ function Seed.MakeChoices(choice, idx1, idx2)
 		if idx2 == nil then 
 			tbl.Choices[i1] = {}
 			tbl.Attempt[i1] = 1
-			for m=1,MAX_ATTEMPTS do
+			for m=1,MAX_ATTEMPTS_LEVELS do
 				local txt
 				tbl.Choices[i1][m], txt = mkrand()
 				Seed.AddSpoiler("[%d][%d] = %s %s", i1, m, tbl.Choices[i1][m], txt)
@@ -74,7 +75,7 @@ function Seed.MakeChoices(choice, idx1, idx2)
 			for i2=1,idx2 do
 				tbl.Choices[i1][i2] = {}
 				tbl.Attempt[i1][i2] = 1
-				for m=1,MAX_ATTEMPTS do
+				for m=1,MAX_ATTEMPTS_MISSIONS do
 					local txt
 					tbl.Choices[i1][i2][m], txt = mkrand()
 					Seed.AddSpoiler("[%d][%d][%d] = %s %s", i1, i2, m, tbl.Choices[i1][i2][m], txt)
@@ -89,14 +90,14 @@ function Seed.GetChoice(choices, idx1, idx2)
 	if idx2 == nil then
 		local rv = choices.Choices[idx1][choices.Attempt[idx1]]
 		choices.Attempt[idx1] = choices.Attempt[idx1] + 1
-		if choices.Attempt[idx1] > MAX_ATTEMPTS then
+		if choices.Attempt[idx1] > #choices.Choices[idx1] then
 			choices.Attempt[idx1] = 1
 		end
 		return rv
 	else
 		local rv = choices.Choices[idx1][idx2][choices.Attempt[idx1][idx2]]
 		choices.Attempt[idx1][idx2] = choices.Attempt[idx1][idx2] + 1
-		if choices.Attempt[idx1][idx2] > MAX_ATTEMPTS then
+		if choices.Attempt[idx1][idx2] > #choices.Choices[idx1][idx2] then
 			choices.Attempt[idx1][idx2] = 1
 		end
 		return rv
