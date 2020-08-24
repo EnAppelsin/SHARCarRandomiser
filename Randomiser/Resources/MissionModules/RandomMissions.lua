@@ -9,7 +9,7 @@ if Settings.RandomMissions then
 		Level = tbl.Level[sort]
 	end
 	
-	function Level.RandomMissions(LoadFile, InitFile, Level, Path)
+	local function Level_RandomMissions(LoadFile, InitFile, Level, Path)
 		local missions = {}
 		for mission in LoadFile:gmatch("AddMission%s*%(%s*\"m(%d)\"") do
 			if tonumber(mission) < 8 then
@@ -43,5 +43,13 @@ if Settings.RandomMissions then
 			end
 		end)
 		return LoadFile, InitFile
+	end
+	
+	if Settings.IsSeeded then
+		Seed.AddSpoiler("-- RandomMissions --")
+		Seed.RandomMissions = Seed.CacheFullLevel(Level_RandomMissions)
+		Level.RandomMissions = Seed.ReturnFullLevel(Seed.RandomMissions)
+	else
+		Level.RandomMissions = Level_RandomMissions
 	end
 end
