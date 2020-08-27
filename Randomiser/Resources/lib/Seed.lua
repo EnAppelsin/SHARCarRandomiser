@@ -7,6 +7,9 @@ Seed.MAX_MISSIONS = 15
 local MAX_ATTEMPTS_MISSIONS = 5
 local MAX_ATTEMPTS_LEVELS = 1
 
+Seed.CachedLevel = {}
+Seed.CachedMission = {}
+
 -- Special Base64 Array to avoid "similar" letters
 Seed._bs = { [0] =
    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
@@ -106,32 +109,29 @@ end
 
 function Seed.CacheFullLevel(level_func)
 	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
-	local tbl = {}
 	for i=1,Seed.MAX_LEVELS do
-		tbl[i] = {}
 		Seed.AddSpoiler("Caching level: %s", i)			
 		local Path = string.format("/GameData/scripts/missions/level%02d/level.mfk", i)
-		local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
-		local InitFile = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+		if Seed.CachedLevel[Path] == nil then
+			Seed.CachedLevel[Path] = {}
+			Seed.CachedLevel[Path].LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+			Seed.CachedLevel[Path].InitFile = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+		end
 		local old_DebugPrint = DebugPrint
 		DebugPrint = function(msg, level)
 			Seed.AddSpoiler(msg)
 		end
-		tbl[i].LoadFile, tbl[i].InitFile = level_func(LoadFile, InitFile, i, Path)
+		Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile = level_func(Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile, i, Path)
 		DebugPrint = old_DebugPrint
 	end
-	return tbl
 end
 
-function Seed.ReturnFullLevel(tbl)
-	return function(LoadFile, InitFile, Level, Path)
-		return tbl[Level].LoadFile, tbl[Level].InitFile
-	end
+function Seed.ReturnFullLevel(LoadFile, InitFile, Level, Path)
+	return Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile
 end
 
 function Seed.CacheFullMission(mission_func)
 	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
-	local tbl = {}
 	for i=1,Seed.MAX_LEVELS do
 		local path = string.format("/GameData/scripts/missions/level%02d/", i)
 		local files = {}
@@ -143,7 +143,6 @@ function Seed.CacheFullMission(mission_func)
 				goto continue
 			end
 			Seed.AddSpoiler("Caching mission: %s", Path)			
-			tbl[Path] = {}
 			mission = tonumber(mission)
 			local misstype
 			if prefix == "m" then
@@ -157,24 +156,24 @@ function Seed.CacheFullMission(mission_func)
 			else
 				error("unknown mission script type")
 			end
-			local LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
-			local InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
+			if Seed.CachedMission[Path] == nil then
+				Seed.CachedMission[Path] = {}
+				Seed.CachedMission[Path].LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+				Seed.CachedMission[Path].InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
+			end
 			local old_DebugPrint = DebugPrint
 			DebugPrint = function(msg, level)
 				Seed.AddSpoiler(msg)
 			end
-			tbl[Path].LoadFile, tbl[Path].InitFile = mission_func(LoadFile, InitFile, i, mission, Path, misstype)
+			Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile = mission_func(Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile, i, mission, Path, misstype)
 			DebugPrint = old_DebugPrint
 			::continue::
 		end
 	end
-	return tbl
 end
 
-function Seed.ReturnFullMission(tbl)
-	return function(LoadFile, InitFile, Level, Mission, Path)
-		return tbl[Path].LoadFile, tbl[Path].InitFile
-	end
+function Seed.ReturnFullMission(LoadFile, InitFile, Level, Mission, Path)
+	return Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile
 end
 
 function Seed.Init()

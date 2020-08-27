@@ -2,6 +2,9 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomPedestrians then
 	local sort = 5
+	if Settings.IsSeeded then
+		sort = 1
+	end
 	local Level = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
@@ -64,8 +67,8 @@ if Settings.RandomPedestrians then
 	
 	if Settings.IsSeeded then
 		Seed.AddSpoiler("-- RandomPedestrians --")
-		Seed.RandomPedestrians = Seed.CacheFullLevel(Level_RandomPedestrians)
-		Level.RandomPedestrians = Seed.ReturnFullLevel(Seed.RandomPedestrians)
+		Seed.CacheFullLevel(Level_RandomPedestrians)
+		Level.RandomPedestrians = Seed.ReturnFullLevel
 	else
 		Level.RandomPedestrians = Level_RandomPedestrians
 	end

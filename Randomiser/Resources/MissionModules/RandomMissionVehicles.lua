@@ -2,6 +2,9 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomMissionVehicles then
 	local sort = 4
+	if Settings.IsSeeded then
+		sort = 1
+	end
 	local Level = {}
 	local Mission = {}
 	local SundayDrive = {}
@@ -110,8 +113,8 @@ if Settings.RandomMissionVehicles then
 	
 	if Settings.IsSeeded then
 		Seed.AddSpoiler("-- RandomMissionVehicles --")
-		Seed.RandomMissionVehicles = Seed.CacheFullMission(Mission_RandomMissionVehicles)
-		Mission.RandomMissionVehicles = Seed.ReturnFullMission(Seed.RandomMissionVehicles)
+		Seed.CacheFullMission(Mission_RandomMissionVehicles)
+		Mission.RandomMissionVehicles = Seed.ReturnFullMission
 	else
 		Mission.RandomMissionVehicles = Mission_RandomMissionVehicles
 	end

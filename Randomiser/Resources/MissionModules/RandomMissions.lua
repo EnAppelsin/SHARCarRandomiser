@@ -2,6 +2,9 @@ local args = {...}
 local tbl = args[1]
 if Settings.RandomMissions then
 	local sort = 5
+	if Settings.IsSeeded then
+		sort = 1
+	end
 	local Level = {}
 	if not tbl.Level[sort] then
 		tbl.Level[sort] = Level
@@ -47,8 +50,8 @@ if Settings.RandomMissions then
 	
 	if Settings.IsSeeded then
 		Seed.AddSpoiler("-- RandomMissions --")
-		Seed.RandomMissions = Seed.CacheFullLevel(Level_RandomMissions)
-		Level.RandomMissions = Seed.ReturnFullLevel(Seed.RandomMissions)
+		Seed.CacheFullLevel(Level_RandomMissions)
+		Level.RandomMissions = Seed.ReturnFullLevel
 	else
 		Level.RandomMissions = Level_RandomMissions
 	end
