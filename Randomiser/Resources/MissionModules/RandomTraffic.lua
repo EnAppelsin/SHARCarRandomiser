@@ -56,6 +56,6 @@ if Settings.RandomTraffic then
 			InitFile = InitFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. parked .. " );"
 		end
 		InitFile = InitFile .. "\r\nCloseTrafficGroup( );"
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "TrafficCars" }
 	end
 end

@@ -23,12 +23,12 @@ if Settings.RandomMissionVehicles then
 	
 	function Level.RandomMissionVehicles(LoadFile, InitFile, Level, Path)
 		LastLevelMV = nil
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevelMV" }
 	end
 	
 	function SundayDrive.RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
 		LastLevelMV = nil
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevelMV" }
 	end
 		
 	local function Mission_RandomMissionVehicles(LoadFile, InitFile, Level, Mission, Path)
@@ -105,7 +105,7 @@ if Settings.RandomMissionVehicles then
 			end
 			return "AddStageVehicle(\"" .. car .. "\",\"" .. position .. "\",\"" .. action .. "\",\"" .. config .. "\",\"" .. orig .. "\");"
 		end)
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevelMV", "MissionDrivers", "MissionVehicles" }
 	end
 	
 	Mission.RandomMissionVehicles = Mission_RandomMissionVehicles

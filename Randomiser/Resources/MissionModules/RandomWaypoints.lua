@@ -47,7 +47,7 @@ if Settings.RandomWaypoints then
 				DebugPrint("Found " .. GetWaypoints(sdInit) .. " waypoints in L" .. Level .. "SD" .. i, 2)
 			end
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "Waypoints" }
 	end
 	
 	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, Type)
@@ -67,6 +67,6 @@ if Settings.RandomWaypoints then
 				DebugPrint("Found " .. WaypointN .. " waypoints in L" .. Level .. "M" .. Mission .. ".")
 			end
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "Waypoints" }
 	end
 end

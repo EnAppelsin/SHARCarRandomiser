@@ -11,6 +11,6 @@ if Settings.RandomCharacter then
 	
 	function Level.RandomCharacter(LoadFile, InitFile, Level, Path)
 		OrigChar = InitFile:match("AddCharacter%s*%(%s*\"([^\n]-)\"")
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "OrigChar" }
 	end
 end

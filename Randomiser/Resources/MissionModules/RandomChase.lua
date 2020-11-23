@@ -37,7 +37,7 @@ if Settings.RandomChase then
 			InitFile = InitFile:gsub("SetNumChaseCars%s*%(%s*\"[^\n]-\"", "SetNumChaseCars(\"" .. chaseAmount .."\"", 1)
 			DebugPrint("Random chase amount -> " .. chaseAmount)
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "RandomChase" }
 	end
 	
 	function Mission.RandomChase(LoadFile, InitFile, Level, Mission, Path)

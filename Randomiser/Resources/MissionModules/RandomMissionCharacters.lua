@@ -26,7 +26,7 @@ if Settings.RandomMissionCharacters then
 		for npc in InitFile:gmatch("AddNPCCharacterBonusMission%s*%(%s*\"([^\n]-)\"") do
 			table.insert(BonusCharacters, npc)
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "BonusCharacters" }
 	end
 	
 	function SundayDrive.RandomMissionCharacters(LoadFile, InitFile, Level, Mission, Path)
@@ -37,7 +37,7 @@ if Settings.RandomMissionCharacters then
 			found = found .. npc .. ", "
 		end
 		DebugPrint(found)
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "MissionCharacters" }
 	end
 	Mission.RandomMissionCharacters = SundayDrive.RandomMissionCharacters
 end

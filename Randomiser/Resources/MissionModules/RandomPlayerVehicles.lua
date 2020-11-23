@@ -30,7 +30,7 @@ if Settings.RandomPlayerVehicles then
 		
 		InitFile = InitFile:gsub("InitLevelPlayerVehicle%s*%(%s*\"[^\n]-\"%s*,%s*\"([^\n]-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
 		DebugPrint("Randomising car for level -> " .. RandomCarName)
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevel", "RandomCar", "RandomCarName" }
 	end
 	
 	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path, Type)
@@ -118,6 +118,6 @@ if Settings.RandomPlayerVehicles then
 			end)
 		end
 		
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevel", "RandomCar", "RandomCarName" }
 	end
 end

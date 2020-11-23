@@ -59,7 +59,7 @@ if Settings.RandomPedestrians then
 			LevelCharacters[#LevelCharacters + 1] = npc
 		end
 		DebugPrint("Random pedestrians for level -> " .. table.concat(LevelPedestrians, ", "))
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LevelPedestrians" }
 	end
 	
 	Level.RandomPedestrians = Level_RandomPedestrians
