@@ -1,5 +1,11 @@
 local Path = "/GameData/" .. GetPath();
 loading = true
+
+if Settings.IsSeeded then
+	Seed.HandleModulesMission(Path)
+end
+
+
 if MissionModules.Mission then
 	local level = tonumber(Path:match("level0(%d)"))
 	local prefix, mission = Path:match("([bsg]?[rm])(%d)l")

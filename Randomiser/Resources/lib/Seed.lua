@@ -9,6 +9,7 @@ local MAX_ATTEMPTS_LEVELS = 1
 
 Seed.CachedLevel = {}
 Seed.CachedMission = {}
+Seed.CachedSDMission = {}
 
 -- Special Base64 Array to avoid "similar" letters
 Seed._bs = { [0] =
@@ -32,106 +33,153 @@ function Seed.Base64dec(s)
 	return base64dec(s .. "=", Seed._bs, Seed._bsi)
 end
 
-function Seed.MissionToIndex(Mission, Type)
-	local MissIdx = Mission + 1
-	if Type == MissionType.Race then
-		MissIdx = MissIdx + 10
-	elseif Type == MissionType.BonusMission then
-		MissIdx = 9
-	elseif Type == MissionType.GamblingRace then
-		MissIdx = 15
-	end
-	return MissIdx
-end
 
-function Seed.MakeChoices(choice, idx1, idx2)
-	local mkrand = nil
-	if choice == nil then
-		mkrand = function()
-			return math.random(), ""
-		end
-	elseif type(choice) == "number" then
-		mkrand = function()
-			return math.random(choice), ""
-		end
-	elseif type(choice) == "function" then
-		mkrand = choice
-	else
-		mkrand = function()
-			local r =  math.random(#choice)
-			return r, string.format("(%s)", choice[r])
-		end
-	end
-	local tbl = { Attempt = {}, Choices = {} }
-	for i1=1,idx1 do
-		if idx2 == nil then 
-			tbl.Choices[i1] = {}
-			tbl.Attempt[i1] = 1
-			for m=1,MAX_ATTEMPTS_LEVELS do
-				local txt
-				tbl.Choices[i1][m], txt = mkrand()
-				Seed.AddSpoiler("[%d][%d] = %s %s", i1, m, tbl.Choices[i1][m], txt)
-			end
-		else
-			tbl.Choices[i1] = {}
-			tbl.Attempt[i1] = {}
-			for i2=1,idx2 do
-				tbl.Choices[i1][i2] = {}
-				tbl.Attempt[i1][i2] = 1
-				for m=1,MAX_ATTEMPTS_MISSIONS do
-					local txt
-					tbl.Choices[i1][i2][m], txt = mkrand()
-					Seed.AddSpoiler("[%d][%d][%d] = %s %s", i1, i2, m, tbl.Choices[i1][i2][m], txt)
-				end
-			end
-		end
-	end	
-	return tbl
-end
-
-function Seed.GetChoice(choices, idx1, idx2)
-	if idx2 == nil then
-		local rv = choices.Choices[idx1][choices.Attempt[idx1]]
-		choices.Attempt[idx1] = choices.Attempt[idx1] + 1
-		if choices.Attempt[idx1] > #choices.Choices[idx1] then
-			choices.Attempt[idx1] = 1
-		end
-		return rv
-	else
-		local rv = choices.Choices[idx1][idx2][choices.Attempt[idx1][idx2]]
-		choices.Attempt[idx1][idx2] = choices.Attempt[idx1][idx2] + 1
-		if choices.Attempt[idx1][idx2] > #choices.Choices[idx1][idx2] then
-			choices.Attempt[idx1][idx2] = 1
-		end
-		return rv
-	end
-end
-
-function Seed.CacheFullLevel(level_func)
-	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
+function Seed.CacheModulesLevel(modules) 
 	for i=1,Seed.MAX_LEVELS do
-		Seed.AddSpoiler("Caching level: %s", i)			
+		Seed.AddSpoiler("Caching level: %s", i)
 		local Path = string.format("/GameData/scripts/missions/level%02d/level.mfk", i)
+		-- Generate structure for seeded level files
 		if Seed.CachedLevel[Path] == nil then
 			Seed.CachedLevel[Path] = {}
-			Seed.CachedLevel[Path].LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
-			Seed.CachedLevel[Path].InitFile = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+			Seed.CachedLevel[Path].Attempt = 1
+			Seed.CachedLevel[Path].LoadFile = {}
+			Seed.CachedLevel[Path].InitFile = {}
+			Seed.CachedLevel[Path].Globals = {}
+			for j=1,MAX_ATTEMPTS_LEVELS do
+				Seed.CachedLevel[Path].LoadFile[j] = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+				Seed.CachedLevel[Path].InitFile[j] = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+				Seed.CachedLevel[Path].Globals[j] = {}
+			end
 		end
+		
 		local old_DebugPrint = DebugPrint
 		DebugPrint = function(msg, level)
 			Seed.AddSpoiler(msg)
 		end
-		Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile = level_func(Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile, i, Path)
+		for j=1,MAX_ATTEMPTS_LEVELS do
+			Seed.AddSpoiler("Seeding attempt #%d", j)
+			for l = LevelMin,LevelMax do
+				if modules[l] then
+					for k, v in pairs(modules[l]) do
+						Seed.AddSpoiler("Running module: " .. k)
+						local globals, g2
+						Seed.CachedLevel[Path].LoadFile[j], Seed.CachedLevel[Path].InitFile[j], globals = v(Seed.CachedLevel[Path].LoadFile[j],  Seed.CachedLevel[Path].InitFile[j], i, Path)
+						if globals ~= nil then
+							g2 = {}
+							for kk, vv in pairs(globals) do
+								g2[vv] = _G[vv]
+							end
+							Seed.CachedLevel[Path].Globals[j] = MergeTable(Seed.CachedLevel[Path].Globals[j], g2)
+						end
+					end
+				end
+			end
+		end
 		DebugPrint = old_DebugPrint
 	end
 end
 
-function Seed.ReturnFullLevel(LoadFile, InitFile, Level, Path)
-	return Seed.CachedLevel[Path].LoadFile, Seed.CachedLevel[Path].InitFile
+function Seed.InternalCacheModuleMission(i, Path, j, prefix, mission)
+	Seed.AddSpoiler("Caching mission: %s", Path)
+	mission = tonumber(mission)
+	local misstype
+	if prefix == "m" then
+		misstype = MissionType.Normal
+	elseif prefix == "sr" then
+		misstype = MissionType.Race
+	elseif prefix == "bm" then
+		misstype = MissionType.BonusMission
+	elseif prefix == "gr" then
+		misstype = MissionType.GamblingRace
+	else
+		error("unknown mission script type")
+	end
+	
+	-- Generate structure for seeded mission files
+	if Seed.CachedMission[Path] == nil then
+		Seed.CachedMission[Path] = {}
+		Seed.CachedMission[Path].Attempt = 1
+		Seed.CachedMission[Path].LoadFile = {}
+		Seed.CachedMission[Path].InitFile = {}
+		Seed.CachedMission[Path].Globals = {}
+		for m=1,MAX_ATTEMPTS_MISSIONS do
+			Seed.CachedMission[Path].LoadFile[m] = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+			Seed.CachedMission[Path].InitFile[m] = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
+			Seed.CachedMission[Path].Globals[m] = {}
+		end
+	end
+	
+	local old_DebugPrint = DebugPrint
+	DebugPrint = function(msg, level)
+		Seed.AddSpoiler(msg)
+	end
+	for m=1,MAX_ATTEMPTS_MISSIONS do
+		Seed.AddSpoiler("Seeding attempt #%d", m)
+		for l = MissionMin,MissionMax do
+			if MissionModules.Mission[l] then
+				for k, v in pairs(MissionModules.Mission[l]) do
+					Seed.AddSpoiler("Running module: " .. k)
+					local globals, g2
+					Seed.CachedMission[Path].LoadFile[m], Seed.CachedMission[Path].InitFile[m], globals = v(Seed.CachedMission[Path].LoadFile[m],  Seed.CachedMission[Path].InitFile[m], i, mission, Path, misstype)
+					if globals ~= nil then
+						g2 = {}
+						for kk, vv in pairs(globals) do
+							g2[vv] = _G[vv]
+						end
+						Seed.CachedMission[Path].Globals[m] = MergeTable(Seed.CachedMission[Path].Globals[m], g2)
+					end
+				end
+			end
+		end
+	end
+	DebugPrint = old_DebugPrint
 end
 
-function Seed.CacheFullMission(mission_func)
-	-- Pretend levels is either known or has been computed beforehand (for now it's just coded)
+function Seed.InternalCacheModuleSDMission(i, Path, j, prefix, mission)
+	Seed.AddSpoiler("Caching SD mission: %s", Path)
+	mission = tonumber(mission)
+	
+	-- Generate structure for seeded sunday drive files
+	if Seed.CachedSDMission[Path] == nil then
+		Seed.CachedSDMission[Path] = {}
+		Seed.CachedSDMission[Path].Attempt = 1
+		Seed.CachedSDMission[Path].LoadFile = {}
+		Seed.CachedSDMission[Path].InitFile = {}
+		Seed.CachedSDMission[Path].Globals = {}
+		for m=1,MAX_ATTEMPTS_MISSIONS do
+			Seed.CachedSDMission[Path].LoadFile[m] = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+			Seed.CachedSDMission[Path].InitFile[m] = ReadFile(Path:gsub("sdl%.mfk", "sdi.mfk")):gsub("//.-([\r\n])", "%1");
+			Seed.CachedSDMission[Path].Globals[m] = {}
+		end
+	end
+	
+	local old_DebugPrint = DebugPrint
+	DebugPrint = function(msg, level)
+		Seed.AddSpoiler(msg)
+	end
+	for m=1,MAX_ATTEMPTS_MISSIONS do
+		Seed.AddSpoiler("Seeding attempt #%d", m)
+		for i = SundayMin,SundayMax do
+			if MissionModules.SundayDrive[l] then
+				for k, v in pairs(MissionModules.SundayDrive[l]) do
+					Seed.AddSpoiler("Running module: " .. k)
+					local globals, g2
+					Seed.CachedSDMission[Path].LoadFile[m], Seed.CachedSDMission[Path].InitFile[m], globals = v(Seed.CachedSDMission[Path].LoadFile[m],  Seed.CachedSDMission[Path].InitFile[m], i, mission, Path)
+					if globals ~= nil then
+						g2 = {}
+						for kk, vv in pairs(globals) do
+							g2[vv] = _G[vv]
+						end
+						Seed.CachedSDMission[Path].Globals[m] = MergeTable(Seed.CachedSDMission[Path].Globals[m], g2)
+					end
+				end
+			end
+		end
+	end
+	DebugPrint = old_DebugPrint
+end
+
+function Seed.CacheModulesMission() 
 	for i=1,Seed.MAX_LEVELS do
 		local path = string.format("/GameData/scripts/missions/level%02d/", i)
 		local files = {}
@@ -139,41 +187,104 @@ function Seed.CacheFullMission(mission_func)
 		for j=1,#files do
 			local Path = files[j]
 			local prefix, mission = Path:match("([bsg]?[rm])(%d)l")
-			if prefix == nil or mission == nil then 
-				goto continue
+			if prefix ~= nil and mission ~= nil then 
+				Seed.InternalCacheModuleMission(i, Path, j, prefix, mission)
 			end
-			Seed.AddSpoiler("Caching mission: %s", Path)			
-			mission = tonumber(mission)
-			local misstype
-			if prefix == "m" then
-				misstype = MissionType.Normal
-			elseif prefix == "sr" then
-				misstype = MissionType.Race
-			elseif prefix == "bm" then
-				misstype = MissionType.BonusMission
-			elseif prefix == "gr" then
-				misstype = MissionType.GamblingRace
-			else
-				error("unknown mission script type")
+			mission = Path:match("m(%d)sdl")
+			if mission ~= nil then
+				Seed.InternalCacheModuleSDMission(i, Path, j, prefix, mission)
 			end
-			if Seed.CachedMission[Path] == nil then
-				Seed.CachedMission[Path] = {}
-				Seed.CachedMission[Path].LoadFile = ReadFile(Path):gsub("//.-([\r\n])", "%1");
-				Seed.CachedMission[Path].InitFile = ReadFile(Path:gsub("l%.mfk", "i.mfk")):gsub("//.-([\r\n])", "%1");
-			end
-			local old_DebugPrint = DebugPrint
-			DebugPrint = function(msg, level)
-				Seed.AddSpoiler(msg)
-			end
-			Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile = mission_func(Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile, i, mission, Path, misstype)
-			DebugPrint = old_DebugPrint
-			::continue::
 		end
 	end
 end
 
-function Seed.ReturnFullMission(LoadFile, InitFile, Level, Mission, Path)
-	return Seed.CachedMission[Path].LoadFile, Seed.CachedMission[Path].InitFile
+function Seed.HandleModulesLevel(Path)
+	if Seed.CachedLevel[Path] == nil then
+		DebugPrint("Request for Path " .. Path .. " was not seeded, falling back to normal generation")
+		return
+	end
+	local Attempt = Seed.CachedLevel[Path].Attempt
+	
+	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
+	
+	local LoadFile = Seed.CachedLevel[Path].LoadFile[Attempt]
+	local InitFile = Seed.CachedLevel[Path].InitFile[Attempt]
+	for kk, vv in pairs(Seed.CachedLevel[Path].Globals[Attempt]) do
+		_G[vv] = Seed.CachedLevel[Path].Globals[Attempt][vv]
+	end
+	
+	LevelInit = InitFile
+	if Settings.DebugLevel >= 5 then
+		DebugPrint("Level Load File:\r\n" .. LoadFile)
+		DebugPrint("Level Init File:\r\n" .. InitFile)
+	end
+	Output(LoadFile)
+	
+	Attempt = Attempt + 1
+	if Attempt > MAX_ATTEMPTS_LEVELS then
+		Attempt = 1
+	end
+	Seed.CachedLevel[Path].Attempt = Attempt
+end
+
+function Seed.HandleModulesMission(Path)
+	if Seed.CachedMission[Path] == nil then
+		DebugPrint("Request for Path " .. Path .. " was not seeded, falling back to normal generation")
+		return
+	end
+	local Attempt = Seed.CachedMission[Path].Attempt
+	
+	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
+	
+	local LoadFile = Seed.CachedMission[Path].LoadFile[Attempt]
+	local InitFile = Seed.CachedMission[Path].InitFile[Attempt]
+	for kk, vv in pairs(Seed.CachedMission[Path].Globals[Attempt]) do
+		_G[vv] = Seed.CachedMission[Path].Globals[Attempt][vv]
+	end
+	
+	MissionInit = InitFile
+	if Settings.DebugLevel >= 5 then
+		DebugPrint("Mission Load File:\r\n" .. LoadFile)
+		DebugPrint("Mission Init File:\r\n" .. InitFile)
+	end
+	Output(LoadFile)
+	
+	Attempt = Attempt + 1
+	if Attempt > MAX_ATTEMPTS_MISSIONS then
+		Attempt = 1
+	end
+	Seed.CachedMission[Path].Attempt = Attempt
+end
+
+function Seed.HandleModulesSDMission(Path)
+	if Seed.CachedSDMission[Path] == nil then
+		DebugPrint("Request for Path " .. Path .. " was not seeded, falling back to normal generation")
+		return
+	end
+	local Attempt = Seed.CachedSDMission[Path].Attempt
+	
+	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
+	
+	local LoadFile = Seed.CachedSDMission[Path].LoadFile[Attempt]
+	local InitFile = Seed.CachedSDMission[Path].InitFile[Attempt]
+	for kk, vv in pairs(Seed.CachedSDMission[Path].Globals[Attempt]) do
+		_G[vv] = Seed.CachedSDMission[Path].Globals[Attempt][vv]
+	end
+	
+	LastLevel = nil
+	PlayerStats = nil
+	SDInit = InitFile
+	if Settings.DebugLevel >= 5 then
+		DebugPrint("SD Load File:\r\n" .. LoadFile)
+		DebugPrint("SD Init File:\r\n" .. InitFile)
+	end
+	Output(LoadFile)
+	
+	Attempt = Attempt + 1
+	if Attempt > MAX_ATTEMPTS_MISSIONS then
+		Attempt = 1
+	end
+	Seed.CachedSDMission[Path].Attempt = Attempt
 end
 
 function Seed.Init()

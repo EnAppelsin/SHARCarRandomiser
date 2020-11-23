@@ -63,3 +63,9 @@ for k,_ in pairs(MissionModules.SundayDrive) do
 		SundayMax = math.max(SundayMax, i)
 	end
 end
+
+if Settings.IsSeeded then
+	DebugPrint("Generating seeded mission scripts")
+	Seed.CacheModulesLevel(MissionModules.Level)
+	Seed.CacheModulesMission()
+end
