@@ -34,49 +34,47 @@ function Seed.Base64dec(s)
 end
 
 
-function Seed.CacheModulesLevel(modules) 
-	for i=1,Seed.MAX_LEVELS do
-		Seed.AddSpoiler("Caching level: %s", i)
-		local Path = string.format("/GameData/scripts/missions/level%02d/level.mfk", i)
-		-- Generate structure for seeded level files
-		if Seed.CachedLevel[Path] == nil then
-			Seed.CachedLevel[Path] = {}
-			Seed.CachedLevel[Path].Attempt = 1
-			Seed.CachedLevel[Path].LoadFile = {}
-			Seed.CachedLevel[Path].InitFile = {}
-			Seed.CachedLevel[Path].Globals = {}
-			for j=1,MAX_ATTEMPTS_LEVELS do
-				Seed.CachedLevel[Path].LoadFile[j] = ReadFile(Path):gsub("//.-([\r\n])", "%1");
-				Seed.CachedLevel[Path].InitFile[j] = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
-				Seed.CachedLevel[Path].Globals[j] = {}
-			end
-		end
-		
-		local old_DebugPrint = DebugPrint
-		DebugPrint = function(msg, level)
-			Seed.AddSpoiler(msg)
-		end
+function Seed.InternalCacheModulesLevel(i) 
+	Seed.AddSpoiler("Caching level: %s", i)
+	local Path = string.format("/GameData/scripts/missions/level%02d/level.mfk", i)
+	-- Generate structure for seeded level files
+	if Seed.CachedLevel[Path] == nil then
+		Seed.CachedLevel[Path] = {}
+		Seed.CachedLevel[Path].Attempt = 1
+		Seed.CachedLevel[Path].LoadFile = {}
+		Seed.CachedLevel[Path].InitFile = {}
+		Seed.CachedLevel[Path].Globals = {}
 		for j=1,MAX_ATTEMPTS_LEVELS do
-			Seed.AddSpoiler("Seeding attempt #%d", j)
-			for l = LevelMin,LevelMax do
-				if modules[l] then
-					for k, v in pairs(modules[l]) do
-						Seed.AddSpoiler("Running module: " .. k)
-						local globals, g2
-						Seed.CachedLevel[Path].LoadFile[j], Seed.CachedLevel[Path].InitFile[j], globals = v(Seed.CachedLevel[Path].LoadFile[j],  Seed.CachedLevel[Path].InitFile[j], i, Path)
-						if globals ~= nil then
-							g2 = {}
-							for kk, vv in pairs(globals) do
-								g2[vv] = _G[vv]
-							end
-							Seed.CachedLevel[Path].Globals[j] = MergeTable(Seed.CachedLevel[Path].Globals[j], g2)
+			Seed.CachedLevel[Path].LoadFile[j] = ReadFile(Path):gsub("//.-([\r\n])", "%1");
+			Seed.CachedLevel[Path].InitFile[j] = ReadFile(Path:gsub("level%.mfk", "leveli.mfk")):gsub("//.-([\r\n])", "%1");
+			Seed.CachedLevel[Path].Globals[j] = {}
+		end
+	end
+	
+	local old_DebugPrint = DebugPrint
+	DebugPrint = function(msg, level)
+		Seed.AddSpoiler(msg)
+	end
+	for j=1,MAX_ATTEMPTS_LEVELS do
+		Seed.AddSpoiler("Seeding attempt #%d", j)
+		for l = LevelMin,LevelMax do
+			if MissionModules.Level[l] then
+				for k, v in pairs(MissionModules.Level[l]) do
+					Seed.AddSpoiler("Running module: " .. k)
+					local globals, g2
+					Seed.CachedLevel[Path].LoadFile[j], Seed.CachedLevel[Path].InitFile[j], globals = v(Seed.CachedLevel[Path].LoadFile[j],  Seed.CachedLevel[Path].InitFile[j], i, Path)
+					if globals ~= nil then
+						g2 = {}
+						for kk, vv in pairs(globals) do
+							g2[vv] = _G[vv]
 						end
+						Seed.CachedLevel[Path].Globals[j] = MergeTable(Seed.CachedLevel[Path].Globals[j], g2)
 					end
 				end
 			end
 		end
-		DebugPrint = old_DebugPrint
 	end
+	DebugPrint = old_DebugPrint
 end
 
 function Seed.InternalCacheModuleMission(i, Path, j, prefix, mission)
@@ -181,6 +179,7 @@ end
 
 function Seed.CacheModulesMission() 
 	for i=1,Seed.MAX_LEVELS do
+		Seed.InternalCacheModulesLevel(i)
 		local path = string.format("/GameData/scripts/missions/level%02d/", i)
 		local files = {}
 		GetFiles(files, path, {".mfk"})
