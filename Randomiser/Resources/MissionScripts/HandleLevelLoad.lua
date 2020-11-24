@@ -2,6 +2,7 @@ local Path = "/GameData/" .. GetPath();
 
 if Settings.IsSeeded then
 	Seed.HandleModulesLevel(Path)
+	return
 end
 
 loading = true

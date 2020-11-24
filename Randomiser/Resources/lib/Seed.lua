@@ -33,6 +33,21 @@ function Seed.Base64dec(s)
 	return base64dec(s .. "=", Seed._bs, Seed._bsi)
 end
 
+-- Always iterate modules in Seeded mode with spairs which runs in a deterministic order!
+-- Otherwise the seeded is still random!
+local function spairs(t, f)
+	local a = {}
+	for n in pairs(t) do table.insert(a, n) end
+	table.sort(a, f)
+	local i = 0
+	local iter = function()
+		i = i + 1
+		if a[i] == nil then return nil
+		else return a[i], t[a[i]]
+		end
+	end
+	return iter
+end
 
 function Seed.InternalCacheModulesLevel(i) 
 	Seed.AddSpoiler("Caching level: %s", i)
@@ -59,7 +74,7 @@ function Seed.InternalCacheModulesLevel(i)
 		Seed.AddSpoiler("Seeding attempt #%d", j)
 		for l = LevelMin,LevelMax do
 			if MissionModules.Level[l] then
-				for k, v in pairs(MissionModules.Level[l]) do
+				for k, v in spairs(MissionModules.Level[l]) do
 					Seed.AddSpoiler("Running module: " .. k)
 					local globals, g2
 					Seed.CachedLevel[Path].LoadFile[j], Seed.CachedLevel[Path].InitFile[j], globals = v(Seed.CachedLevel[Path].LoadFile[j],  Seed.CachedLevel[Path].InitFile[j], i, Path)
@@ -115,7 +130,7 @@ function Seed.InternalCacheModuleMission(i, Path, j, prefix, mission)
 		Seed.AddSpoiler("Seeding attempt #%d", m)
 		for l = MissionMin,MissionMax do
 			if MissionModules.Mission[l] then
-				for k, v in pairs(MissionModules.Mission[l]) do
+				for k, v in spairs(MissionModules.Mission[l]) do
 					Seed.AddSpoiler("Running module: " .. k)
 					local globals, g2
 					Seed.CachedMission[Path].LoadFile[m], Seed.CachedMission[Path].InitFile[m], globals = v(Seed.CachedMission[Path].LoadFile[m],  Seed.CachedMission[Path].InitFile[m], i, mission, Path, misstype)
@@ -159,7 +174,7 @@ function Seed.InternalCacheModuleSDMission(i, Path, j, prefix, mission)
 		Seed.AddSpoiler("Seeding attempt #%d", m)
 		for i = SundayMin,SundayMax do
 			if MissionModules.SundayDrive[l] then
-				for k, v in pairs(MissionModules.SundayDrive[l]) do
+				for k, v in spairs(MissionModules.SundayDrive[l]) do
 					Seed.AddSpoiler("Running module: " .. k)
 					local globals, g2
 					Seed.CachedSDMission[Path].LoadFile[m], Seed.CachedSDMission[Path].InitFile[m], globals = v(Seed.CachedSDMission[Path].LoadFile[m],  Seed.CachedSDMission[Path].InitFile[m], i, mission, Path)

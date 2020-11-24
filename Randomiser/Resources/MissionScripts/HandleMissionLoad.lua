@@ -3,6 +3,7 @@ loading = true
 
 if Settings.IsSeeded then
 	Seed.HandleModulesMission(Path)
+	return
 end
 
 

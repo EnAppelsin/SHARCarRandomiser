@@ -3,6 +3,7 @@ loading = true
 
 if Settings.IsSeeded then
 	Seed.HandleModulesSDMission(Path)
+	return
 end
 
 if MissionModules.SundayDrive then
