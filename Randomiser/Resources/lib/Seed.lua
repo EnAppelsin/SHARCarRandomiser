@@ -172,7 +172,7 @@ function Seed.InternalCacheModuleSDMission(i, Path, j, prefix, mission)
 	end
 	for m=1,MAX_ATTEMPTS_MISSIONS do
 		Seed.AddSpoiler("Seeding attempt #%d", m)
-		for i = SundayMin,SundayMax do
+		for l = SundayMin,SundayMax do
 			if MissionModules.SundayDrive[l] then
 				for k, v in spairs(MissionModules.SundayDrive[l]) do
 					Seed.AddSpoiler("Running module: " .. k)
@@ -224,7 +224,8 @@ function Seed.HandleModulesLevel(Path)
 	local LoadFile = Seed.CachedLevel[Path].LoadFile[Attempt]
 	local InitFile = Seed.CachedLevel[Path].InitFile[Attempt]
 	for kk, vv in pairs(Seed.CachedLevel[Path].Globals[Attempt]) do
-		_G[vv] = Seed.CachedLevel[Path].Globals[Attempt][vv]
+		_G[kk] = vv
+		DebugPrint("Restoring global " .. kk .. " to value " .. tostring(vv), 3)
 	end
 	
 	LevelInit = InitFile
@@ -253,7 +254,8 @@ function Seed.HandleModulesMission(Path)
 	local LoadFile = Seed.CachedMission[Path].LoadFile[Attempt]
 	local InitFile = Seed.CachedMission[Path].InitFile[Attempt]
 	for kk, vv in pairs(Seed.CachedMission[Path].Globals[Attempt]) do
-		_G[vv] = Seed.CachedMission[Path].Globals[Attempt][vv]
+		_G[kk] = vv
+		DebugPrint("Restoring global " .. kk .. " to value " .. tostring(vv), 3)
 	end
 	
 	MissionInit = InitFile
@@ -282,7 +284,8 @@ function Seed.HandleModulesSDMission(Path)
 	local LoadFile = Seed.CachedSDMission[Path].LoadFile[Attempt]
 	local InitFile = Seed.CachedSDMission[Path].InitFile[Attempt]
 	for kk, vv in pairs(Seed.CachedSDMission[Path].Globals[Attempt]) do
-		_G[vv] = Seed.CachedSDMission[Path].Globals[Attempt][vv]
+		_G[kk] = vv
+		DebugPrint("Restoring global " .. kk .. " to value " .. tostring(vv), 3)
 	end
 	
 	LastLevel = nil
