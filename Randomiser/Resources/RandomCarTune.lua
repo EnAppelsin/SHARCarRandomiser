@@ -1,4 +1,4 @@
-if SettingRandomCarSounds then
+if Settings.RandomCarSounds then
 	-- ENGINE LIST
 	local RandomEnginePool = {}
 
