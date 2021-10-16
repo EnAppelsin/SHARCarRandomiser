@@ -32,7 +32,7 @@ SetDamperC(0.2);
 
 SetSuspensionYOffset(-0.15);
 
-SetHitPoints(13.0);
+SetHitPoints(1.2);
 
 SetBurnoutRange(0.12);
 SetMaxSpeedBurstTime(1.3);

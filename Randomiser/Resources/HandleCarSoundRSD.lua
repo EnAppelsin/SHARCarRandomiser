@@ -1,4 +1,4 @@
-if SettingCustomCars then
+if Settings.CustomCars then
 	local Path = GetPath()
 	for k,v in pairs(CustomCarSounds) do
 		Path = Path:gsub("\\", "/")

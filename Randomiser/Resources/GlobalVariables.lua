@@ -1,24 +1,5 @@
-TEXTURE_CHUNK = "\000\144\001\000"
-SHADER_CHUNK = "\000\016\001\000"
-ANIMATION_CHUNK = "\000\016\018\000"
-ANIMATION_GROUP_CHUNK = "\002\016\018\000"
-SKIN_CHUNK = "\001\000\001\000"
-SKELETON_CHUNK = "\000\069\000\000"
-MESH_CHUNK = "\000\000\001\000"
-COMP_DRAW_CHUNK = "\018\069\000\000"
-COMP_DRAW_SKIN_LIST_SUBCHUNK = "\019\069\000\000"
-COMP_DRAW_PROP_LIST_SUBCHUNK = "\020\069\000\000"
-COMP_DRAW_SKIN_SUBCHUNK = "\021\069\000\000"
-OLD_FRAME_CONTROLLER_CHUNK = "\000\018\018\000"
-SPRITE_CHUNK = "\005\144\001\000"
-IMAGE_CHUNK = "\001\144\001\000"
-IMAGE_DATA_CHUNK = "\002\144\001\000"
-CAR_CAMERA_DATA_CHUNK = "\000\001\000\003"
-MOTION_ROOT_LABEL = "Motion_Root\000"
-TEXT_BIBLE_CHUNK = "\x0D\x80\x01\x00"
-LANGUAGE_CHUNK = "\x0E\x80\x01\x00"
-
-ModVersion = ReadFile(ModPath .. "/Meta.ini"):match("Version=(.-)[\r\n]")
+ModName = GetModName()
+ModVersion = GetModVersion()
 
 OrigChar = nil
 RandomChar = nil
@@ -36,113 +17,104 @@ MissionCharacters = {}
 
 -- Count number of random cars
 RandomCarPoolN = #RandomCarPool
-RandomPedPoolN = #RandomPedPool
 RandomDialoguePoolN = 0
+RCFDialoguePoolN = 0
 
-cartunespt = ReadFile(ModPath .. "/Resources/car_tune.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-carsoundspt = ReadFile(ModPath .. "/Resources/carsound.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-dialogspt = ReadFile(ModPath .. "/Resources/dialog.spt"):gsub("\r\n", "\n"):gsub("\r", "\n"):gsub("\n", "\r\n")
-
-SettingRandomCouch = GetSetting("RandomCouch")
-SettingRandomMusic = GetSetting("RandomMusic")
-SettingRandomMusicCues = GetSetting("RandomMusicCues")
-SettingRandomDialogue = GetSetting("RandomDialogue")
-SettingRandomCharacter = GetSetting("RandomCharacter")
-SettingRandomMissionCharacters = GetSetting("RandomMissionCharacters")
-SettingRandomPlayerVehicles = GetSetting("RandomPlayerVehicles")
-SettingSaveChoice = GetSetting("SaveChoice")
-SettingRandomCarScale = GetSetting("RandomCarScale")
-SettingRandomCarSounds = GetSetting("RandomCarSounds")
-SettingCustomCars = GetSetting("CustomCars")
-SettingRandomPedestrians = GetSetting("RandomPedestrians")
-SettingRandomTraffic = GetSetting("RandomTraffic")
-SettingRandomChase = GetSetting("RandomChase")
-SettingRandomChaseAmount = GetSetting("RandomChaseAmount")
-SettingRandomChaseStats = GetSetting("RandomChaseStats")
-SettingRandomMissionVehicles = GetSetting("RandomMissionVehicles")
-SettingRandomMissionVehiclesStats = GetSetting("RandomMissionVehiclesStats")
-SettingDifferentCellouts = GetSetting("DifferentCellouts")
-SettingSaveChoiceMV = GetSetting("SaveChoiceMV")
-SettingRandomStats = GetSetting("RandomStats")
-SettingSkipLocks = GetSetting("SkipLocks")
-SettingSkipFMVs = GetSetting("SkipFMVs")
-SettingBoostHP = GetSetting("BoostHP")
-SettingDebugLevel = GetSetting("DebugLevel")
-
---Chaos settings
-SettingRandomInteriors = GetSetting("RandomInteriors")
-SettingRandomDirectives = GetSetting("RandomDirectives")
-SettingRandomMissions = GetSetting("RandomMissions")
-SettingRandomItems = GetSetting("RandomItems")
+cartunespt = ReadFile("/GameData/sound/scripts/car_tune.spt"):gsub("SetEngineClipName %( \"tt\" %)", "SetEngineClipName ( \"snake_car\" )"):gsub("SetEngineIdleClipName %( \"tt\" %)", "SetEngineIdleClipName ( \"snake_car\" )"):gsub("\r\n    SetOverlayClipName %( \"\" %)", ""):gsub("\r\n    SetOverlayClipName %( \"generator\" %)", "")
+carsoundspt = ReadFile("/GameData/sound/scripts/carsound.spt")
 
 --Random Stat Min/Max Variables
-if SettingRandomStats then
---Mass Variables
-	MinMass = GetSetting("StatMinMass")
-	MaxMass = GetSetting("StatMaxMass")
-	if MaxMass < MinMass then
-		MaxMass = MinMass
-	end
---Gas Scale Variables
-	MinGas = GetSetting("StatMinGas")
-	MaxGas = GetSetting("StatMaxGas")
-	if MaxGas < MinGas then
-		MaxGas = MinGas
-	end
---Slip Gas Scale Variables
-	MinSlipGas = GetSetting("StatMinSlipGasScale")
-	MaxSlipGas = GetSetting("StatMaxSlipGasScale")
-	if MaxSlipGas < MinSlipGas then
-		MaxSlipGas = MinSlipGas
-	end
--- Break Gas Scale Variables
-	MinBreakGasScale = GetSetting("StatMinBreakGasScale")
-	MaxBreakGasScale = GetSetting("StatMaxBreakGasScale")
-	if MaxBreakGasScale < MinBreakGasScale then
-		MaxBreakGasScale = MinBreakGasScale
-	end
--- Top Speed Variables
-	MinSpeed = GetSetting("StatMinSpeed")
-	MaxSpeed = GetSetting("StatMaxSpeed")
-	if MaxSpeed < MinSpeed then
-		MaxSpeed = MinSpeed
-	end
--- Wheel Turn Angle
-	MinTurnAngle = GetSetting("StatMinAngle")
-	MaxTurnAngle = GetSetting("StatMaxAngle")
-	if MaxTurnAngle < MinTurnAngle then
-		MaxTurnAngle = MinTurnAngle
-	end
--- Wheel Grip Variables
-	MinGrip = GetSetting("StatMinGrip")
-	MaxGrip = GetSetting("StatMaxGrip")
-	if MaxGrip < MinGrip then
-		MaxGrip = MinGrip
-	end
--- Steering Variables
-	MinSteering = GetSetting("StatMinSteering")
-	MaxSteering = GetSetting("StatMaxSteering")
-	if MaxSteering < MinSteering then
-		MaxSteering = MinSteering
-	end
--- SlipSteering Variables
-	MinSlipSteering = GetSetting("StatMinSlipSteering")
-	MaxSlipSteering = GetSetting("StatMaxSlipSteering")
-	if MaxSlipSteering < MinSlipSteering then
-		MaxSlipSteering = MinSlipSteering
-	end
--- HP Variables
-	MinHP = GetSetting("StatMinHP")
-	MaxHP = GetSetting("StatMaxHP")
-	if MaxHP < MinHP then
-		MaxHP = MinHP
+if Settings.RandomStats then
+	if Settings.SpeedrunMode then
+		--TODO: Change to GetSettingDefault if added
+		MinMass = 800
+		MaxMass = 4000
+		MinGas = 3
+		MaxGas = 11
+		MinSlipGas = 0
+		MaxSlipGas = 1
+		MinBreakGasScale = 1
+		MaxBreakGasScale = 10
+		MinSpeed = 110
+		MaxSpeed = 200
+		MinTurnAngle = 15
+		MaxTurnAngle = 35
+		MinGrip = 3
+		MaxGrip = 35
+		MinSteering = 90
+		MaxSteering = 100
+		MinSlipSteering = 20
+		MaxSlipSteering = 40
+		MinHP = 0
+		MaxHP = 10
+	else
+	--Mass Variables
+		MinMass = Settings.StatMinMass
+		MaxMass = Settings.StatMaxMass
+		if MaxMass < MinMass then
+			MaxMass = MinMass
+		end
+	--Gas Scale Variables
+		MinGas = Settings.StatMinGas
+		MaxGas = Settings.StatMaxGas
+		if MaxGas < MinGas then
+			MaxGas = MinGas
+		end
+	--Slip Gas Scale Variables
+		MinSlipGas = Settings.StatMinSlipGasScale
+		MaxSlipGas = Settings.StatMaxSlipGasScale
+		if MaxSlipGas < MinSlipGas then
+			MaxSlipGas = MinSlipGas
+		end
+	-- Break Gas Scale Variables
+		MinBreakGasScale = Settings.StatMinBreakGasScale
+		MaxBreakGasScale = Settings.StatMaxBreakGasScale
+		if MaxBreakGasScale < MinBreakGasScale then
+			MaxBreakGasScale = MinBreakGasScale
+		end
+	-- Top Speed Variables
+		MinSpeed = Settings.StatMinSpeed
+		MaxSpeed = Settings.StatMaxSpeed
+		if MaxSpeed < MinSpeed then
+			MaxSpeed = MinSpeed
+		end
+	-- Wheel Turn Angle
+		MinTurnAngle = Settings.StatMinAngle
+		MaxTurnAngle = Settings.StatMaxAngle
+		if MaxTurnAngle < MinTurnAngle then
+			MaxTurnAngle = MinTurnAngle
+		end
+	-- Wheel Grip Variables
+		MinGrip = Settings.StatMinGrip
+		MaxGrip = Settings.StatMaxGrip
+		if MaxGrip < MinGrip then
+			MaxGrip = MinGrip
+		end
+	-- Steering Variables
+		MinSteering = Settings.StatMinSteering
+		MaxSteering = Settings.StatMaxSteering
+		if MaxSteering < MinSteering then
+			MaxSteering = MinSteering
+		end
+	-- SlipSteering Variables
+		MinSlipSteering = Settings.StatMinSlipSteering
+		MaxSlipSteering = Settings.StatMaxSlipSteering
+		if MaxSlipSteering < MinSlipSteering then
+			MaxSlipSteering = MinSlipSteering
+		end
+	-- HP Variables
+		MinHP = Settings.StatMinHP
+		MaxHP = Settings.StatMaxHP
+		if MaxHP < MinHP then
+			MaxHP = MinHP
+		end
 	end
 end
 
-if SettingRandomCarScale then
+if Settings.RandomCarScale then
 	-- Random Car Scale
-	MinCarScale = GetSetting("StatMinScale")
-	MaxCarScale = GetSetting("StatMaxScale")
+	MinCarScale = Settings.StatMinScale
+	MaxCarScale = Settings.StatMaxScale
 	if MaxCarScale < MinCarScale then
 		MaxCarScale = MinCarScale
 	end

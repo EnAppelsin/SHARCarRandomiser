@@ -2,7 +2,16 @@
 local Path = "/GameData/" .. GetPath()
 local File = nil
 
-if SettingCustomCars then
+if Settings.RandomStaticCars and RandomStaticCar and RandomStaticCarName then
+	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
+	if carName == RandomStaticCar then
+		Path = Path:gsub(carName, RandomStaticCarName)
+		RandomStaticCar = nil
+		RandomStaticCarName = nil
+	end
+end
+
+if Settings.CustomCars then
 	local carName = Path:match("[\\/]cars[\\/](.-)%.con")
 	for i = 1, #CustomCarPool do
 		if CustomCarPool[i]:lower() == carName:lower() then
@@ -37,7 +46,7 @@ local function randomStats(data)
 	local donutTorque = round(math.random() + math.random(1, 20), 2)
 	
 	
-	if SettingRandomPlayerVehicles and RandomCarName and Path:match(RandomCarName) then
+	if Settings.RandomPlayerVehicles and RandomCarName and Path:match(RandomCarName) then
 		-- Takes the stats that were assigned to the player vehicle when the mission is originally loaded.
 		if PlayerStats == nil then
 			PlayerStats = {}
@@ -92,11 +101,11 @@ if string.match(Path, "tt%.con") then
 end
 
 -- Only update the randomly spawned car
-if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCarName) then
+if Settings.RandomPlayerVehicles and RandomCarName and string.match(Path, RandomCarName) then
 
-	if SettingRandomStats and RandomCarName ~= "huskA" then	
+	if Settings.RandomStats and RandomCarName ~= "huskA" then	
 		File = randomStats(File)
-	elseif SettingBoostHP then
+	elseif Settings.BoostHP then
 		HP = string.match(File, "SetHitPoints%((.-)%);")
 		if HP and tonumber(HP) < 0.8 then
 			File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.8);", 1)
@@ -105,27 +114,30 @@ if SettingRandomPlayerVehicles and RandomCarName and string.match(Path, RandomCa
 	end
 end
 
-if SettingRandomMissionVehicles and MissionVehicles then
-	for k,v in pairs(MissionVehicles) do
-		if string.match(Path, v) then
-			if SettingRandomStats then
-				File = randomStats(File)
-			else
-				HP = string.match(File, "SetHitPoints%((.-)%);")
-				if HP and tonumber(HP) < 0.6 then
-					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
-					DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+if Settings.RandomMissionVehicles and MissionVehicles ~= nil then
+	for k,v in pairs(MissionVehicles) do	
+		for l, t in pairs(v) do
+			if string.match(Path, t) then
+				if Settings.RandomStats then
+					File = randomStats(File)
+				else
+					HP = string.match(File, "SetHitPoints%((.-)%);")
+					if HP and tonumber(HP) < 0.6 then
+						File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(0.6);", 1)
+						DebugPrint("Boosting HP up from " .. HP .. " to 0.6 for " .. Path)
+					end
+					if HP and tonumber(HP) > 15 then
+						File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(15);", 1)
+						DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
+					end
 				end
-				if HP and tonumber(HP) > 15 then
-					File = string.gsub(File, "SetHitPoints%(.-%);", "SetHitPoints(15);", 1)
-					DebugPrint("Capping HP from " .. HP .. " to 15 for " .. Path)
-				end
+				File = File:gsub("SetTireGrip%(.-%);", "SetTireGrip(40.0);", 1);
 			end
 		end
 	end
 end
 
-if SettingRandomStats and SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
+if Settings.RandomStats and Settings.RandomTraffic and TrafficCars and #TrafficCars > 0 then
 	for i = 1, #TrafficCars do
 		if string.match(Path, TrafficCars[i]) then
 			File = randomStats(File)
@@ -134,11 +146,11 @@ if SettingRandomStats and SettingRandomTraffic and TrafficCars and #TrafficCars 
 	end
 end
 
-if SettingRandomPedestrians then
+if Settings.RandomPedestrians then
 	local driverName = GetRandomFromTbl(RandomPedPool, false)
 		if string.match(File, "SetCharactersVisible%(%s*1%s*%);") then
 		File = string.gsub(File, "SetDriver%(%s*\"(.-)\"%s*%);", function(orig)
-			if SettingRandomTraffic and TrafficCars and #TrafficCars > 0 then
+			if Settings.RandomTraffic and TrafficCars and #TrafficCars > 0 then
 				for i = 1, #TrafficCars do
 					if string.match(Path, TrafficCars[i]) then
 						DebugPrint("Setting driver for traffic car " .. TrafficCars[i])
@@ -155,7 +167,7 @@ if SettingRandomPedestrians then
 	end
 end
 
-if SettingRandomCarScale and not string.match(Path, "huskA") then
+if Settings.RandomCarScale and not string.match(Path, "huskA") then
 	local mins = math.log(MinCarScale)
 	local range = math.log(MaxCarScale) - mins
 	local scale = round(math.exp(math.random() * range + mins), 2)
