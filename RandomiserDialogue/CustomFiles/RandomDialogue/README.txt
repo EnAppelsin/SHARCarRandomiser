@@ -1,1 +1,0 @@
-For random dialogue to work in the Randomiser mod (v2.1 and above), RSD files for dialogue need to be placed in this folder, or subfolders of this folder.

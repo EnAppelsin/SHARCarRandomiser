@@ -1,1 +1,0 @@
-To add custom chars to the randomiser pools, the _m P3D file must be in this folder.
