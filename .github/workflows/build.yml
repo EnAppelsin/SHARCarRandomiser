@@ -23,7 +23,7 @@ jobs:
     - name: Check mod launcher version
       id: mod-launcher-version
       run: |
-        $Request = Invoke-WebRequest -Uri "https://api.donutteam.com/?Event=AppLookup&Apps=4&Format=XML" -Method:Get -Headers $head -ContentType "application/xml" -ErrorAction:Stop -TimeoutSec 60
+        $Request = Invoke-WebRequest -Uri "https://api.donutteam.com/?Event=AppLookup&Apps=4&Format=XML" -Method:Get -ErrorAction:Stop -TimeoutSec 60
         $Version = ([XML]$Request.Content).DonutTeamAPI.Data.Version
         Write-Output "::set-output name=version::$Version"
 
