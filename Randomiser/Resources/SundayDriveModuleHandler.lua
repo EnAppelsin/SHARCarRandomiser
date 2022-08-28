@@ -11,11 +11,11 @@ local Changed = false
 for i=1,#Modules do
 	local Module = Modules[i]
 	
-	if Module.HandleMission then
+	if Module.HandleSundayDrive then
 		LoadFile = LoadFile or MFKLexer.Lexer:Parse(ReadFile(GamePath))
 		InitFile = InitFile or MFKLexer.Lexer:Parse(ReadFile(InitPath))
 		
-		if Module.HandleMission(LoadFile, InitFile, Level) then
+		if Module.HandleSundayDrive(LoadFile, InitFile, Level) then
 			Changed = true
 		end
 	end
@@ -23,5 +23,5 @@ end
 
 if Changed then
 	LoadFile:Output(true)
-	MissionInit = InitFile:__tostring(true)
+	SundayDriveInit = InitFile:__tostring(true)
 end
