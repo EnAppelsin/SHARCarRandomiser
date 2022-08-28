@@ -19,9 +19,12 @@ for i=1,#ModuleFiles do
 	
 	if result.Setting == nil or Settings[result.Setting] then
 		local priority = result.Priority or 5
-		local modules = Modules[priority] or {}
+		local modules = Modules[priority]
+		if modules == nil then
+			modules = {}
+			Modules[priority] = modules
+		end
 		modules[#modules + 1] = result
-		Modules[priority] = modules
 		ModulesN = ModulesN + 1
 	end
 end
