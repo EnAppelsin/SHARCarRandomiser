@@ -8,15 +8,18 @@ local LoadFile
 local InitFile
 
 local Changed = false
-for i=1,#Modules do
-	local Module = Modules[i]
-	
-	if Module.HandleSundayDrive then
-		LoadFile = LoadFile or MFKLexer.Lexer:Parse(ReadFile(GamePath))
-		InitFile = InitFile or MFKLexer.Lexer:Parse(ReadFile(InitPath))
+for j=1,#ModuleKeys do
+	local Modules = Modules[ModuleKeys[j]]
+	for i=1,#Modules do
+		local Module = Modules[i]
 		
-		if Module.HandleSundayDrive(LoadFile, InitFile, Level) then
-			Changed = true
+		if Module.HandleSundayDrive then
+			LoadFile = LoadFile or MFKLexer.Lexer:Parse(ReadFile(GamePath))
+			InitFile = InitFile or MFKLexer.Lexer:Parse(ReadFile(InitPath))
+			
+			if Module.HandleSundayDrive(LoadFile, InitFile, Level) then
+				Changed = true
+			end
 		end
 	end
 end

@@ -1,6 +1,7 @@
 local Module = {}
 
 Module.Setting = nil
+Module.Priority = 5
 
 local licenses = {}
 GetFilesInDirectory(Paths.Resources .. "/Licenses", licenses, ".png")

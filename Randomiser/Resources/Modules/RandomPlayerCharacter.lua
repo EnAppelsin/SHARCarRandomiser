@@ -1,6 +1,7 @@
 local Module = {}
 
 Module.Setting = nil --"RandomCharacter"
+Module.Priority = 5
 
 local CharName
 

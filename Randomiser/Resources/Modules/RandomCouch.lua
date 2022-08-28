@@ -1,6 +1,7 @@
 local Module = {}
 
 Module.Setting = nil --"RandomCouch"
+Module.Priority = 5
 
 Module.P3DFilters = {
 	"art/frontend/scrooby/resource/pure3d/homer.p3d",
