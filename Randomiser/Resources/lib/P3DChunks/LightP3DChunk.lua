@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.LightP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version, Type, Colour, Constant, Linear, Squard, Enabled)
@@ -29,6 +32,7 @@ local function new(self, Name, Version, Type, Colour, Constant, Linear, Squard, 
 	assert(type(Enabled) == "number", "Arg #8 (Enabled) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name
 	}
@@ -43,12 +47,15 @@ P3D.LightP3DChunk.Types = {
 	Ambient = 0,
 	Directional = 2
 }
-function P3D.LightP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.LightP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Colour = {}
-	chunk.Name, chunk.Version, chunk.Type, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Constant, chunk.Linear, chunk.Squard, chunk.Enabled = string_unpack("<s1IIBBBBfffI", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.Type, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Constant, chunk.Linear, chunk.Squard, chunk.Enabled = string_unpack(Endian .. "s1IIBBBBfffI", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	if Endian == ">" then
+		chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A = chunk.Colour.A, chunk.Colour.R, chunk.Colour.G, chunk.Colour.B
+	end
 	
 	return chunk
 end
@@ -62,6 +69,13 @@ function P3D.LightP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
+	local Colour = {}
+	if self.Endian == ">" then
+		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.A, self.Colour.R, self.Colour.G, self.Colour.B
+	else
+		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A
+	end
+	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIs1IIBBBBfffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Type, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Constant, self.Linear, self.Squard, self.Enabled) .. chunkData
+	return string_pack(self.Endian .. "IIIs1IIBBBBfffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Type, Colour.B, Colour.G, Colour.R, Colour.A, self.Constant, self.Linear, self.Squard, self.Enabled) .. chunkData
 end

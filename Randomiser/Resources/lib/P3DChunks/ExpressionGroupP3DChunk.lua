@@ -3,18 +3,21 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.ExpressionGroupP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Name, TargetName, Stages)
@@ -24,6 +27,7 @@ local function new(self, Version, Name, TargetName, Stages)
 	assert(type(Stages) == "table", "Arg #4 (Stages) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -37,15 +41,15 @@ end
 
 P3D.ExpressionGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Expression_Group)
 P3D.ExpressionGroupP3DChunk.new = new
-function P3D.ExpressionGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.ExpressionGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
-	chunk.Version, chunk.Name, chunk.TargetName, num, pos = string_unpack("<Is1s1I", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.TargetName, num, pos = string_unpack(Endian .. "Is1s1I", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.TargetName = P3D.CleanP3DString(chunk.TargetName)
 	
-	chunk.Stages = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
+	chunk.Stages = {string_unpack(Endian .. string_rep("I", num), chunk.ValueStr, pos)}
 	chunk.Stages[num + 1] = nil
 	
 	return chunk
@@ -63,5 +67,5 @@ function P3D.ExpressionGroupP3DChunk:__tostring()
 	local stagesN = #self.Stages
 	
 	local headerLen = 12 + 4 + #Name + 1 + #TargetName + 1 + 4 + stagesN * 4
-	return string_pack("<IIIIs1s1I" .. string_rep("I", stagesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, TargetName, stagesN, table_unpack(self.Stages)) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1s1I" .. string_rep("I", stagesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, TargetName, stagesN, table_unpack(self.Stages)) .. chunkData
 end

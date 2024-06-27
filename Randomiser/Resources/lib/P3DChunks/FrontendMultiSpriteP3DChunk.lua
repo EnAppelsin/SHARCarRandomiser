@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendMultiSpriteP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version, Position, Dimension, Justification, Colour, Translucency, RotationValue, ImageNames)
@@ -30,6 +33,7 @@ local function new(self, Name, Version, Position, Dimension, Justification, Colo
 	assert(type(ImageNames) == "table", "Arg #9 (ImageNames) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -55,18 +59,21 @@ P3D.FrontendMultiSpriteP3DChunk.Justifications = {
 	Bottom = 3,
 	Centre = 4
 }
-function P3D.FrontendMultiSpriteP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.FrontendMultiSpriteP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
 	chunk.Position = {}
 	chunk.Dimension = {}
 	chunk.Justification = {}
 	chunk.Colour = {}
-	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, num, pos = string_unpack("<s1IiiIIIIBBBBIfI", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, num, pos = string_unpack(Endian .. "s1IiiIIIIBBBBIfI", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	if Endian == ">" then
+		chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A = chunk.Colour.A, chunk.Colour.R, chunk.Colour.G, chunk.Colour.B
+	end
 	
-	chunk.ImageNames = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
+	chunk.ImageNames = {string_unpack(Endian .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.ImageNames[num + 1] = nil
 	for i=1,num do
 		chunk.ImageNames[i] = P3D.CleanP3DString(chunk.ImageNames[i])
@@ -86,10 +93,17 @@ function P3D.FrontendMultiSpriteP3DChunk:__tostring()
 	local num = #self.ImageNames
 	local values = {}
 	for i=1,num do
-		values[i] = string_pack("<s1", P3D.MakeP3DString(self.ImageNames[i]))
+		values[i] = string_pack(self.Endian .. "s1", P3D.MakeP3DString(self.ImageNames[i]))
 	end
 	local valuesData = table_concat(values)
 	
+	local Colour = {}
+	if self.Endian == ">" then
+		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.A, self.Colour.R, self.Colour.G, self.Colour.B
+	else
+		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A
+	end
+	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + #valuesData
-	return string_pack("<IIIs1IiiIIIIBBBBIfI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Position.X, self.Position.Y, self.Dimension.X, self.Dimension.Y, self.Justification.X, self.Justification.Y, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Translucency, self.RotationValue, num) .. valuesData .. chunkData
+	return string_pack(self.Endian .. "IIIs1IiiIIIIBBBBIfI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Position.X, self.Position.Y, self.Dimension.X, self.Dimension.Y, self.Justification.X, self.Justification.Y, Colour.B, Colour.G, Colour.R, Colour.A, self.Translucency, self.RotationValue, num) .. valuesData .. chunkData
 end

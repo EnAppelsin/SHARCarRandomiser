@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.TreeNode2P3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, SplitAxis, SplitPosition, StaticEntityLimit, StaticPhysEntityLimit, IntersectEntityLimit, DynaPhysEntityLimit, FenceEntityLimit, RoadSegmentEntityLimit, PathSegmentEntityLimit, AnimEntityLimit)
@@ -31,6 +34,7 @@ local function new(self, SplitAxis, SplitPosition, StaticEntityLimit, StaticPhys
 	assert(type(AnimEntityLimit) == "number", "Arg #10 (AnimEntityLimit) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		SplitAxis = SplitAxis,
 		SplitPosition = SplitPosition,
@@ -50,10 +54,10 @@ end
 
 P3D.TreeNode2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Tree_Node_2)
 P3D.TreeNode2P3DChunk.new = new
-function P3D.TreeNode2P3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.TreeNode2P3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.SplitAxis, chunk.SplitPosition, chunk.StaticEntityLimit, chunk.StaticPhysEntityLimit, chunk.IntersectEntityLimit, chunk.DynaPhysEntityLimit, chunk.FenceEntityLimit, chunk.RoadSegmentEntityLimit, chunk.PathSegmentEntityLimit, chunk.AnimEntityLimit = string_unpack("<bfIIIIIIII", chunk.ValueStr)
+	chunk.SplitAxis, chunk.SplitPosition, chunk.StaticEntityLimit, chunk.StaticPhysEntityLimit, chunk.IntersectEntityLimit, chunk.DynaPhysEntityLimit, chunk.FenceEntityLimit, chunk.RoadSegmentEntityLimit, chunk.PathSegmentEntityLimit, chunk.AnimEntityLimit = string_unpack(Endian .. "bfIIIIIIII", chunk.ValueStr)
 
 	return chunk
 end
@@ -66,5 +70,5 @@ function P3D.TreeNode2P3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIbfIIIIIIII", self.Identifier, headerLen, headerLen + #chunkData, self.SplitAxis, self.SplitPosition, self.StaticEntityLimit, self.StaticPhysEntityLimit, self.IntersectEntityLimit, self.DynaPhysEntityLimit, self.FenceEntityLimit, self.RoadSegmentEntityLimit, self.PathSegmentEntityLimit, self.AnimEntityLimit) .. chunkData
+	return string_pack(self.Endian .. "IIIbfIIIIIIII", self.Identifier, headerLen, headerLen + #chunkData, self.SplitAxis, self.SplitPosition, self.StaticEntityLimit, self.StaticPhysEntityLimit, self.IntersectEntityLimit, self.DynaPhysEntityLimit, self.FenceEntityLimit, self.RoadSegmentEntityLimit, self.PathSegmentEntityLimit, self.AnimEntityLimit) .. chunkData
 end

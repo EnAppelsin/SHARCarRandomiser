@@ -57,6 +57,8 @@ local TokenEndCharacters = {
 local tblconcat = table.concat
 local strbyte = string.byte
 
+local assert = assert
+local type = type
 
 MFKLexer.MFKFunction = {}
 function MFKLexer.MFKFunction:New(Name, Arguments, Conditional, Not)
@@ -69,19 +71,17 @@ function MFKLexer.MFKFunction:New(Name, Arguments, Conditional, Not)
 end
 
 function MFKLexer.MFKFunction:AddChildFunction(Func)
-	assert(Conditional, "Adding child function to a not-conditional function")
+	assert(self.Conditional, "Adding child function to a not-conditional function")
 	self.Children[#self.Children + 1] = Func
 end
 
-function MFKLexer.MFKFunction:SetArg(Index, Value)
-	self.Arguments[Index] = Value
+function MFKLexer.MFKFunction:SetArg(Index, Value, Condition)
+	if Condition == nil or tostring(Condition) == tostring(self.Arguments[Index]) then
+		self.Arguments[Index] = Value
+	end
 end
 
-function MFKLexer.MFKFunction:SetArgIf(Index, Value, Condition)
-	if tostring(self.Arguments[Index]) == tostring(Condition) then self.Arguments[Index] = Value end
-end
-
-function MFKLexer.MFKFunction:__tostring(Clean)
+function MFKLexer.MFKFunction:__tostring()
 	local output = {}
 	if self.Not then output[1] = "!" end
 	output[#output + 1] = "\"" .. self.Name .. "\"("
@@ -92,16 +92,13 @@ function MFKLexer.MFKFunction:__tostring(Clean)
 	output[#output + 1] = ")"
 	if self.Conditional then
 		output[#output + 1] = "{"
-		if Clean then output[#output + 1] = "\r\n" end
 		for i=1,#self.Children do
-			output[#output + 1] = self.Children[i]:__tostring(Clean)
+			output[#output + 1] = tostring(self.Children[i])
 		end
-		if Clean then output[#output + 1] = "\r\n" end
 		output[#output + 1] = "}"
 	else
 		output[#output + 1] = ";"
 	end
-	if Clean then output[#output + 1] = "\r\n" end
 	return tblconcat(output)
 end
 function MFKLexer.MFKFunction:Output(Clean)
@@ -350,45 +347,27 @@ function MFKLexer.Lexer:InsertFunction(Index, FunctionName, Arguments, Condition
 	return Func
 end
 
-local function SetFunctionArgument(FunctionName, Function, Index, Value)
+local function SetFunctionArgument(FunctionName, Function, Index, Value, Condition)
 	if Function.Name:lower() == FunctionName then
-		Function:SetArg(Index, Value)
+		Function:SetArg(Index, Value, Condition)
 	end
 	if Function.Conditional then
 		for i=1,#Function.Children do
-			SetFunctionArgument(FunctionName, Function.Children[i], Index, Value)
+			SetFunctionArgument(FunctionName, Function.Children[i], Index, Value, Condition)
 		end
 	end
 end
-function MFKLexer.Lexer:SetAll(FunctionName, Index, Value)
+function MFKLexer.Lexer:SetAll(FunctionName, Index, Value, Condition)
 	FunctionName = FunctionName:lower()
 	for i=1,#self.Functions do
-		SetFunctionArgument(FunctionName, self.Functions[i], Index, Value)
+		SetFunctionArgument(FunctionName, self.Functions[i], Index, Value, Condition)
 	end
 end
 
-local function SetFunctionArgumentIf(FunctionName, Function, Index, Value, Condition)
-	if Function.Name:lower() == FunctionName then
-		Function:SetArgIf(Index, Value, Condition)
-	end
-	if Function.Conditional then
-		for i=1,#Function.Children do
-			SetFunctionArgumentIf(FunctionName, Function.Children[i], Index, Value, Condition)
-		end
-	end
-end
-function MFKLexer.Lexer:SetAllIf(FunctionName, Index, Value, Condition)
-	FunctionName = FunctionName:lower()
-	Condition = tostring(Condition)
-	for i=1,#self.Functions do
-		SetFunctionArgumentIf(FunctionName, self.Functions[i], Index, Value, Condition)
-	end
-end
-
-function MFKLexer.Lexer:__tostring(Clean)
+function MFKLexer.Lexer:__tostring()
 	local output = {}
 	for i=1,#self.Functions do
-		output[i] = self.Functions[i]:__tostring(Clean)
+		output[i] = tostring(self.Functions[i])
 	end
 	return tblconcat(output)
 end

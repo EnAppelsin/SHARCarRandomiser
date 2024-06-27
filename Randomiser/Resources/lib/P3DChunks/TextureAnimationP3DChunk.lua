@@ -3,18 +3,21 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.TextureAnimationP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version, MaterialName, NumFrames, FrameRate, Cyclic)
@@ -26,6 +29,7 @@ local function new(self, Name, Version, MaterialName, NumFrames, FrameRate, Cycl
 	assert(type(Cyclic) == "number", "Arg #6 (Cyclic) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -41,10 +45,10 @@ end
 
 P3D.TextureAnimationP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture_Animation)
 P3D.TextureAnimationP3DChunk.new = new
-function P3D.TextureAnimationP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.TextureAnimationP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumFrames, chunk.FrameRate, chunk.Cyclic = string_unpack("<s1Is1IfI", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumFrames, chunk.FrameRate, chunk.Cyclic = string_unpack(Endian .. "s1Is1IfI", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.MaterialName = P3D.CleanP3DString(chunk.MaterialName)
 	
@@ -62,5 +66,5 @@ function P3D.TextureAnimationP3DChunk:__tostring()
 	local MaterialName = P3D.MakeP3DString(self.MaterialName)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #MaterialName + 1 + 4 + 4 + 4
-	return string_pack("<IIIs1Is1IfI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, MaterialName, self.NumFrames, self.FrameRate, self.Cyclic) .. chunkData
+	return string_pack(self.Endian .. "IIIs1Is1IfI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, MaterialName, self.NumFrames, self.FrameRate, self.Cyclic) .. chunkData
 end

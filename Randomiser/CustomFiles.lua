@@ -3,7 +3,6 @@ Paths = {}
 Paths.ModPath = GetModPath()
 Paths.Resources = Paths.ModPath .. "/Resources"
 Paths.Lib = Paths.Resources .. "/lib"
-Paths.Modules = Paths.Resources .. "/Modules"
 
 dofile(Paths.Lib .. "/Utils.lua")
 dofile(Paths.Lib .. "/P3D2.lua")
@@ -11,6 +10,7 @@ P3D.LoadChunks(Paths.Lib .. "/P3DChunks")
 dofile(Paths.Lib .. "/MFKLexer.lua")
 
 dofile(Paths.Lib .. "/ModuleLoader.lua")
+ModuleLoader.LoadModules(Paths.Resources .. "/Modules")
 
 CharP3DFiles = {}
 CharNames = {}

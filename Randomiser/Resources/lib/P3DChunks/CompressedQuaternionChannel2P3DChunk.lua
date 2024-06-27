@@ -6,7 +6,10 @@ CREDITS:
 
 local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
-assert(P3D.Float2ChannelP3DChunk == nil, "Chunk type already loaded.")
+assert(P3D.CompressedQuaternionChannel2P3DChunk == nil, "Chunk type already loaded.")
+
+local math_floor = math.floor
+local math_sqrt = math.sqrt
 
 local string_format = string.format
 local string_pack = string.pack
@@ -41,9 +44,9 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.Float2ChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_2_Channel)
-P3D.Float2ChannelP3DChunk.new = new
-function P3D.Float2ChannelP3DChunk:parse(Endian, Contents, Pos, DataLength)
+P3D.CompressedQuaternionChannel2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Compressed_Quaternion_Channel_2)
+P3D.CompressedQuaternionChannel2P3DChunk.new = new
+function P3D.CompressedQuaternionChannel2P3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local numFrames, pos
@@ -59,14 +62,22 @@ function P3D.Float2ChannelP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	chunk.Values = {}
 	for i=1,numFrames do
 		local value = {}
-		value.X, value.Y, pos = string_unpack(Endian .. "ff", chunk.ValueStr, pos)
+		value.X, value.Y, value.Z, pos = string_unpack(Endian .. "hhh", chunk.ValueStr, pos)
+		value.X = value.X / 32767
+		value.Y = value.Y / 32767
+		value.Z = value.Z / 32767
+		value.W = math_sqrt(1 - value.X^2 - value.Y^2 - value.Z^2)
 		chunk.Values[i] = value
 	end
 	
 	return chunk
 end
 
-function P3D.Float2ChannelP3DChunk:__tostring()
+local function round(val)
+	return math_floor(val + 0.5)
+end
+
+function P3D.CompressedQuaternionChannel2P3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
@@ -82,10 +93,10 @@ function P3D.Float2ChannelP3DChunk:__tostring()
 	local values = {}
 	for i=1,framesN do
 		local value = self.Values[i]
-		values[i] = string_pack(self.Endian .. "ff", value.X, value.Y)
+		values[i] = string_pack(self.Endian .. "hhh", round(value.X * 32767), round(value.Y * 32767), round(value.Z * 32767))
 	end
 	local valuesData = table_concat(values)
 	
-	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + #valuesData
+	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + framesN * 6
 	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, framesN, table_unpack(self.Frames)) .. valuesData .. chunkData
 end

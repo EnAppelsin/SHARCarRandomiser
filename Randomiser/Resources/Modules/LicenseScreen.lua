@@ -1,17 +1,11 @@
-local Module = {}
-
-Module.Setting = nil
-Module.Priority = 5
+local LicenseScreen = Module("License Screen", "LicenseScreen", 5)
 
 local licenses = {}
 GetFilesInDirectory(Paths.Resources .. "/Licenses", licenses, ".png")
 local licensesN = #licenses
 assert(licensesN > 0, "Failed to find any license images")
 
-Module.P3DFilters = {
-	"art/frontend/dynaload/images/license/*license*.p3d",
-}
-function Module.HandleP3D(GamePath, P3DFile)
+LicenseScreen:AddP3DHandler("art/frontend/dynaload/images/license/*license*.p3d", function(Path, P3DFile)
 	local Sprite = P3DFile:GetChunk(P3D.Identifiers.Sprite)
 	if not Sprite then
 		return false
@@ -25,8 +19,8 @@ function Module.HandleP3D(GamePath, P3DFile)
 	
 	local ImageData = P3D.ImageDataP3DChunk(ReadFile(licenses[math.random(licensesN)]))
 	Image:AddChunk(ImageData)
-
+	
 	return true
-end
+end)
 
-return Module
+return LicenseScreen

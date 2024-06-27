@@ -1,13 +1,6 @@
-local Module = {}
+local RandomCouch = Module("Random Couch", "RandomCouch", 5)
 
-Module.Setting = nil --"RandomCouch"
-Module.Priority = 5
-
-Module.P3DFilters = {
-	"art/frontend/scrooby/resource/pure3d/homer.p3d",
-	"art/frontend/scrooby/resource/pure3d/homer_?.p3d",
-}
-function Module.HandleP3D(GamePath, P3DFile)
+local function ReplaceCouch(Path, P3DFile)
 	local ReplacePed = CharP3DFiles[math.random(CharCount)]
 	print("Replacing couch character with: " .. ReplacePed)
 	
@@ -88,4 +81,7 @@ function Module.HandleP3D(GamePath, P3DFile)
 	return true
 end
 
-return Module
+RandomCouch:AddP3DHandler("art/frontend/scrooby/resource/pure3d/homer.p3d", ReplaceCouch)
+RandomCouch:AddP3DHandler("art/frontend/scrooby/resource/pure3d/homer_?.p3d", ReplaceCouch)
+
+return RandomCouch

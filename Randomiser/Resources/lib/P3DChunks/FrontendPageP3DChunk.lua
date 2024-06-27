@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendPageP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version, Resolution)
@@ -24,6 +27,7 @@ local function new(self, Name, Version, Resolution)
 	assert(type(Resolution) == "table", "Arg #3 (Resolution) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -36,11 +40,11 @@ end
 
 P3D.FrontendPageP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Page)
 P3D.FrontendPageP3DChunk.new = new
-function P3D.FrontendPageP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.FrontendPageP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Resolution = {}
-	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y = string_unpack("<s1III", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y = string_unpack(Endian .. "s1III", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
@@ -56,5 +60,5 @@ function P3D.FrontendPageP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4
-	return string_pack("<IIIs1III", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y) .. chunkData
+	return string_pack(self.Endian .. "IIIs1III", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y) .. chunkData
 end

@@ -3,18 +3,21 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.ExpressionMixerP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Name, Type, TargetName, ExpressionGroupName)
@@ -25,6 +28,7 @@ local function new(self, Version, Name, Type, TargetName, ExpressionGroupName)
 	assert(type(ExpressionGroupName) == "string", "Arg #5 (ExpressionGroupName) must be a string")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -39,10 +43,10 @@ end
 
 P3D.ExpressionMixerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Expression_Mixer)
 P3D.ExpressionMixerP3DChunk.new = new
-function P3D.ExpressionMixerP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.ExpressionMixerP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Name, chunk.Type, chunk.TargetName, chunk.ExpressionGroupName = string_unpack("<Is1Is1s1", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.Type, chunk.TargetName, chunk.ExpressionGroupName = string_unpack(Endian .. "Is1Is1s1", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.TargetName = P3D.CleanP3DString(chunk.TargetName)
 	chunk.ExpressionGroupName = P3D.CleanP3DString(chunk.ExpressionGroupName)
@@ -62,5 +66,5 @@ function P3D.ExpressionMixerP3DChunk:__tostring()
 	local ExpressionGroupName = P3D.MakeP3DString(self.ExpressionGroupName)
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + #TargetName + 1 + #ExpressionGroupName + 1
-	return string_pack("<IIIIs1Is1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, TargetName, ExpressionGroupName) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1Is1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, TargetName, ExpressionGroupName) .. chunkData
 end

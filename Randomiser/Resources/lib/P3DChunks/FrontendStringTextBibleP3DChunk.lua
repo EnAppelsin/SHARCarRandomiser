@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendStringTextBibleP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, BibleName, StringID)
@@ -23,6 +26,7 @@ local function new(self, BibleName, StringID)
 	assert(type(StringID) == "string", "Arg #2 (StringID) must be a string")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		BibleName = BibleName,
 		StringID = StringID
@@ -34,10 +38,10 @@ end
 
 P3D.FrontendStringTextBibleP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_String_Text_Bible)
 P3D.FrontendStringTextBibleP3DChunk.new = new
-function P3D.FrontendStringTextBibleP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.FrontendStringTextBibleP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.BibleName, chunk.StringID = string_unpack("<s1s1", chunk.ValueStr)
+	chunk.BibleName, chunk.StringID = string_unpack(Endian .. "s1s1", chunk.ValueStr)
 	chunk.BibleName = P3D.CleanP3DString(chunk.BibleName)
 	chunk.StringID = P3D.CleanP3DString(chunk.StringID)
 	
@@ -55,5 +59,5 @@ function P3D.FrontendStringTextBibleP3DChunk:__tostring()
 	local StringID = P3D.MakeP3DString(self.StringID)
 	
 	local headerLen = 12 + #BibleName + 1 + #StringID + 1
-	return string_pack("<IIIs1s1", self.Identifier, headerLen, headerLen + #chunkData, BibleName, StringID) .. chunkData
+	return string_pack(self.Endian .. "IIIs1s1", self.Identifier, headerLen, headerLen + #chunkData, BibleName, StringID) .. chunkData
 end

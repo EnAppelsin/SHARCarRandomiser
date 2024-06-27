@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.OldPrimitiveGroupP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumIndices, NumMatrices)
@@ -27,13 +30,14 @@ local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumInd
 	assert(type(NumMatrices) == "number", "Arg #6 (NumMatrices) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
-		Version = {},
-		ShaderName = {},
-		PrimitiveType = {},
-		NumVertices = {},
-		NumIndices = {},
-		NumMatrices = {},
+		Version = Version,
+		ShaderName = ShaderName,
+		PrimitiveType = PrimitiveType,
+		NumVertices = NumVertices,
+		NumIndices = NumIndices,
+		NumMatrices = NumMatrices,
 	}
 	
 	self.__index = self
@@ -78,16 +82,35 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	ColourMask = 7<<15,
 	ColourMaskOffset = 15,
 }
-function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldPrimitiveGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num
-	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack("<Is1IIIII", chunk.ValueStr)
+	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack(Endian .. "Is1IIIII", chunk.ValueStr)
 	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
 
 	return chunk
 end
 
+local VertexTypeMap = {
+	[P3D.Identifiers.Packed_Normal_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals,
+	[P3D.Identifiers.Normal_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals,
+	[P3D.Identifiers.Colour_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Colours,
+	[P3D.Identifiers.Matrix_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices,
+	[P3D.Identifiers.Matrix_Palette] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices,
+	[P3D.Identifiers.Weight_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights,
+	[P3D.Identifiers.Position_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position,
+}
+local UVTypeMap = {
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8,
+}
 function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	local vertexType = 0
 	
@@ -96,38 +119,16 @@ function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 		local identifier = self.Chunks[i].Identifier
 		if identifier == P3D.Identifiers.UV_List then
 			uvN = uvN + 1
-		elseif identifier == P3D.Identifiers.Packed_Normal_List or identifier == P3D.Identifiers.Normal_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals
-		elseif identifier == P3D.Identifiers.Colour_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Colours
-		elseif identifier == P3D.Identifiers.Matrix_List or identifier == P3D.Identifiers.Matrix_Palette then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices
-		elseif identifier == P3D.Identifiers.Weight_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights
-		elseif identifier == P3D.Identifiers.Position_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position
+		else
+			local chunkVertexType = VertexTypeMap[identifier]
+			if chunkVertexType then
+				vertexType = vertexType | chunkVertexType
+			end
 		end
 	end
 	if uvN > 0 then
-		if uvN == 1 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs
-		elseif uvN == 2 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2
-		elseif uvN == 3 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3
-		elseif uvN == 4 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4
-		elseif uvN == 5 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5
-		elseif uvN == 6 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6
-		elseif uvN == 7 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7
-		elseif uvN == 8 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8
-		else
-			error("Too manu UVs")
-		end
+		assert(uvN <= 8, "Old Primitive Groups can only have a maximum of 8 UV Lists")
+		vertexType = vertexType | UVTypeMap[uvN]
 	end
 	
 	return vertexType
@@ -143,5 +144,5 @@ function P3D.OldPrimitiveGroupP3DChunk:__tostring()
 	local ShaderName = P3D.MakeP3DString(self.ShaderName)
 	
 	local headerLen = 12 + 4 + #ShaderName + 1 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
 end

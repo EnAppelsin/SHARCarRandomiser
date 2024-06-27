@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.AnimationChannelCountP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, ChannelChunkID, NumKeys)
@@ -24,6 +27,7 @@ local function new(self, Version, ChannelChunkID, NumKeys)
 	assert(type(NumKeys) == "table", "Arg #3 (NumKeys) must be a table.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		ChannelChunkID = ChannelChunkID,
@@ -36,13 +40,13 @@ end
 
 P3D.AnimationChannelCountP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Channel_Count)
 P3D.AnimationChannelCountP3DChunk.new = new
-function P3D.AnimationChannelCountP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.AnimationChannelCountP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
-	chunk.Version, chunk.ChannelChunkID, num, pos = string_unpack("<III", chunk.ValueStr)
+	chunk.Version, chunk.ChannelChunkID, num, pos = string_unpack(Endian .. "III", chunk.ValueStr)
 	
-	chunk.NumKeys = table_pack(string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos))
+	chunk.NumKeys = {string_unpack(Endian .. string_rep("H", num), chunk.ValueStr, pos)}
 	chunk.NumKeys[num + 1] = nil
 
 	return chunk
@@ -58,5 +62,5 @@ function P3D.AnimationChannelCountP3DChunk:__tostring()
 	local numKeysN = #self.NumKeys
 	
 	local headerLen = 12 + 4 + 4 + 4 + numKeysN * 2
-	return string_pack("<IIIIII" .. string_rep("H", numKeysN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.ChannelChunkID, numKeysN, table_unpack(self.NumKeys)) .. chunkData
+	return string_pack(self.Endian .. "IIIIII" .. string_rep("H", numKeysN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.ChannelChunkID, numKeysN, table_unpack(self.NumKeys)) .. chunkData
 end

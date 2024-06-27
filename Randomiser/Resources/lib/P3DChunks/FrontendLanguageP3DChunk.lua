@@ -4,21 +4,25 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendLanguageP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
+local table_move = table.move
 local table_unpack = table.unpack
 
 local utf8_char = utf8.char
 local utf8_codes = utf8.codes
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Language, Modulo, Entries)
@@ -41,31 +45,32 @@ local function new(self, Name, Language, Modulo, Entries)
 		
 		Offsets[i] = BufferN
 		
-		local hash = self:GetNameHash(name, Modulo)
+		local hash = self:GetNameHash(name, Modulo, "<")
 		Hashes[i] = hash
 		
 		local ucs2 = {}
-		local n = 0
+		local n = 1
 		for p, c in utf8_codes(value) do
 			if c == 0 then break end
-			n = n + 1
 			ucs2[n] = c
+			n = n + 1
 		end
-		n = n + 1
 		ucs2[n] = 0
-		value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
-		Buffer[i] = value
-		BufferN = BufferN + #value
+		
+		table_move(ucs2, 1, n, #Buffer + 1, Buffer)
+		
+		BufferN = BufferN + n*2
 	end
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Language = Language,
 		Modulo = Modulo,
 		Hashes = Hashes,
 		Offsets = Offsets,
-		Buffer = table_concat(Buffer)
+		Buffer = Buffer
 	}
 	
 	self.__index = self
@@ -74,32 +79,36 @@ end
 
 P3D.FrontendLanguageP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Language)
 P3D.FrontendLanguageP3DChunk.new = new
-function P3D.FrontendLanguageP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.FrontendLanguageP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local numEntries, bufferSize, pos
-	chunk.Name, chunk.Language, numEntries, chunk.Modulo, bufferSize, pos = string_unpack("<s1c1III", chunk.ValueStr)
+	chunk.Name, chunk.Language, numEntries, chunk.Modulo, bufferSize, pos = string_unpack(Endian .. "s1c1III", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.Hashes = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Hashes = {string_unpack(Endian .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Hashes[numEntries + 1]
 	chunk.Hashes[numEntries + 1] = nil
 	
-	chunk.Offsets = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Offsets = {string_unpack(Endian .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Offsets[numEntries + 1]
 	chunk.Offsets[numEntries + 1] = nil
 	
-	chunk.Buffer = chunk.ValueStr:sub(pos)
+	chunk.Buffer = {string_unpack(Endian ..string_rep("H", (#chunk.ValueStr-pos+1) / 2), chunk.ValueStr, pos)}
+	chunk.Buffer[#chunk.Buffer] = nil
 	
 	return chunk
 end
 
-function P3D.FrontendLanguageP3DChunk:GetNameHash(Name, Modulo)
+function P3D.FrontendLanguageP3DChunk:GetNameHash(Name, Modulo, Endian)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	
 	Modulo = Modulo or self.Modulo
+	assert(type(Modulo) == "number", "Arg #2 (Modulo) must be a number")
+	Endian = Endian or self.Endian
+	assert(type(Endian) == "string" and (Endian == ">" or Endian == "<"), "Arg #3 (Endian) must be either \"<\" or \">\"")
+	
 	local Hash = 0
-	local chars = {string_unpack("<" .. string_rep("B", #Name), Name)}
+	local chars = {string_unpack(Endian .. string_rep("B", #Name), Name)}
 	for i=1,#Name do
 		local c = chars[i]
 		Hash = (c + (Hash << 6)) % Modulo
@@ -121,8 +130,8 @@ function P3D.FrontendLanguageP3DChunk:GetValueFromHash(Hash)
 	
 	local out = {}
 	local n = 0
-	for i=self.Offsets[index] + 1,#self.Buffer,2 do
-		local s = string_unpack("<H", self.Buffer, i)
+	for i=self.Offsets[index]/2 + 1,#self.Buffer,1 do
+		local s = self.Buffer[i]
 		if s == 0 then break end
 		n = n + 1
 		out[n] = s
@@ -146,19 +155,18 @@ function P3D.FrontendLanguageP3DChunk:AddValue(Name, Value)
 	assert(type(Value) == "string", "Arg #2 (Value) must be a string")
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
 	
-	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
+	Value = string_pack(self.Endian .. string_rep("H", n), table_unpack(ucs2))
 	self.Hashes[#self.Hashes + 1] = self:GetNameHash(Name)
-	self.Offsets[#self.Offsets + 1] = #self.Buffer
-	self.Buffer = self.Buffer .. Value
+	self.Offsets[#self.Offsets + 1] = #self.Buffer*2
+	table_move(ucs2, 1, n, #self.Buffer + 1, self.Buffer)
 end
 
 function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
@@ -177,26 +185,40 @@ function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
 		return self:AddValue(Name, Value)
 	end
 	
-	local offset = self.Offsets[index]
-	local startLen = (self.Offsets[index + 1] or #self.Buffer) - offset
+	local offset = self.Offsets[index]/2
+	
+	local origEnd = 0
+	for i=offset + 1,#self.Buffer,1 do
+		local s = self.Buffer[i]
+		if s == 0 then
+			origEnd = i
+			break
+		end
+	end
+	
+	local newBuffer = {}
+	table_move(self.Buffer, 1, offset, 1, newBuffer)
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
+	table_move(ucs2, 1, n, #newBuffer + 1, newBuffer)
+	local newEnd = #newBuffer
 	
-	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
+	table_move(self.Buffer, origEnd + 1, #self.Buffer, #newBuffer + 1, newBuffer)
+	self.Buffer = newBuffer
 	
-	self.Buffer = self.Buffer:sub(1, offset) .. Value .. self.Buffer:sub(offset + startLen + 1)
-	
-	local diff = #Value - startLen
-	for i=idx + 1,#self.Offsets do
-		self.Offsets[i] = self.Offsets[i] + diff
+	local diff = (newEnd-origEnd)*2
+	for i=1,#self.Offsets do
+		local offset2 = self.Offsets[i]/2
+		if offset2 > offset then
+			self.Offsets[i] = self.Offsets[i] + diff
+		end
 	end
 end
 
@@ -218,7 +240,10 @@ function P3D.FrontendLanguageP3DChunk:__tostring()
 	for i=1,entriesN do
 		values[entriesN + i] = self.Offsets[i]
 	end
+	for i=1,bufferN do
+		values[#values + 1] = self.Buffer[i]
+	end
 	
-	local headerLen = 12 + #Name + 1 + 1 + 4 + 4 + 4 + entriesN * 4 + entriesN * 4 + bufferN
-	return string_pack("<IIIs1c1III" .. string_rep("I", entriesN) .. string_rep("I", entriesN), self.Identifier, headerLen, headerLen + #chunkData, Name, self.Language, entriesN, self.Modulo, bufferN, table_unpack(values)) .. self.Buffer .. chunkData
+	local headerLen = 12 + #Name + 1 + 1 + 4 + 4 + 4 + entriesN * 4 + entriesN * 4 + bufferN * 2
+	return string_pack(self.Endian .. "IIIs1c1III" .. string_rep("I", entriesN) .. string_rep("I", entriesN) .. string_rep("H", bufferN), self.Identifier, headerLen, headerLen + #chunkData, Name, self.Language, entriesN, self.Modulo, bufferN * 2, table_unpack(values)) .. chunkData
 end

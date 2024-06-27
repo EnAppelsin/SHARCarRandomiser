@@ -4,24 +4,28 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.NormalListP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Normals)
 	assert(type(Normals) == "table", "Arg #1 (Normals) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Normals = Normals
 	}
@@ -32,15 +36,15 @@ end
 
 P3D.NormalListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Normal_List)
 P3D.NormalListP3DChunk.new = new
-function P3D.NormalListP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.NormalListP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	local num, pos = string_unpack("<I", chunk.ValueStr)
+	local num, pos = string_unpack(Endian .. "I", chunk.ValueStr)
 	
 	chunk.Normals = {}
 	for i=1,num do
 		local normal = {}
-		normal.X, normal.Y, normal.Z, pos = string_unpack("<fff", chunk.ValueStr, pos)
+		normal.X, normal.Y, normal.Z, pos = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
 		chunk.Normals[i] = normal
 	end
 	
@@ -58,10 +62,10 @@ function P3D.NormalListP3DChunk:__tostring()
 	local normals = {}
 	for i=1,normalsN do
 		local normal = self.Normals[i]
-		normals[i] = string_pack("<fff", normal.X, normal.Y, normal.Z)
+		normals[i] = string_pack(self.Endian .. "fff", normal.X, normal.Y, normal.Z)
 	end
 	local normalsData = table_concat(normals)
 	
 	local headerLen = 12 + 4 + normalsN * 12
-	return string_pack("<IIII", self.Identifier, headerLen, headerLen + #chunkData, normalsN) .. normalsData .. chunkData
+	return string_pack(self.Endian .. "IIII", self.Identifier, headerLen, headerLen + #chunkData, normalsN) .. normalsData .. chunkData
 end

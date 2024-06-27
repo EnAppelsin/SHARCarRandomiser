@@ -1,13 +1,10 @@
-local Module = {}
-
-Module.Setting = nil --"RandomCharacter"
-Module.Priority = 5
+local RandomPlayerCharacter = Module("Random Player Character", "RandomPlayerCharacter", 5)
 
 local CharName
 
-function Module.HandleLevel(LoadFile, InitFile, Level)
-	for i=1,#InitFile.Functions do
-		local func = InitFile.Functions[i]
+RandomPlayerCharacter:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
+	for i=1,#LevelInit.Functions do
+		local func = LevelInit.Functions[i]
 		local name = func.Name:lower()
 		if name == "addcharacter" then
 			CharName = func.Arguments[1]
@@ -15,17 +12,14 @@ function Module.HandleLevel(LoadFile, InitFile, Level)
 		end
 	end
 	return false
-end
+end)
 
-Module.P3DFilters = {
-	"art/chars/*_m.p3d",
-}
-function Module.HandleP3D(GamePath, P3DFile)
+RandomPlayerCharacter:AddP3DHandler("art/chars/*_m.p3d", function(Path, P3DFile)
 	if CharName == nil then
 		return false
 	end
 	
-	local fileName = RemoveFileExtension(GetFileName(GamePath))
+	local fileName = RemoveFileExtension(GetFileName(Path))
 	if not (fileName == CharName:sub(1, 6) .. "_m" or fileName:match(CharName:sub(1, 1) .. "%_.-%_m")) then
 		return false
 	end
@@ -81,6 +75,6 @@ function Module.HandleP3D(GamePath, P3DFile)
 	P3DFile.Chunks = ReplaceP3D.Chunks
 	CharName = nil
 	return true
-end
+end)
 
-return Module
+return RandomPlayerCharacter

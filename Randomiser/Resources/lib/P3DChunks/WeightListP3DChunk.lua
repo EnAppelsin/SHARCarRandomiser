@@ -4,24 +4,28 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.WeightListP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Weights)
 	assert(type(Weights) == "table", "Arg #1 (Weights) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Weights = Weights
 	}
@@ -32,15 +36,15 @@ end
 
 P3D.WeightListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Weight_List)
 P3D.WeightListP3DChunk.new = new
-function P3D.WeightListP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.WeightListP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	local num, pos = string_unpack("<I", chunk.ValueStr)
+	local num, pos = string_unpack(Endian .. "I", chunk.ValueStr)
 	
 	chunk.Weights = {}
 	for i=1,num do
 		local weight = {}
-		weight.X, weight.Y, weight.Z, pos = string_unpack("<fff", chunk.ValueStr, pos)
+		weight.X, weight.Y, weight.Z, pos = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
 		chunk.Weights[i] = weight
 	end
 	
@@ -58,10 +62,10 @@ function P3D.WeightListP3DChunk:__tostring()
 	local weights = {}
 	for i=1,weightsN do
 		local weight = self.Weights[i]
-		weights[i] = string_pack("<fff", weight.X, weight.Y, weight.Z)
+		weights[i] = string_pack(self.Endian .. "fff", weight.X, weight.Y, weight.Z)
 	end
 	local weightsData = table_concat(weights)
 	
 	local headerLen = 12 + 4 + weightsN * 12
-	return string_pack("<IIII", self.Identifier, headerLen, headerLen + #chunkData, weightsN) .. weightsData .. chunkData
+	return string_pack(self.Endian .. "IIII", self.Identifier, headerLen, headerLen + #chunkData, weightsN) .. weightsData .. chunkData
 end

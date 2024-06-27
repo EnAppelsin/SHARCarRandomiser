@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.StatePropFrameControllerDataP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Cyclic, NumberOfCycles, HoldFrame, MinFrame, MaxFrame, RelativeSpeed)
@@ -28,6 +31,7 @@ local function new(self, Name, Cyclic, NumberOfCycles, HoldFrame, MinFrame, MaxF
 	assert(type(RelativeSpeed) == "number", "Arg #7 (RelativeSpeed) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Cyclic = Cyclic,
@@ -44,10 +48,10 @@ end
 
 P3D.StatePropFrameControllerDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Frame_Controller_Data)
 P3D.StatePropFrameControllerDataP3DChunk.new = new
-function P3D.StatePropFrameControllerDataP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.StatePropFrameControllerDataP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Cyclic, chunk.NumberOfCycles, chunk.HoldFrame, chunk.MinFrame, chunk.MaxFrame, chunk.RelativeSpeed = string_unpack("<s1IIIfff", chunk.ValueStr)
+	chunk.Name, chunk.Cyclic, chunk.NumberOfCycles, chunk.HoldFrame, chunk.MinFrame, chunk.MaxFrame, chunk.RelativeSpeed = string_unpack(Endian .. "s1IIIfff", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
@@ -63,5 +67,5 @@ function P3D.StatePropFrameControllerDataP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIs1IIIfff", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Cyclic, self.NumberOfCycles, self.HoldFrame, self.MinFrame, self.MaxFrame, self.RelativeSpeed) .. chunkData
+	return string_pack(self.Endian .. "IIIs1IIIfff", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Cyclic, self.NumberOfCycles, self.HoldFrame, self.MinFrame, self.MaxFrame, self.RelativeSpeed) .. chunkData
 end

@@ -4,18 +4,21 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.StatePropStateDataV1P3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, AutoTransition, OutState, NumDrawables, NumFrameControllers, NumEvents, NumCallbacks, OutFrame)
@@ -29,6 +32,7 @@ local function new(self, Name, AutoTransition, OutState, NumDrawables, NumFrameC
 	assert(type(OutFrame) == "number", "Arg #8 (OutFrame) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		AutoTransition = AutoTransition,
@@ -46,10 +50,10 @@ end
 
 P3D.StatePropStateDataV1P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_State_Data_V1)
 P3D.StatePropStateDataV1P3DChunk.new = new
-function P3D.StatePropStateDataV1P3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.StatePropStateDataV1P3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.AutoTransition, chunk.OutState, chunk.NumDrawables, chunk.NumFrameControllers, chunk.NumEvents, chunk.NumCallbacks, chunk.OutFrame = string_unpack("<s1IIIIIIf", chunk.ValueStr)
+	chunk.Name, chunk.AutoTransition, chunk.OutState, chunk.NumDrawables, chunk.NumFrameControllers, chunk.NumEvents, chunk.NumCallbacks, chunk.OutFrame = string_unpack(Endian .. "s1IIIIIIf", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
@@ -65,5 +69,5 @@ function P3D.StatePropStateDataV1P3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIs1IIIIIIf", self.Identifier, headerLen, headerLen + #chunkData, Name, self.AutoTransition, self.OutState, self.NumDrawables, self.NumFrameControllers, self.NumEvents, self.NumCallbacks, self.OutFrame) .. chunkData
+	return string_pack(self.Endian .. "IIIs1IIIIIIf", self.Identifier, headerLen, headerLen + #chunkData, Name, self.AutoTransition, self.OutState, self.NumDrawables, self.NumFrameControllers, self.NumEvents, self.NumCallbacks, self.OutFrame) .. chunkData
 end

@@ -3,18 +3,21 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.OldOffsetListP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, KeyIndex, Offsets, PrimGroupIndex)
@@ -23,6 +26,7 @@ local function new(self, KeyIndex, Offsets, PrimGroupIndex)
 	assert(type(PrimGroupIndex) == "number", "Arg #3 (PrimGroupIndex) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		KeyIndex = KeyIndex,
 		Offsets = Offsets,
@@ -35,21 +39,21 @@ end
 
 P3D.OldOffsetListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Offset_List)
 P3D.OldOffsetListP3DChunk.new = new
-function P3D.OldOffsetListP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldOffsetListP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
-	num, chunk.KeyIndex, pos = string_unpack("<II", chunk.ValueStr)
+	num, chunk.KeyIndex, pos = string_unpack(Endian .. "II", chunk.ValueStr)
 	
 	chunk.Offsets = {}
 	for i=1,num do
 		local offset = {}
 		offset.Offset = {}
-		offset.Index, offset.Offset.X, offset.Offset.Y, offset.Offset.Z, pos = string_unpack("<Ifff", chunk.ValueStr, pos)
+		offset.Index, offset.Offset.X, offset.Offset.Y, offset.Offset.Z, pos = string_unpack(Endian .. "Ifff", chunk.ValueStr, pos)
 		chunk.Offsets[i] = offset
 	end
 	
-	chunk.PrimGroupIndex = string_unpack("<I", chunk.ValueStr, pos)
+	chunk.PrimGroupIndex = string_unpack(Endian .. "I", chunk.ValueStr, pos)
 	
 	return chunk
 end
@@ -65,11 +69,11 @@ function P3D.OldOffsetListP3DChunk:__tostring()
 	local offsets = {}
 	for i=1,offsetsN do
 		local offset = self.Offsets[i]
-		offsets[i] = string_pack("<Ifff", offset.Index, offset.Offset.X, offset.Offset.Y, offset.Offset.Z)
+		offsets[i] = string_pack(self.Endian .. "Ifff", offset.Index, offset.Offset.X, offset.Offset.Y, offset.Offset.Z)
 	end
 	local offsetsData = table_concat(offsets)
 	local offsetsDataLen = #offsetsData
 	
 	local headerLen = 12 + 4 + 4 + offsetsDataLen + 4
-	return string_pack("<IIIIIc" .. offsetsDataLen .. "I", self.Identifier, headerLen, headerLen + #chunkData, offsetsN, self.KeyIndex, offsetsData, self.PrimGroupIndex) .. chunkData
+	return string_pack(self.Endian .. "IIIIIc" .. offsetsDataLen .. "I", self.Identifier, headerLen, headerLen + #chunkData, offsetsN, self.KeyIndex, offsetsData, self.PrimGroupIndex) .. chunkData
 end

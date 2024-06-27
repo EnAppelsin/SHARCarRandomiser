@@ -6,7 +6,7 @@ CREDITS:
 ]]
 
 P3D = {}
-P3D.Version = "2.1"
+P3D.Version = "2.3"
 P3D.Identifiers = {
 	Anim = 0x3F0000C,
 	Animated_Object = 0x20001,
@@ -52,6 +52,7 @@ P3D.Identifiers = {
 	Composite_Drawable_Skin_List = 0x4513,
 	Composite_Drawable_Sort_Order = 0x4519,
 	Compressed_Quaternion_Channel = 0x121111,
+	Compressed_Quaternion_Channel_2 = 0x121112,
 	Dyna_Phys = 0x3F00002,
 	Entity_Channel = 0x121107,
 	Export_Info = 0x7030,
@@ -213,8 +214,12 @@ end
 
 P3D.ChunkClasses = {}
 
+local math_atan = math.atan
+local math_cos = math.cos
 local math_deg = math.deg
 local math_rad = math.rad
+local math_sin = math.sin
+local math_sqrt = math.sqrt
 
 local string_format = string.format
 local string_pack = string.pack
@@ -222,17 +227,20 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
+local table_move = table.move
 local table_unpack = table.unpack
 
 local assert = assert
+local getmetatable = getmetatable
+local setmetatable = setmetatable
+local tostring = tostring
 local type = type
 
 function P3D.MakeP3DString(str)
 	if str == nil then return nil end
 	local diff = #str & 3
 	if diff ~= 0 then
-		str = str .. string_rep("\0", 4 - diff)
+		return str .. string_rep("\0", 4 - diff)
 	end
 	return str
 end
@@ -262,7 +270,7 @@ local function RadToDeg(self)
 	end
 end
 
-P3D.Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y)
+local Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y)
 	assert(type(X) == "number", "Arg #1 (X) must be a number")
 	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
 	
@@ -274,11 +282,140 @@ P3D.Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call =
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Vector2:__tostring()
+P3D.Vector2 = Vector2
+
+local function IsVector2(obj)
+	return getmetatable(obj) == Vector2
+end
+P3D.IsVector2 = IsVector2
+
+function Vector2:__unm()
+	return Vector2(-self.X, -self.Y)
+end
+function Vector2:__add(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return Vector2(self.X + vector.X, self.Y + vector.Y)
+end
+function Vector2:__sub(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return Vector2(self.X - vector.X, self.Y - vector.Y)
+end
+function Vector2:__mul(value)
+	if type(self) == "number" then
+		assert(IsVector2(value), "Arg #1 (value) must be a Vector2 when multiplying with a number")
+		
+		return Vector2(value.X * self, value.Y * self)
+	elseif type(value) == "number" then
+		assert(IsVector2(self), "Arg #0 (self) must be a Vector2 when multiplying with a number")
+		
+		return Vector2(self.X * value, self.Y * value)
+	else
+		assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+		assert(IsVector2(value), "Arg #1 (value) must be a Vector2")
+	
+		return Vector2(self.X * value.X, self.Y * value.Y)
+	end
+end
+function Vector2:__div(value)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(value) == "number", "Arg #1 (value) must be a number")
+	
+	return Vector2(self.X / value, self.Y / value)
+end
+function Vector2:__eq(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	-- Not sure if should assert or return false
+	--assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	if not IsVector2(vector) then
+		return false
+	end
+	
+	return self.X == vector.X and self.Y == vector.Y
+end
+function Vector2:__tostring()
 	return string.format("{ X = %.3f, Y = %.3f }", self.X, self.Y)
 end
+function Vector2:Set(X, Y)
+	if IsVector2(X) then
+		self.X = X.X
+		self.Y = X.Y
+	else
+		assert(X == nil or type(X) == "number", "Arg #1 (X or Vector2) must be either a number or a Vector2")
+		assert(Y == nil or type(Y) == "number", "Arg #2 (Y) must be a number")
+		self.X = X or self.X
+		self.Y = Y or self.Y
+	end
+end
+function Vector2:Clone()
+	return Vector2(self.X, self.Y)
+end
+function Vector2:GetMag()
+	return math_sqrt(self.X^2 + self.Y^2)
+end
+function Vector2:GetMagSq()
+	return self.X^2 + self.Y^2
+end
+function Vector2:SetMag(mag)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(mag) == "number", "Arg #1 (mag) must be a number")
+	assert(self:GetMag() ~= 0, "Cannot set magnitude when direction is ambiguous")
+	
+	self:Norm()
+	local v = self * mag
+	self:Set(v)
+	return self
+end
+function Vector2:Dist(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return math_sqrt((self.X - vector.X)^2 + (self.Y - vector.Y)^2)
+end
+function Vector2:Dot(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return self.X * vector.X + self.Y * vector.Y
+end
+function Vector2:Norm()
+	local mag = self:GetMag()
+	if mag ~= 0 then
+		self:Set(self / mag)
+	end
+	return self
+end
+function Vector2:Heading()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return -math_atan(self.Y, self.X)
+end
+function Vector2:Rotate(theta)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(theta) == "number", "Arg #1 (theta) must be a number")
+	
+	local s = math_sin(theta)
+	local c = math_cos(theta)
+	local v = Vector2(c * self.X + s * self.Y, -(s * self.X) + c * self.Y)
+	self:Set(v)
+	return self
+end
+function Vector2:Array()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return {self.X, self.Y}
+end
+function Vector2:Unpack()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return self.X, self.Y
+end
 
-P3D.Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y, Z)
+local Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y, Z)
 	assert(type(X) == "number", "Arg #1 (X) must be a number")
 	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
 	assert(type(Z) == "number", "Arg #3 (Z) must be a number")
@@ -292,8 +429,32 @@ P3D.Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call =
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Vector3:__tostring()
+P3D.Vector3 = Vector3
+
+local function IsVector3(obj)
+	return getmetatable(obj) == Vector3
+end
+P3D.IsVector3 = IsVector3
+
+function Vector3:__tostring()
 	return string.format("{ X = %.3f, Y = %.3f, Z = %.3f }", self.X, self.Y, self.Z)
+end
+function Vector3:Set(X, Y, Z)
+	if IsVector3(X) then
+		self.X = X.X
+		self.Y = X.Y
+		self.Z = X.Z
+	else
+		assert(X == nil or type(X) == "number", "Arg #1 (X or Vector3) must be either a number or a Vector3")
+		assert(Y == nil or type(Y) == "number", "Arg #2 (Y) must be a number")
+		assert(Z == nil or type(Z) == "number", "Arg #3 (Z) must be a number")
+		self.X = X or self.X
+		self.Y = Y or self.Y
+		self.Z = Z or self.Z
+	end
+end
+function Vector3:Clone()
+	return Vector3(self.X, self.Y, self.Z)
 end
 
 P3D.SymmetricMatrix3x3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, XX, XY, XZ, YY, YZ, ZZ)
@@ -340,7 +501,7 @@ function P3D.Quaternion:__tostring()
 	return string.format("{ W = %.3f, X = %.3f, Y = %.3f, Z = %.3f }", self.W, self.X, self.Y, self.Z)
 end
 
-P3D.Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+local Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
 	assert(type(M11) == "number", "Arg #1 (M11) must be a number")
 	assert(type(M12) == "number", "Arg #2 (M12) must be a number")
 	assert(type(M13) == "number", "Arg #3 (M13) must be a number")
@@ -380,7 +541,14 @@ P3D.Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = 
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Matrix:__tostring()
+P3D.Matrix = Matrix
+
+local function IsMatrix(obj)
+	return getmetatable(obj) == Matrix
+end
+P3D.IsMatrix = Matrix
+
+function Matrix:__tostring()
 	return string.format("{ { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f } }", self.M11, self.M12, self.M13, self.M14, self.M21, self.M22, self.M23, self.M24, self.M31, self.M32, self.M33, self.M34, self.M41, self.M42, self.M43, self.M44)
 end
 
@@ -404,78 +572,95 @@ end})
 function P3D.Colour:__tostring()
 	return string.format("R = %d, G = %d, B = %d, A = %d", self.R, self.G, self.B, self.A)
 end
+function P3D.Colour:ToArgb()
+	return (self.A << 24) | (self.R << 16) | (self.G << 8) | self.B
+end
+function P3D.Colour:FromArgb(ARGB)
+	assert(type(ARGB) == "number", "Arg #1 (ARGB) must be a number")
+	
+	local Data = {
+		R = (ARGB >> 16) & 0xFF,
+		G = (ARGB >> 8) & 0xFF,
+		B = ARGB & 0xFF,
+		A = (ARGB >> 24) & 0xFF
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end
 P3D.Color = P3D.Colour
 
-local function DecompressBlock(Source, Length, SourceIndex)
-	local Written = 0
-	SourceIndex = SourceIndex or 1
-	local DestTbl = {}
-	local DestinationPos = 1
-	while Written < Length do
-		local Unknown
-		Unknown, SourceIndex = string_unpack("<B", Source, SourceIndex)
-		if Unknown <= 15 then
-			if Unknown == 0 then
-				local Unknown2
-				Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
-				if Unknown2 == 0 then
-					repeat
-						Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
-						Unknown = Unknown + 255
-					until Unknown2 ~= 0
+-- LZR (Lempel - Ziv - Radical) Decompression
+local function DecompressBlock(Input, OutputSize, InputPos)
+	local Output = {}
+	local OutputPos = 1
+	
+	while OutputPos <= OutputSize do
+		local code
+		code, InputPos = string_unpack("<B", Input, InputPos)
+		
+		if code > 15 then
+			local matchLength = code & 15
+			local tmp
+			
+			if matchLength == 0 then
+				matchLength = 15
+				tmp, InputPos = string_unpack("<B", Input, InputPos)
+				while tmp == 0 do
+					matchLength = matchLength + 255
+					tmp, InputPos = string_unpack("<B", Input, InputPos)
 				end
-				Unknown = Unknown + Unknown2
-				DestTbl[DestinationPos], DestTbl[DestinationPos + 1], DestTbl[DestinationPos + 2], DestTbl[DestinationPos + 3], DestTbl[DestinationPos + 4], DestTbl[DestinationPos + 5], DestTbl[DestinationPos + 6], DestTbl[DestinationPos + 7], DestTbl[DestinationPos + 8], DestTbl[DestinationPos + 9], DestTbl[DestinationPos + 10], DestTbl[DestinationPos + 11], DestTbl[DestinationPos + 12], DestTbl[DestinationPos + 13], DestTbl[DestinationPos + 14], SourceIndex = string_unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Source, SourceIndex)
-				DestinationPos = DestinationPos + 15
-				Written = Written + 15
+				matchLength = matchLength + tmp
 			end
+			
+			tmp, InputPos = string_unpack("<B", Input, InputPos)
+			local offset = (code >> 4) | tmp << 4
+			local matchPos = OutputPos - offset
+			
+			local len = matchLength >> 2
+			matchLength = matchLength - (len << 2)
+			
 			repeat
-				DestTbl[DestinationPos], SourceIndex = string_unpack("<c1", Source, SourceIndex)
-				DestinationPos = DestinationPos + 1
-				Written = Written + 1
-				Unknown = Unknown - 1
-			until Unknown <= 0
+				Output[OutputPos] = Output[matchPos]
+				Output[OutputPos + 1] = Output[matchPos + 1]
+				Output[OutputPos + 2] = Output[matchPos + 2]
+				Output[OutputPos + 3] = Output[matchPos + 3]
+				matchPos = matchPos + 4
+				OutputPos = OutputPos + 4
+				len = len - 1
+			until len == 0
+			
+			while matchLength ~= 0 do
+				Output[OutputPos] = Output[matchPos]
+				matchPos = matchPos + 1
+				OutputPos = OutputPos + 1
+				matchLength = matchLength - 1
+			end
 		else
-			local Unknown2 = Unknown % 16
-			if Unknown2 == 0 then
-				local Unknown3 = 15
-				local Unknown4
-				Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
-				if Unknown4 == 0 then
-					repeat
-						Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
-						Unknown3 = Unknown3 + 255
-					until Unknown4 ~= 0
+			local runLength = code
+			
+			if runLength == 0 then
+				code, InputPos = string_unpack("<B", Input, InputPos)
+				while code == 0 do
+					runLength = runLength + 255
+					code, InputPos = string_unpack("<B", Input, InputPos)
 				end
-				Unknown2 = Unknown2 + Unknown4 + Unknown3
+				runLength = runLength + code
+				
+				table_move({string_unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Input, InputPos)}, 1, 15, OutputPos, Output)
+				InputPos = InputPos + 15
+				OutputPos = OutputPos + 15
 			end
-			local Unknown3
-			Unknown3, SourceIndex = string_unpack("<B", Source, SourceIndex)
-			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * Unknown3))
-			local Unknown5 = math.floor(Unknown2 / 4)
-			repeat
-				DestTbl[DestinationPos] = DestTbl[Unknown6]
-				DestTbl[DestinationPos + 1] = DestTbl[Unknown6 + 1]
-				DestTbl[DestinationPos + 2] = DestTbl[Unknown6 + 2]
-				DestTbl[DestinationPos + 3] = DestTbl[Unknown6 + 3]
-				Unknown6 = Unknown6 + 4
-				DestinationPos = DestinationPos + 4
-				Unknown5 = Unknown5 - 1
-			until Unknown5 <= 0
-			local Unknown7 = Unknown2 % 4
-			while Unknown7 > 0 do
-				DestTbl[DestinationPos] = DestTbl[Unknown6]
-				DestinationPos = DestinationPos + 1
-				Unknown6 = Unknown6 + 1
-				Unknown7 = Unknown7 - 1
-			end
-			Written = Written + Unknown2
+			
+			table_move({string_unpack(string_rep("c1", runLength), Input, InputPos)}, 1, runLength, OutputPos, Output)
+			InputPos = InputPos + runLength
+			OutputPos = OutputPos + runLength
 		end
 	end
-	return table_concat(DestTbl), DestinationPos
+	
+	return table_concat(Output), OutputPos
 end
 
--- Decompress a compressed P3D
 local function Decompress(File, UncompressedLength)
 	local DecompressedLength = 0
 	local pos = 9
@@ -492,6 +677,7 @@ end
 
 local FileSignature = 0xFF443350
 local CompressedFileSignature = 0x5A443350
+local BigEndianFileSignature = 0x503344FF
 function P3D.DecompressFile(File)
 	assert(type(File) == "string", "Arg #1 (File) must be a string")
 	
@@ -510,10 +696,10 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	Parent.Chunks = Parent.Chunks or {}
 	local n = 0
 	while Pos < EndPos do
-		local Identifier, HeaderLength, Length = string_unpack("<III", Contents, Pos)
+		local Identifier, HeaderLength, Length = string_unpack(Parent.Endian .. "III", Contents, Pos)
 		
 		local class = P3D.ChunkClasses[Identifier] or P3D.P3DChunk
-		local Chunk, overwrittenHeaderLength = class:parse(Contents, Pos + 12, HeaderLength - 12, Identifier)
+		local Chunk, overwrittenHeaderLength = class:parse(Parent.Endian, Contents, Pos + 12, HeaderLength - 12, Identifier)
 		
 		HeaderLength = overwrittenHeaderLength or HeaderLength
 		
@@ -525,32 +711,44 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	end
 end
 
-local function LoadP3DFile(self, Path)
-	local Data = {}
-	if Path == nil then
-		Data.Chunks = {}
-	else
-		local success, contents = pcall(ReadFile, Path)
-		assert(success, "Failed to read file at '" .. Path .. "': " .. contents)
-		
-		assert(#contents >= 12, "Specified file too short")
-		
-		local Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
-		if Identifier == CompressedFileSignature then
-			contents = Decompress(contents, HeaderLength)
-			Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
-		end
-		assert(Identifier == FileSignature, "Specified file isn't a P3D")
-		
-		ProcessSubChunks(Data, contents, Pos, Length)
+local function LoadP3DFileFromData(self, contents)
+	assert(type(contents) == "string" and #contents >= 12, "Contents too short")
+	
+	local Data = {
+		Endian = "<"
+	}
+	
+	local Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
+	if Identifier == CompressedFileSignature then
+		contents = Decompress(contents, HeaderLength)
+		Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
+	elseif Identifier == BigEndianFileSignature then
+		Identifier, HeaderLength, Length, Pos = string_unpack(">III", contents)
+		Data.Endian = ">"
 	end
+	assert(Identifier == FileSignature, "Contents is not a valid P3D file")
+	
+	ProcessSubChunks(Data, contents, Pos, Length)
+	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
+local function LoadP3DFile(self, Path)
+	if Path == nil then
+		self.__index = self
+		return setmetatable({ Endian = "<", Chunks = {} }, self)
+	else
+		local success, contents = pcall(ReadFile, Path)
+		assert(success, string.format("Failed to read file at '%s': %s", Path, contents))
+		
+		return LoadP3DFileFromData(self, contents)
+	end
+end
+
 local function AddChunk(self, Chunk, Index)
 	assert(type(Chunk) == "table" and Chunk.Identifier, "Arg #1 (Chunk) must be a valid chunk")
-	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks), "Arg #2 (Index) must be a number smaller than the chunk count")
+	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks + 1), "Arg #2 (Index) must be a number smaller than the chunk count")
 	
 	if Index then
 		table.insert(self.Chunks, Index, Chunk)
@@ -584,45 +782,100 @@ local function RemoveChunk(self, ChunkOrIndex)
 	end
 end
 
-local function GetChunks(self, Identifier, Backwards)
+local function GetChunks(self, Identifier, Backwards, Name)
 	assert(Identifier == nil or type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
+	assert(Name == nil or type(Name) == "string", "Arg #3 (Name) must be a string")
 	
 	local chunks = self.Chunks
 	local chunkN = #chunks
 	
+	local index, finish, step
 	if Backwards then
-		local n = chunkN
-		return function()
-			while n > 0 do
-				local Chunk = chunks[n]
-				n = n - 1
-				if Identifier == nil or Chunk.Identifier == Identifier then
-					return Chunk
-				end
-			end
-			return nil
-		end
+		index = chunkN
+		finish = 0
+		step = -1
 	else
-		local n = 1
-		return function()
-			while n <= chunkN do
-				local Chunk = chunks[n]
-				n = n + 1
-				if Identifier == nil or Chunk.Identifier == Identifier then
-					return Chunk
-				end
+		index = 1
+		finish = chunkN + 1
+		step = 1
+	end
+	
+	return function()
+		while index ~= finish do
+			assert(Backwards or chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
+			local Chunk = chunks[index]
+			index = index + step
+			if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
+				return Chunk
 			end
-			return nil
 		end
+		return nil
 	end
 end
 
-local function GetChunk(self, Identifier, Backwards)
-	return GetChunks(self, Identifier, Backwards)()
+local function GetChunk(self, Identifier, Backwards, Name)
+	return GetChunks(self, Identifier, Backwards, Name)()
 end
 
-local function GetChunksIndexed(self, Identifier, Backwards)
+local function GetChunksIndexed(self, Identifier, Backwards, Name)
 	assert(Identifier == nil or type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
+	assert(Name == nil or type(Name) == "string", "Arg #3 (Name) must be a string")
+	
+	local chunks = self.Chunks
+	local chunkN = #chunks
+	
+	local index, finish, step
+	if Backwards then
+		index = chunkN
+		finish = 0
+		step = -1
+	else
+		index = 1
+		finish = chunkN + 1
+		step = 1
+	end
+	
+	return function()
+		while index ~= finish do
+			assert(Backwards or chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
+			local Chunk = chunks[index]
+			index = index + step
+			if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
+				return index - step, Chunk
+			end
+		end
+		return nil
+	end
+end
+
+local function GetChunkIndexed(self, Identifier, Backwards, Name)
+	return GetChunksIndexed(self, Identifier, Backwards, Name)()
+end
+
+local function Match(self, Filters)
+	for key, needle in pairs(Filters) do
+		local value = self[key]
+		
+		local valueType = type(value)
+		local needleType = type(needle)
+		
+		if valueType ~= needleType then
+			return false
+		end
+		
+		if needleType == "string" then
+			if not value:match(needle) and value ~= needle then
+				return false
+			end
+		elseif value ~= needle then
+			return false
+		end
+	end
+	return true
+end
+
+local function Find(self, Filters, Backwards)
+	assert(type(Filters) == "table", "Arg #1 (Filters) must be a key/value table.")
 	
 	local chunks = self.Chunks
 	local chunkN = #chunks
@@ -633,7 +886,7 @@ local function GetChunksIndexed(self, Identifier, Backwards)
 			while n > 0 do
 				local Chunk = chunks[n]
 				n = n - 1
-				if Identifier == nil or Chunk.Identifier == Identifier then
+				if Chunk:Match(Filters) then
 					return n + 1, Chunk
 				end
 			end
@@ -643,9 +896,10 @@ local function GetChunksIndexed(self, Identifier, Backwards)
 		local n = 1
 		return function()
 			while n <= chunkN do
+				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
 				local Chunk = chunks[n]
 				n = n + 1
-				if Identifier == nil or Chunk.Identifier == Identifier then
+				if Chunk:Match(Filters) then
 					return n - 1, Chunk
 				end
 			end
@@ -654,11 +908,72 @@ local function GetChunksIndexed(self, Identifier, Backwards)
 	end
 end
 
-local function GetChunkIndexed(self, Identifier, Backwards)
-	return GetChunksIndexed(self, Identifier, Backwards)()
+local function FindFirst(self, Filters, Backwards)
+	return Find(self, Filters, Backwards)()
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = LoadP3DFile})
+local skip = {
+	["Chunks"] = true,
+	["Identifier"] = true,
+	["ValueStr"] = true,
+}
+local function P3DChunk_stateless_iter(self, k)
+	if not self.parentClass then
+		if k == nil then
+			return "ValueStr", self.ValueStr
+		else
+			return nil
+		end
+	end
+	local v
+	repeat
+		k, v = next(self, k)
+	until k == nil or not skip[k]
+	return k, v
+end
+local function P3DChunk_pairs(self)
+	return P3DChunk_stateless_iter, self, nil
+end
+
+local function Clone(self, seen)
+	if type(self) ~= 'table' then
+		return self
+	end
+	
+	if seen and seen[self] then
+		return seen[self]
+	end
+	
+	local s = seen or {}
+	local res = {}
+	s[self] = res
+	
+	for k in pairs(skip) do
+		res[k] = Clone(self[k], s)
+	end
+	
+	for k, v in pairs(self) do
+		res[Clone(k, s)] = Clone(v, s)
+	end
+	
+	return setmetatable(res, getmetatable(self))
+end
+
+local function SetLittleEndian(self)
+	self.Endian = "<"
+	for i=1,#self.Chunks do
+		self.Chunks[i]:SetLittleEndian()
+	end
+end
+
+local function SetBigEndian(self)
+	self.Endian = ">"
+	for i=1,#self.Chunks do
+		self.Chunks[i]:SetBigEndian()
+	end
+end
+
+P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, LoadFromData = LoadP3DFileFromData, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
@@ -666,7 +981,7 @@ function P3D.P3DFile:__tostring()
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
-	return string_pack("<III", FileSignature, 12, 12 + #chunkData) .. chunkData
+	return string_pack(self.Endian .. "III", FileSignature, 12, 12 + #chunkData) .. chunkData
 end
 
 function P3D.P3DFile:Output()
@@ -694,10 +1009,30 @@ local function P3DChunk_new(self, ...)
 	end
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk_new})
-function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
+local function P3DChunk_Replace(self, NewChunk)
+	assert(type(NewChunk) == "table", "Arg #1 (NewChunk) must be a chunk table")
+	
+	for k in pairs(self) do
+		self[k] = nil
+	end
+	
+	for k,v in pairs(NewChunk) do
+		self[k] = v
+	end
+	
+	for key in pairs(skip) do
+		self[key] = NewChunk[key]
+	end
+	
+	self.__index = NewChunk.__index
+	setmetatable(self, getmetatable(NewChunk))
+end
+
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian, Replace = P3DChunk_Replace}, {__call = P3DChunk_new})
+function P3D.P3DChunk:parse(Endian, Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
+	Data.Endian = Endian
 	Data.Identifier = Identifier
 	if DataLength > 0 then
 		Data.ValueStr = Contents:sub(Pos, Pos + DataLength - 1)
@@ -716,12 +1051,12 @@ function P3D.P3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	local headerLen = 12 + #self.ValueStr
-	return string_pack("<III", self.Identifier, headerLen, headerLen + #chunkData) .. self.ValueStr .. chunkData
+	return string_pack(self.Endian .. "III", self.Identifier, headerLen, headerLen + #chunkData) .. self.ValueStr .. chunkData
 end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	local class = setmetatable({Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, getmetatable(self))
+	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian, Replace = P3DChunk_Replace}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
@@ -755,7 +1090,7 @@ function P3D.LoadChunks(Path)
 	end)
 	
 	local classes, classesN = P3D.GetIdentifiersWithClasses()
-	print("P3D2.lua", string.format("Loaded %d files. Chunk classes: %d/%d.", files, classesN, IdentifierIdsN))
+	print("P3D2.lua", string.format("Loaded %d file%s. Chunk classes: %d/%d.", files, files == 1 and "" or "s", classesN, IdentifierIdsN))
 	return files, classes
 end
 
