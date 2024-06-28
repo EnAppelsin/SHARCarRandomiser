@@ -1,6 +1,6 @@
 local string_sub = string.sub
 
-local RandomMissionCharacters = Module("Random Mission Characters", "RandomMissionCharacters", 5)
+local RandomMissionCharacters = Module("Random Mission Characters", "RandomMissionCharacters")
 
 local BonusCharacters
 

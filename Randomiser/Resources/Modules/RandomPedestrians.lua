@@ -3,7 +3,7 @@ local string_sub = string.sub
 local table_remove = table.remove
 local table_unpack = table.unpack
 
-local RandomPedestrians = Module("Random Pedestrians")
+local RandomPedestrians = Module("Random Pedestrians", "RandomPedestrians")
 
 local function ReplaceCharacter(Path, P3DFile)
 	return P3DUtils.ReplaceCharacter(P3DFile)
