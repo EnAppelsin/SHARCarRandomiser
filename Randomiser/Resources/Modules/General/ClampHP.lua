@@ -3,6 +3,13 @@ local ClampHP = Module("Clamp HP", "ClampHP", 1000)
 local MinimumHP = Settings.MinimumHP
 local MaximumHP = Settings.MaximumHP
 
+local DefaultHP = 2 -- Default HP if `SetHitPoints` isn't called
+
+if Settings[ClampHP.Setting] and MaximumHP < MinimumHP then
+	Alert("You cannot have \"Maximum HP\" lower than \"Minimum HP\")
+	os.exit()
+end
+
 ClampHP:AddCONHandler("*.con", function(Path, CON)
 	local functions = CON.functions
 	
@@ -24,13 +31,13 @@ ClampHP:AddCONHandler("*.con", function(Path, CON)
 		end
 	end
 	
-	if 2 < MinimumHP then
+	if DefaultHP < MinimumHP then
 		print("Increasing HP to " .. MinimumHP .. " for: " .. Path)
 		CON:AddFunction("SetHitPoints", MinimumHP)
 		return true
 	end
 	
-	if 2 > MaximumHP then
+	if DefaultHP > MaximumHP then
 		print("Decreasing HP to " .. MaximumHP .. " for: " .. Path)
 		CON:AddFunction("SetHitPoints", MaximumHP)
 		return true
