@@ -22,7 +22,7 @@ function GetFilesInDirectory(Dir, Tbl, Extension, ProcessSubDirs)
 	DirectoryGetEntries(Dir, function(Entry, IsDir)
 		if IsDir then
 			if ProcessSubDirs then
-				GetFilesInDirectory(string_format("%s/%s", Dir, Extension, Entry), Tbl, true)
+				GetFilesInDirectory(string_format("%s/%s", Dir, Entry), Tbl, Extension, true)
 			end
 			return true
 		end

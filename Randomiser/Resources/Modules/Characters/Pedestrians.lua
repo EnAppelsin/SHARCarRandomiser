@@ -5,12 +5,17 @@ local table_unpack = table.unpack
 
 local RandomPedestrians = Module("Random Pedestrians", "RandomPedestrians")
 
+local AmbientCharacters
+
 local function ReplaceCharacter(Path, P3DFile)
-	return P3DUtils.ReplaceCharacter(P3DFile)
+	local ReplaceP3D = P3D.P3DFile(AmbientCharacters[Path])
+	
+	return P3DUtils.ReplaceCharacter(P3DFile, ReplaceP3D)
 end
 
 RandomPedestrians:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	RandomPedestrians.Handlers.P3D = {}
+	AmbientCharacters = {}
 	
 	local pedPool = {table_unpack(CharNames)}
 	
@@ -36,7 +41,10 @@ RandomPedestrians:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 			if #char > 6 then
 				char = string_sub(char, 1, 6)
 			end
-			RandomPedestrians:AddP3DHandler("art/chars/" .. char .. "_m.p3d", ReplaceCharacter)
+			local path = "art\\chars\\" .. char .. "_m.p3d"
+			AmbientCharacters[path] = CharP3DFiles[math_random(CharCount)]
+			print("Replacing ambient character \"" .. char .. "\" with: " .. AmbientCharacters[path])
+			RandomPedestrians:AddP3DHandler(path, ReplaceCharacter)
 		end
 	end
 	

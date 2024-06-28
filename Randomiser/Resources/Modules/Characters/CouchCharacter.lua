@@ -81,7 +81,7 @@ local function ReplaceCouch(Path, P3DFile)
 	return true
 end
 
-RandomCouch:AddP3DHandler("art/frontend/scrooby/resource/pure3d/homer.p3d", ReplaceCouch)
-RandomCouch:AddP3DHandler("art/frontend/scrooby/resource/pure3d/homer_?.p3d", ReplaceCouch)
+RandomCouch:AddP3DHandler("art\\frontend\\scrooby\\resource\\pure3d\\homer.p3d", ReplaceCouch)
+RandomCouch:AddP3DHandler("art\\frontend\\scrooby\\resource\\pure3d\\homer_?.p3d", ReplaceCouch)
 
 return RandomCouch

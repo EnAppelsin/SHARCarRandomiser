@@ -31,7 +31,32 @@ for i=#CharP3DFiles,1,-1 do
 			table.remove(CharP3DFiles, i)
 		else
 			CharCount = CharCount + 1
-			CharNames[CharCount] = CompositeDrawable.Name
+			table.insert(CharNames, 1, CompositeDrawable.Name)
 		end
 	end
 end
+print(string.format("Loaded %i characters", CharCount))
+
+CarP3DFiles = {}
+CarNames = {}
+CarCount = 0
+GetFilesInDirectory("/GameData/art/cars", CarP3DFiles, ".p3d")
+
+local ExcludedCars = {["huskA"]=true,["common"]=true}
+for i=#CarP3DFiles,1,-1 do
+	local filePath = CarP3DFiles[i]
+	local fileName = RemoveFileExtension(GetFileName(filePath))
+	if ExcludedCars[fileName] then
+		table.remove(CarP3DFiles, i)
+	else
+		local P3DFile = P3D.P3DFile(filePath)
+		local CompositeDrawable = P3DFile:GetChunk(P3D.Identifiers.Composite_Drawable)
+		if not CompositeDrawable then
+			table.remove(CarP3DFiles, i)
+		else
+			CarCount = CarCount + 1
+			table.insert(CarNames, 1, CompositeDrawable.Name)
+		end
+	end
+end
+print(string.format("Loaded %i cars", CarCount))

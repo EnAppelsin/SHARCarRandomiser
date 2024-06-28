@@ -188,7 +188,7 @@ function ModuleLoader.LoadModules(path)
 	assert(Exists(path, false, true), "Path (Arg #1) must be a directory that exists.")
 	
 	local ModuleFiles = {}
-	GetFilesInDirectory(path, ModuleFiles, ".lua")
+	GetFilesInDirectory(path, ModuleFiles, ".lua", true)
 	assert(#ModuleFiles > 0, "No module files found in Path (Arg #1)")
 	
 	Modules = Modules or {}
