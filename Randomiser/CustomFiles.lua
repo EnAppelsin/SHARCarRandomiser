@@ -11,7 +11,6 @@ dofile(Paths.Lib .. "/P3DUtils.lua")
 dofile(Paths.Lib .. "/MFKLexer.lua")
 
 dofile(Paths.Lib .. "/ModuleLoader.lua")
-ModuleLoader.LoadModules(Paths.Resources .. "/Modules")
 
 CharP3DFiles = {}
 CharNames = {}
@@ -60,3 +59,5 @@ for i=#CarP3DFiles,1,-1 do
 	end
 end
 print(string.format("Loaded %i cars", CarCount))
+
+ModuleLoader.LoadModules(Paths.Resources .. "/Modules")
