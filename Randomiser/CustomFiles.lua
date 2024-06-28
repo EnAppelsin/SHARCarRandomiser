@@ -7,6 +7,7 @@ Paths.Lib = Paths.Resources .. "/lib"
 dofile(Paths.Lib .. "/Utils.lua")
 dofile(Paths.Lib .. "/P3D2.lua")
 P3D.LoadChunks(Paths.Lib .. "/P3DChunks")
+dofile(Paths.Lib .. "/P3DUtils.lua")
 dofile(Paths.Lib .. "/MFKLexer.lua")
 
 dofile(Paths.Lib .. "/ModuleLoader.lua")
