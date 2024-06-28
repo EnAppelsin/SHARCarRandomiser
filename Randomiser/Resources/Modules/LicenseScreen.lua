@@ -6,6 +6,8 @@ local licensesN = #licenses
 assert(licensesN > 0, "Failed to find any license images")
 
 LicenseScreen:AddP3DHandler("art/frontend/dynaload/images/license/*license*.p3d", function(Path, P3DFile)
+	LicenseScreen.Handlers.P3D = {}
+	
 	local Sprite = P3DFile:GetChunk(P3D.Identifiers.Sprite)
 	if not Sprite then
 		return false

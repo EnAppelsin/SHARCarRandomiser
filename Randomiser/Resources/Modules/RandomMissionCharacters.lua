@@ -14,7 +14,7 @@ RandomMissionCharacters:AddLevelHandler(function(LevelNumber, LevelLoad, LevelIn
 	for i=1,#LevelInit.Functions do
 		local func = LevelInit.Functions[i]
 		local name = func.Name:lower()
-		if name == "addambientcharacter" then
+		if name == "addnpccharacterbonusmission" then
 			local char = func.Arguments[1]
 			if #char > 6 then
 				char = string_sub(char, 1, 6)
