@@ -1,4 +1,4 @@
 if MissionInit then
-	Output(MissionInit)
+	MissionInit:Output(true)
 	MissionInit = nil
 end

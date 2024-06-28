@@ -29,6 +29,6 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	MissionLoad:Output()
-	_G.MissionInit = tostring(MissionInit)
+	MissionLoad:Output(true)
+	_G.MissionInit = MissionInit
 end

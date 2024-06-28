@@ -32,5 +32,5 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	CON:Output()
+	CON:Output(true)
 end

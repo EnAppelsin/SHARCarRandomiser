@@ -1,4 +1,4 @@
 if SundayDriveInit then
-	Output(SundayDriveInit)
+	SundayDriveInit:Output(true)
 	SundayDriveInit = nil
 end

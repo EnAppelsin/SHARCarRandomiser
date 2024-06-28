@@ -24,6 +24,6 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	StreetRaceLoad:Output()
-	_G.StreetRaceInit = tostring(StreetRaceInit)
+	StreetRaceLoad:Output(true)
+	_G.StreetRaceInit = StreetRaceInit
 end

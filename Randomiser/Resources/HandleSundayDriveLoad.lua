@@ -29,6 +29,6 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	SundayDriveLoad:Output()
-	_G.SundayDriveInit = tostring(SundayDriveInit)
+	SundayDriveLoad:Output(true)
+	_G.SundayDriveInit = SundayDriveInit
 end

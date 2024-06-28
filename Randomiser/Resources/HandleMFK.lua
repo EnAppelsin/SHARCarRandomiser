@@ -32,5 +32,5 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	MFK:Output()
+	MFK:Output(true)
 end

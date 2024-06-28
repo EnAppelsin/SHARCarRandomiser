@@ -1,4 +1,4 @@
 if StreetRaceInit then
-	Output(StreetRaceInit)
+	StreetRaceInit:Output(true)
 	StreetRaceInit = nil
 end
