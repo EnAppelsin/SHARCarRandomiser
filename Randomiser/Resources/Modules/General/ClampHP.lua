@@ -9,7 +9,7 @@ ClampHP:AddCONHandler("*.con", function(Path, CON)
 	for i=#functions,1,-1 do
 		local func = functions[i]
 		if func.Name:lower() == "sethitpoints" then
-			local hp = tonumber(func.Arguments[1])
+			local hp = func.Arguments[1]
 			if hp < MinimumHP then
 				print("Increasing HP to " .. MinimumHP .. " for: " .. Path)
 				func.Arguments[1] = MinimumHP

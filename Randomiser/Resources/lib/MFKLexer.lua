@@ -58,6 +58,7 @@ local tblconcat = table.concat
 local strbyte = string.byte
 
 local assert = assert
+local tonumber = tonumber
 local type = type
 
 MFKLexer.MFKFunction = {}
@@ -296,16 +297,18 @@ function MFKLexer.Lexer:Parse(Text)
 			ExpectToken("(")
 			
 			local Arguments = {}
+			local ArgumentsN = 0
 			while true do
 				local Token = ReadTokenNotEndOfFile()
 				if Token == ")" then break end
 				
-				if #Arguments > 0 then
+				if ArgumentsN > 0 then
 					assert(Token == ",", "Expected token: ,\nGot token: " .. Token)
 					Token = ReadTokenNotEndOfFile()
 				end
 				
-				Arguments[#Arguments + 1] = Token
+				ArgumentsN = ArgumentsN + 1
+				Arguments[ArgumentsN] = tonumber(Token) or Token
 			end
 			
 			local Conditional = false
