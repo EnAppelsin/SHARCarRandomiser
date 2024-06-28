@@ -31,7 +31,7 @@ for i=#CharP3DFiles,1,-1 do
 			table.remove(CharP3DFiles, i)
 		else
 			CharCount = CharCount + 1
-			table.insert(CharNames, 1, CompositeDrawable.Name)
+			table.insert(CharNames, 1, CompositeDrawable.Name:sub(1, -3))
 		end
 	end
 end

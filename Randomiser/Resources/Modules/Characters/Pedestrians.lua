@@ -28,7 +28,7 @@ RandomPedestrians:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		elseif name == "createpedgroup" then
 			for j=1,7 do
 				local randomPedIndex = math_random(#pedPool)
-				local randomPed = pedPool[randomPedIndex]:sub(1,-3)
+				local randomPed = pedPool[randomPedIndex]
 				table_remove(pedPool, randomPedIndex)
 				if #pedPool == 0 then
 					pedPool = {table_unpack(CharNames)}
