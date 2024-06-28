@@ -200,7 +200,7 @@ function P3DUtils.ReplaceCar(OrigP3D, ReplaceP3D)
 			end
 		end
 		for OldFrameController in ReplaceP3D:GetChunks(P3D.Identifiers.Old_Frame_Controller) do
-			if OldFrameController.HierarchyName = OrigName then
+			if OldFrameController.HierarchyName == OrigName then
 				local Animation = ReplaceP3D:GetChunk(P3D.Identifiers.Animation, false, OldFrameController.AnimationName)
 				for AnimationGroupList in Animation:GetChunks(P3D.Identifiers.Animation_Group_List) do
 					for AnimationGroup in AnimationGroupList:GetChunks(P3D.Identifiers.Animation_Group) do
