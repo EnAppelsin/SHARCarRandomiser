@@ -78,7 +78,9 @@ end
 function MFKLexer.MFKFunction:SetArg(Index, Value, Condition)
 	if Condition == nil or tostring(Condition) == tostring(self.Arguments[Index]) then
 		self.Arguments[Index] = Value
+		return true
 	end
+	return false
 end
 
 function MFKLexer.MFKFunction:__tostring()
@@ -348,20 +350,24 @@ function MFKLexer.Lexer:InsertFunction(Index, FunctionName, Arguments, Condition
 end
 
 local function SetFunctionArgument(FunctionName, Function, Index, Value, Condition)
+	local changed = false
 	if Function.Name:lower() == FunctionName then
-		Function:SetArg(Index, Value, Condition)
+		changed = Function:SetArg(Index, Value, Condition)
 	end
 	if Function.Conditional then
 		for i=1,#Function.Children do
-			SetFunctionArgument(FunctionName, Function.Children[i], Index, Value, Condition)
+			changed = SetFunctionArgument(FunctionName, Function.Children[i], Index, Value, Condition) or changed
 		end
 	end
+	return changed
 end
 function MFKLexer.Lexer:SetAll(FunctionName, Index, Value, Condition)
 	FunctionName = FunctionName:lower()
+	local changed = false
 	for i=1,#self.Functions do
-		SetFunctionArgument(FunctionName, self.Functions[i], Index, Value, Condition)
+		changed = SetFunctionArgument(FunctionName, self.Functions[i], Index, Value, Condition) or changed
 	end
+	return changed
 end
 
 function MFKLexer.Lexer:__tostring()
