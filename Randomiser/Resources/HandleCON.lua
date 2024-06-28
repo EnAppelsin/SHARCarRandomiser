@@ -1,3 +1,11 @@
+-- Efficiency bullshit, thanks Lua
+local assert = assert
+local pcall = pcall
+local print = print
+local string_format = string.format
+local WildcardMatch = WildcardMatch
+-- End efficiency bullshit
+
 local Path = GetPath()
 local GamePath
 
@@ -17,7 +25,7 @@ for moduleN=1,#Modules do
 			
 			print("ModuleHandler", "Running CON module: " .. module.Name)
 			local success, changed = pcall(handler.Callback, Path, CON)
-			assert(success, string.format("Error running CON handler from module \"%s\":\n%s", module.Name, changed))
+			assert(success, string_format("Error running CON handler from module \"%s\":\n%s", module.Name, changed))
 			isChanged = isChanged or changed
 		end
 	end

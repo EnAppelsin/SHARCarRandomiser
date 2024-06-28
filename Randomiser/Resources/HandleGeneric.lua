@@ -2,6 +2,14 @@ if IsWriting() then
 	return
 end
 
+-- Efficiency bullshit, thanks Lua
+local assert = assert
+local pcall = pcall
+local print = print
+local string_format = string.format
+local WildcardMatch = WildcardMatch
+-- End efficiency bullshit
+
 local Path = GetPath()
 local GamePath = GetGamePath(Path)
 
@@ -19,9 +27,9 @@ for moduleN=1,#Modules do
 				contents = contents or ReadFile(GamePath)
 			end
 			
-				print("ModuleHandler", "Running generic module: " .. module.Name)
+			print("ModuleHandler", "Running generic module: " .. module.Name)
 			local success, changed, newContents = pcall(handler.Callback, contents)
-			assert(success, string.format("Error running generic handler from module \"%s\":\n%s", module.Name, changed))
+			assert(success, string_format("Error running generic handler from module \"%s\":\n%s", module.Name, changed))
 			if changed then
 				contents = newContents
 				isChanged = true
