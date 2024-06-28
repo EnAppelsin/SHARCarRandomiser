@@ -1,4 +1,4 @@
-local RandomCouch = Module("Random Couch", "RandomCouch", 5)
+local RandomCouch = Module("Random Couch", "RandomCouchCharacter")
 
 local function ReplaceCouch(Path, P3DFile)
 	local ReplacePed = CharP3DFiles[math.random(CharCount)]

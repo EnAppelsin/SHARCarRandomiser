@@ -1,4 +1,4 @@
-local LicenseScreen = Module("License Screen", "LicenseScreen", 5)
+local LicenseScreen = Module("License Screen")
 
 local licenses = {}
 GetFilesInDirectory(Paths.Resources .. "/Licenses", licenses, ".png")

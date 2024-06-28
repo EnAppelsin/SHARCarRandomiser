@@ -205,9 +205,13 @@ function ModuleLoader.LoadModules(path)
 		assert(success, string.format("Error executing module \"%s\":\n%s", ModuleFile, result))
 		assert(getmetatable(result) == Module, string.format("Invalid return value from module \"%s\". Invalid metatable.", ModuleFile))
 		
-		ModulesN = ModulesN + 1
-		Modules[ModulesN] = result
-		print("Loaded module: " .. ModuleFile)
+		if result.Setting == nil or Settings[result.Setting] then
+			ModulesN = ModulesN + 1
+			Modules[ModulesN] = result
+			print("Loaded module: " .. ModuleFile)
+		else
+			print("Skipping module due to setting disabled: " .. ModuleFile)
+		end
 	end
 	
 	table.sort(Modules, CompareModules)
