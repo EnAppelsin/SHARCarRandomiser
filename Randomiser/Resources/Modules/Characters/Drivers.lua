@@ -23,6 +23,24 @@ local DriverFunctions = {
 	["addstagevehicle"] = 5,
 }
 
+local CarDrivers = {
+	["apu"] = {"apu_v"}
+	["bart"] = {"bart_v", "honor_v"}
+	["cletus"] = {"cletu_v"}
+	["cbg"] = {"comic_v"}
+	["lisa"] = {"elect_v", "lisa_v"}
+	["homer"] = {"famil_v", "homer_v"}
+	["frink"] = {"frink_v"}
+	["grandpa"] = {"gramp_v", "gramR_v"}
+	["marge"] = {"marge_v"}
+	["otto"] = {"otto_v"}
+	["skinner"] = {"skinn_m1", "skinn_v"}
+	["smithers"] = {"smith_v"}
+	["snake"] = {"snake_v"}
+	["wiggum"] = {"wiggu_v"}
+	["zmale1"] = {"zombi_v"}
+}
+
 local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	local changed = false
 	local driverPool = {table_unpack(CharNames)}
@@ -30,7 +48,7 @@ local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionIn
 	for i=1,#functions do
 		local func = functions[i]
 		local name = func.Name:lower()
-		if name:lower() == "addstagevehicle" then
+		if name:lower() == "addstagevehicle" and CarDrivers[func.Arguments[5]] then
 			changed = true
 			
 			local randomDriverIndex = math_random(#driverPool)
