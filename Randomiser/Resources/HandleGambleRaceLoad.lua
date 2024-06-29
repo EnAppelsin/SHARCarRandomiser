@@ -1,3 +1,5 @@
+local table_unpack = table.unpack
+
 local Path = GetPath()
 local GamePath = GetGamePath(Path)
 
@@ -7,7 +9,7 @@ local GambleRaceInit
 local isChanged = false
 for moduleN=1,#Modules do
 	local module = Modules[moduleN]
-	local handlers = module.Handlers.Race[CurrentLevel][4]
+	local handlers = {table_unpack(module.Handlers.Race[CurrentLevel][4])}
 	
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]

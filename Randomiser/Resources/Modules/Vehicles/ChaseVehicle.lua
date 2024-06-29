@@ -24,7 +24,7 @@ RandomChaseVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		end
 	end
 	
-	LevelLoad:SetAll("LoadP3DFile", 1, RandomVehicleP3D, "art\\cars\\" .. origChase .. ".p3d")
+	LevelLoad:AddFunction("LoadP3DFile", RandomVehicleP3D)
 	if Settings.RandomChaseAmount then
 		local amount = math_random(5)
 		print("Setting chase amount to: " .. amount)

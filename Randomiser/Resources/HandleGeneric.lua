@@ -28,7 +28,7 @@ for moduleN=1,#Modules do
 			end
 			
 			print("ModuleHandler", "Running generic module: " .. module.Name)
-			local success, changed, newContents = pcall(handler.Callback, contents)
+			local success, changed, newContents = pcall(handler.Callback, Path, contents)
 			assert(success, string_format("Error running generic handler from module \"%s\":\n%s", module.Name, changed))
 			if changed then
 				contents = newContents

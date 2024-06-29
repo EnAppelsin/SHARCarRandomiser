@@ -1,3 +1,5 @@
+local table_unpack = table.unpack
+
 local Path = GetPath()
 local GamePath = GetGamePath(Path)
 
@@ -10,9 +12,9 @@ for moduleN=1,#Modules do
 	local module = Modules[moduleN]
 	local handlers
 	if CurrentLevel == 1 then
-		handlers = module.Handlers.Mission[CurrentLevel][CurrentMission + 1]
+		handlers = {table_unpack(module.Handlers.Mission[CurrentLevel][CurrentMission + 1])}
 	else
-		handlers = module.Handlers.Mission[CurrentLevel][CurrentMission]
+		handlers = {table_unpack(module.Handlers.Mission[CurrentLevel][CurrentMission])}
 	end
 	
 	for handlerN=1,#handlers do

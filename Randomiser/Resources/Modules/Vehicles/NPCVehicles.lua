@@ -88,9 +88,9 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	end
 	
 	for k,v in pairs(addedCars) do
-		if not LoadedCars[v] and not LoadedMissionsCars[v] then
+		--if not LoadedCars[v] and not LoadedMissionsCars[v] then
 			MissionLoad:AddFunction("LoadDisposableCar", {k,v,"AI"})
-		end
+		--end
 	end
 	
 	return true

@@ -3,6 +3,7 @@ local assert = assert
 local pcall = pcall
 local print = print
 local string_format = string.format
+local table_unpack = table.unpack
 local WildcardMatch = WildcardMatch
 -- End efficiency bullshit
 
@@ -14,7 +15,7 @@ local P3DFile
 local isChanged = false
 for moduleN=1,#Modules do
 	local module = Modules[moduleN]
-	local handlers = module.Handlers.P3D
+	local handlers = {table_unpack(module.Handlers.P3D)}
 	
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]
