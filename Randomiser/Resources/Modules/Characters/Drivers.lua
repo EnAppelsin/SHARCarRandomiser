@@ -24,21 +24,21 @@ local DriverFunctions = {
 }
 
 local CarDrivers = {
-	["apu"] = {"apu_v"}
-	["bart"] = {"bart_v", "honor_v"}
-	["cletus"] = {"cletu_v"}
-	["cbg"] = {"comic_v"}
-	["lisa"] = {"elect_v", "lisa_v"}
-	["homer"] = {"famil_v", "homer_v"}
-	["frink"] = {"frink_v"}
-	["grandpa"] = {"gramp_v", "gramR_v"}
-	["marge"] = {"marge_v"}
-	["otto"] = {"otto_v"}
-	["skinner"] = {"skinn_m1", "skinn_v"}
-	["smithers"] = {"smith_v"}
-	["snake"] = {"snake_v"}
-	["wiggum"] = {"wiggu_v"}
-	["zmale1"] = {"zombi_v"}
+	["apu"] = {"apu_v"},
+	["bart"] = {"bart_v", "honor_v"},
+	["cletus"] = {"cletu_v"},
+	["cbg"] = {"comic_v"},
+	["lisa"] = {"elect_v", "lisa_v"},
+	["homer"] = {"famil_v", "homer_v"},
+	["frink"] = {"frink_v"},
+	["grandpa"] = {"gramp_v", "gramR_v"},
+	["marge"] = {"marge_v"},
+	["otto"] = {"otto_v"},
+	["skinner"] = {"skinn_m1", "skinn_v"},
+	["smithers"] = {"smith_v"},
+	["snake"] = {"snake_v"},
+	["wiggum"] = {"wiggu_v"},
+	["zmale1"] = {"zombi_v"},
 }
 
 local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionInit)
