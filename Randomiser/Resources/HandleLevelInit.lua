@@ -1,4 +1,4 @@
 if LevelInit then
-	Output(LevelInit)
+	LevelInit:Output(true)
 	LevelInit = nil
 end

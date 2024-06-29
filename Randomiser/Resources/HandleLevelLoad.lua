@@ -24,6 +24,6 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	LevelLoad:Output()
-	_G.LevelInit = tostring(LevelInit)
+	LevelLoad:Output(true)
+	_G.LevelInit = LevelInit
 end
