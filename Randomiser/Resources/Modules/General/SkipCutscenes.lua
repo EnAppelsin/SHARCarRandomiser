@@ -8,7 +8,7 @@ local function RemoveFMVs(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 			local func = functions[i]
 			if func.Name:lower() == "setfmvinfo" then
 				func.Name = "SetDurationTime"
-				func.Arguments[1] = 1
+				func.Arguments[1] = 0
 			end
 		end
 		return true
