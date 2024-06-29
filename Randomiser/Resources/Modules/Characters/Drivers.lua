@@ -1,0 +1,54 @@
+local math_random = math.random
+local table_remove = table.remove
+local table_unpack = table.unpack
+
+local RandomDrivers = Module("Random Drivers", "RandomDrivers", 10)
+
+RandomDrivers:AddCONHandler("*.con", function(Path, CON)
+	if WildcardMatch(Path, "scripts/cars/*husk*.con", true, true) then
+		return false
+	end
+	local randomDriver = CharNames[math_random(CharCount)]
+	print("Setting driver to \"" .. randomDriver .. "\" for: " .. Path)
+	
+	if not CON:SetAll("SetDriver", 1, randomDriver) then
+		CON:AddFunction("SetDriver", randomDriver)
+	end
+	
+	return true
+end)
+
+local DriverFunctions = {
+	["activatevehicle"] = 4,
+	["addstagevehicle"] = 5,
+}
+
+local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionInit)
+	local changed = false
+	local driverPool = {table_unpack(CharNames)}
+	local functions = MissionInit.Functions
+	for i=1,#functions do
+		local func = functions[i]
+		local name = func.Name:lower()
+		if name:lower() == "addstagevehicle" then
+			changed = true
+			
+			local randomDriverIndex = math_random(#driverPool)
+			local randomDriver = driverPool[randomDriverIndex]
+			table_remove(driverPool, randomDriverIndex)
+			if #driverPool == 0 then
+				driverPool = {table_unpack(CharNames)}
+			end
+			
+			print("Setting driver to \"" .. randomDriver .. "\" for: " .. func.Arguments[1])
+			
+			func.Arguments[5] = randomDriver
+		end
+	end
+	return changed
+end
+
+RandomDrivers:AddSundayDriveHandler(MissionDrivers)
+RandomDrivers:AddMissionHandler(MissionDrivers)
+
+return RandomDrivers
