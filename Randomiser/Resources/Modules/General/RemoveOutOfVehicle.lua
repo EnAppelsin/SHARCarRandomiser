@@ -3,7 +3,7 @@ local table_remove = table.remove
 local RemoveOutOfVehicle = Module("Remove Out Of Vehicle", "RemoveOutOfVehicle", 1000)
 
 local function RemoveCondition(LevelNumber, MissionNumber, MissionLoad, MissionInit)
-	local functions = MissionInit.functions
+	local functions = MissionInit.Functions
 	local toRemove = {}
 	local toRemoveN = 0
 	
