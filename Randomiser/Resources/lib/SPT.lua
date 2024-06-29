@@ -99,6 +99,7 @@ SPT.Class = setmetatable({}, {
 	__call = function(self, classType, className, classData)
 		assert(type(classType) == "string", "ClassType (Arg #1) must be a string.")
 		assert(type(className) == "string", "ClassName (Arg #2) must be a string.")
+		assert(classData == nil or type(classData) == "string", "ClassData (Arg #3) must be a string.")
 		
 		local Data = {
 			Type = classType,
@@ -109,61 +110,63 @@ SPT.Class = setmetatable({}, {
 		local VariablesN = 0
 		Data.Variables = Variables
 		
-		for line in string_gmatch(classData, "[^\r\n]+") do
-			local name, argumentsStr, option = string_match(line, "%s+(.-)%s+%(%s+(.-)%s+%)%s+option%s+(.+)")
-			if name == nil then
-				name, argumentsStr = string_match(line, "%s+(.-)%s+%(%s+(.-)%s+%)")
-			end
-			if name ~= nil then
-				local variable = {
-					Name = name,
-					Option = option,
-				}
-				VariablesN = VariablesN + 1
-				Variables[VariablesN] = variable
-				
-				local arguments = {}
-				local argumentsN = 0
-				variable.Arguments = arguments
-				
-				local openString = false
-				local str
-				local strN
-				for word in string_gmatch(argumentsStr, "[^ ]+") do
-					if string_match(word, "^\".-\"$") then
-						argumentsN = argumentsN + 1
-						arguments[argumentsN] = SPT.Argument(word:sub(2, -2), "string")
-					else
-						if word:sub(1, 1) == "\"" then
-							openString = true
-							str = {word:sub(2)}
-							strN = 1
-						end
-						
-						if openString then
-							strN = strN + 1
-							if word:sub(-1) == "\"" then
-								str[strN] = word:sub(1, -2)
-								argumentsN = argumentsN + 1
-								arguments[argumentsN] = SPT.Argument(table_concat(str, " "), "string")
-								openString = false
-							else
-								str[strN] = word
-							end
-						elseif string_match(word, "^-?%d+%.%d+$") then
+		if classData then
+			for line in string_gmatch(classData, "[^\r\n]+") do
+				local name, argumentsStr, option = string_match(line, "%s+(.-)%s+%(%s+(.-)%s+%)%s+option%s+(.+)")
+				if name == nil then
+					name, argumentsStr = string_match(line, "%s+(.-)%s+%(%s+(.-)%s+%)")
+				end
+				if name ~= nil then
+					local variable = {
+						Name = name,
+						Option = option,
+					}
+					VariablesN = VariablesN + 1
+					Variables[VariablesN] = variable
+					
+					local arguments = {}
+					local argumentsN = 0
+					variable.Arguments = arguments
+					
+					local openString = false
+					local str
+					local strN
+					for word in string_gmatch(argumentsStr, "[^ ]+") do
+						if string_match(word, "^\".-\"$") then
 							argumentsN = argumentsN + 1
-							arguments[argumentsN] = SPT.Argument(tonumber(word), "float")
-						elseif string_match(word, "^-?%d+$") then
-							argumentsN = argumentsN + 1
-							arguments[argumentsN] = SPT.Argument(tonumber(word), "int")
-						elseif word == "true" then
-							argumentsN = argumentsN + 1
-							arguments[argumentsN] = SPT.Argument(true, "bool")
-						elseif word == "false" then
-							argumentsN = argumentsN + 1
-							arguments[argumentsN] = SPT.Argument(false, "bool")
+							arguments[argumentsN] = SPT.Argument(word:sub(2, -2), "string")
 						else
-							error("Invalid argument: " .. word)
+							if word:sub(1, 1) == "\"" then
+								openString = true
+								str = {word:sub(2)}
+								strN = 1
+							end
+							
+							if openString then
+								strN = strN + 1
+								if word:sub(-1) == "\"" then
+									str[strN] = word:sub(1, -2)
+									argumentsN = argumentsN + 1
+									arguments[argumentsN] = SPT.Argument(table_concat(str, " "), "string")
+									openString = false
+								else
+									str[strN] = word
+								end
+							elseif string_match(word, "^-?%d+%.%d+$") then
+								argumentsN = argumentsN + 1
+								arguments[argumentsN] = SPT.Argument(tonumber(word), "float")
+							elseif string_match(word, "^-?%d+$") then
+								argumentsN = argumentsN + 1
+								arguments[argumentsN] = SPT.Argument(tonumber(word), "int")
+							elseif word == "true" then
+								argumentsN = argumentsN + 1
+								arguments[argumentsN] = SPT.Argument(true, "bool")
+							elseif word == "false" then
+								argumentsN = argumentsN + 1
+								arguments[argumentsN] = SPT.Argument(false, "bool")
+							else
+								error("Invalid argument: " .. word)
+							end
 						end
 					end
 				end
@@ -174,6 +177,17 @@ SPT.Class = setmetatable({}, {
 		return setmetatable(Data, self)
 	end,
 })
+
+function SPT.Class:AddVariable(Name, Arguments, Option)
+	assert(type(Name) == "string", "Name (Arg #1) must be a string.")
+	assert(type(Arguments) == "table", "Arguments (Arg #2) must be a table.")
+	assert(Option == nil or type(Option) == "string", "Option (Arg #3) must be a string.")
+	
+	local Variable = { Name = Name, Option = Option, Arguments = Arguments }
+	local VariableIndex = #self.Variables + 1
+	self.Variables[VariableIndex] = Variable
+	return Variable, VariableIndex
+end
 
 function SPT.Class:GetVariables(Backwards, Name)
 	assert(Name == nil or type(Name) == "string", "Arg #2 (Name) must be a string.")
