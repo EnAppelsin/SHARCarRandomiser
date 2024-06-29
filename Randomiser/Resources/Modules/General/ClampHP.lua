@@ -11,6 +11,9 @@ if Settings[ClampHP.Setting] and MaximumHP < MinimumHP then
 end
 
 ClampHP:AddCONHandler("*.con", function(Path, CON)
+	if WildcardMatch(Path, "scripts/cars/*husk*.con", true, true) then
+		return false
+	end
 	local functions = CON.Functions
 	
 	for i=#functions,1,-1 do
