@@ -12,8 +12,8 @@ for moduleN=1,#Modules do
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]
 		
-		GambleRaceLoad = MissionLoad or MFKLexer.Lexer:Parse(ReadFile(GamePath))
-		GambleRaceInit = MissionInit or MFKLexer.Lexer:Parse(ReadFile(GamePath:sub(1, -6) .. "i.mfk"))
+		GambleRaceLoad = GambleRaceLoad or MFKLexer.Lexer:Parse(ReadFile(GamePath))
+		GambleRaceInit = GambleRaceInit or MFKLexer.Lexer:Parse(ReadFile(GamePath:sub(1, -6) .. "i.mfk"))
 		
 		print("ModuleHandler", "Running gamble race module: " .. module.Name)
 		local success, changed = pcall(handler, CurrentLevel, 4, GambleRaceLoad, GambleRaceInit)

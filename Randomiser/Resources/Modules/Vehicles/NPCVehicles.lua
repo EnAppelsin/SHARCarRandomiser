@@ -30,8 +30,7 @@ RandomNPCVehicles:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	return false
 end)
 
-
-RandomNPCVehicles:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
+function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	-- TODO: Save on reload if some setting enabled or something
 	local carP3DPool = {table_unpack(CarP3DFiles)}
 	local carNamePool = {table_unpack(CarNames)}
@@ -95,6 +94,9 @@ RandomNPCVehicles:AddMissionHandler(function(LevelNumber, MissionNumber, Mission
 	end
 	
 	return true
-end)
+end
+
+RandomNPCVehicles:AddMissionHandler(HandleMission)
+RandomNPCVehicles:AddRaceHandler(HandleMission)
 
 return RandomNPCVehicles

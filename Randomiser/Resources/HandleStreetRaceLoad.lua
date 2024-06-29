@@ -13,8 +13,8 @@ for moduleN=1,#Modules do
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]
 		
-		StreetRaceLoad = MissionLoad or MFKLexer.Lexer:Parse(ReadFile(GamePath))
-		StreetRaceInit = MissionInit or MFKLexer.Lexer:Parse(ReadFile(GamePath:sub(1, -6) .. "i.mfk"))
+		StreetRaceLoad = StreetRaceLoad or MFKLexer.Lexer:Parse(ReadFile(GamePath))
+		StreetRaceInit = StreetRaceInit or MFKLexer.Lexer:Parse(ReadFile(GamePath:sub(1, -6) .. "i.mfk"))
 		
 		print("ModuleHandler", "Running street race module: " .. module.Name)
 		local success, changed = pcall(handler, CurrentLevel, CurrentStreetRace, StreetRaceLoad, StreetRaceInit)

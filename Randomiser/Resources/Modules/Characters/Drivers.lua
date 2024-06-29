@@ -68,5 +68,6 @@ end
 
 RandomDrivers:AddSundayDriveHandler(MissionDrivers)
 RandomDrivers:AddMissionHandler(MissionDrivers)
+RandomDrivers:AddRaceHandler(MissionDrivers)
 
 return RandomDrivers
