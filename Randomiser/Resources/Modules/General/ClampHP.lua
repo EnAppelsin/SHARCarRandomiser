@@ -18,12 +18,12 @@ ClampHP:AddCONHandler("*.con", function(Path, CON)
 		if func.Name:lower() == "sethitpoints" then
 			local hp = func.Arguments[1]
 			if hp < MinimumHP then
-				print("Increasing HP to " .. MinimumHP .. " for: " .. Path)
+				print("Increasing HP to " .. MinimumHP .. " from " .. hp .. " for: " .. Path)
 				func.Arguments[1] = MinimumHP
 				return true
 			end
 			if hp > MaximumHP then
-				print("Decreasing HP to " .. MaximumHP .. " for: " .. Path)
+				print("Decreasing HP to " .. MaximumHP .. " from " .. hp .. " for: " .. Path)
 				func.Arguments[1] = MaximumHP
 				return true
 			end
@@ -32,13 +32,13 @@ ClampHP:AddCONHandler("*.con", function(Path, CON)
 	end
 	
 	if DefaultHP < MinimumHP then
-		print("Increasing HP to " .. MinimumHP .. " for: " .. Path)
+		print("Increasing HP to " .. MinimumHP .. " from " .. DefaultHP .. " for: " .. Path)
 		CON:AddFunction("SetHitPoints", MinimumHP)
 		return true
 	end
 	
 	if DefaultHP > MaximumHP then
-		print("Decreasing HP to " .. MaximumHP .. " for: " .. Path)
+		print("Decreasing HP to " .. MaximumHP .. " from " .. DefaultHP .. " for: " .. Path)
 		CON:AddFunction("SetHitPoints", MaximumHP)
 		return true
 	end
