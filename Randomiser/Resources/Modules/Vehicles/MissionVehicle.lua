@@ -1,9 +1,9 @@
 local math_random = math.random
 local table_remove = table.remove
 
-local RandomMissionVehicles = Module("Random Mission Vehicles", "RandomMissionVehicles", 3)
+local RandomMissionVehicle = Module("Random Mission Vehicle", "RandomMissionVehicle", 3)
 
-RandomMissionVehicles:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
+RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	-- TODO: Save on reload if some setting enabled or something
 	
 	local RandomVehicleIndex = math_random(CarCount)
@@ -126,4 +126,4 @@ RandomMissionVehicles:AddMissionHandler(function(LevelNumber, MissionNumber, Mis
 	return true
 end)
 
-return RandomMissionVehicles
+return RandomMissionVehicle

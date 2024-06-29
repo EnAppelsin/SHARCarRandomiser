@@ -7,12 +7,16 @@ RandomLevelVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	local RandomVehicleP3D = CarP3DFiles[RandomVehicleIndex]
 	local RandomVehicleName = CarNames[RandomVehicleIndex]
 	
+	print("Setting level vehicle to: " .. RandomVehicleName)
+	
 	local functions = LevelLoad.Functions
 	for i=1,#functions do
 		local func = functions[i]
 		if func.Name:lower() == "loaddisposablecar" and func.Arguments[3] == "DEFAULT" then
 			func.Arguments[1] = RandomVehicleP3D
-			func.Arguments[2] = RandomVehicleName
+			if Settings.RandomLevelVehicleStats then
+				func.Arguments[2] = RandomVehicleName
+			end
 		end
 	end
 	

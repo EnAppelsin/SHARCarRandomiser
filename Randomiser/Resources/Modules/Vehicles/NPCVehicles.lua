@@ -72,7 +72,9 @@ RandomNPCVehicles:AddMissionHandler(function(LevelNumber, MissionNumber, Mission
 			
 			local origCarName = func.Arguments[1]
 			func.Arguments[1] = randomCarName
-			func.Arguments[4] = randomCarName .. ".con"
+			if Settings.RandomNPCVehiclesStats then
+				func.Arguments[4] = randomCarName .. ".con"
+			end
 			MissionInit:SetAll("ActivateVehicle", 1, randomCarName, origCarName)
 			MissionInit:SetAll("SetVehicleAIParams", 1, randomCarName, origCarName)
 			MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, randomCarName, origCarName)

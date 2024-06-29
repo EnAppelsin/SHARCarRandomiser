@@ -7,7 +7,7 @@ RandomChaseVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	local RandomVehicleP3D = CarP3DFiles[RandomVehicleIndex]
 	local RandomVehicleName = CarNames[RandomVehicleIndex]
 	
-	print("Setting chase car to: " .. RandomVehicleName)
+	print("Setting chase vehicle to: " .. RandomVehicleName)
 	
 	local origChase
 	local functions = LevelInit.Functions
@@ -17,7 +17,9 @@ RandomChaseVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		if name == "createchasemanager" then
 			origChase = func.Arguments[1]
 			func.Arguments[1] = RandomVehicleName
-			func.Arguments[2] = RandomVehicleName .. ".con"
+			if Settings.RandomChaseVehicleStats then
+				func.Arguments[2] = RandomVehicleName .. ".con"
+			end
 			break
 		end
 	end
