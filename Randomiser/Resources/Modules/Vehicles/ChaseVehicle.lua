@@ -1,6 +1,6 @@
 local math_random = math.random
 
-local RandomChaseVehicle = Module("Random Chase Vehicle", "RandomChaseVehicle", 1)
+local RandomChaseVehicle = Module("Random Chase Vehicle", "RandomChaseVehicle", 2)
 
 RandomChaseVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	local RandomVehicleIndex = math_random(CarCount)

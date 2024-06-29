@@ -6,7 +6,7 @@ local table_unpack = table.unpack
 local GetFileName = GetFileName
 local RemoveFileExtension = RemoveFileExtension
 
-local RandomTraffic = Module("Random Traffic", "RandomTraffic", 2)
+local RandomTraffic = Module("Random Traffic", "RandomTraffic", 3)
 
 RandomTraffic:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	local carP3DPool = {table_unpack(CarP3DFiles)}

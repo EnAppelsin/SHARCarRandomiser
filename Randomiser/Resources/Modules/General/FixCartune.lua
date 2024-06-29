@@ -1,6 +1,6 @@
 local table_remove = table.remove
 
-local FixCartune = Module("Fix Cartune", nil, 0)
+local FixCartune = Module("Fix Cartune", nil, 1)
 
 FixCartune:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPT)
 	for carSoundParameters in SPT:GetClasses("carSoundParameters") do
