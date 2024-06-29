@@ -11,7 +11,7 @@ if Settings[ClampHP.Setting] and MaximumHP < MinimumHP then
 end
 
 ClampHP:AddCONHandler("*.con", function(Path, CON)
-	local functions = CON.functions
+	local functions = CON.Functions
 	
 	for i=#functions,1,-1 do
 		local func = functions[i]
