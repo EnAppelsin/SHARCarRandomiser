@@ -2,19 +2,18 @@ local table_remove = table.remove
 
 local FixCartune = Module("Fix Cartune", nil, 0)
 
-FixCartune:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPTFile)
-	for carSoundParameters in SPTFile:GetClasses("carSoundParameters") do
-		for variable, index in carSoundParameters:GetVariables(true) do
-			local name = variable.Name
+FixCartune:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPT)
+	for carSoundParameters in SPT:GetClasses("carSoundParameters") do
+		for method, index in carSoundParameters:GetMethods(true) do
+			local name = method.Name
 			if name == "SetEngineClipName" or name == "SetEngineIdleClipName" then
-				local clipNameArgument = variable.Arguments[1]
-				if clipNameArgument.Value == "tt" then
-					clipNameArgument.Value = "apu_car"
+				if method.Parameters[1] == "tt" then
+					method.Parameters[1] = "apu_car"
 				end
 			elseif name == "SetOverlayClipName" then
-				local clipName = variable.Arguments[1].Value
+				local clipName = method.Parameters[1]
 				if clipName == "" or clipName == "generator" then
-					carSoundParameters:RemoveVariable(index)
+					carSoundParameters:RemoveMethod(index)
 				end
 			end
 		end

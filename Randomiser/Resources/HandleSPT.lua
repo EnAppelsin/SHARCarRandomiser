@@ -9,7 +9,7 @@ local WildcardMatch = WildcardMatch
 local Path = GetPath()
 local GamePath
 
-local SPTFile
+local SPT
 
 local isChanged = false
 for moduleN=1,#Modules do
@@ -21,10 +21,10 @@ for moduleN=1,#Modules do
 		
 		if WildcardMatch(Path, handler.Path, true, true) then
 			GamePath = GamePath or GetGamePath(Path)
-			SPTFile = SPTFile or SPT.SPTFile(GamePath)
+			SPT = SPT or SPTParser.SPTFile(GamePath)
 			
 			print("ModuleHandler", "Running SPT module: " .. module.Name)
-			local success, changed = pcall(handler.Callback, Path, SPTFile)
+			local success, changed = pcall(handler.Callback, Path, SPT)
 			assert(success, string_format("Error running SPT handler from module \"%s\":\n%s", module.Name, changed))
 			isChanged = isChanged or changed
 		end
@@ -32,5 +32,5 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	Output(tostring(SPTFile))
+	Output(tostring(SPT))
 end

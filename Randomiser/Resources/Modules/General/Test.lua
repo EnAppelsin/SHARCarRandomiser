@@ -20,11 +20,11 @@ end)
 	print("Generic handler: " .. GetPath())
 end)]]
 
---[[Test:AddSPTHandler("*", function(Path, SPTFile)
+--[[Test:AddSPTHandler("*", function(Path, SPT)
 	print("Validating: " .. Path)
 	
 	local contents = ReadFile("/GameData/" .. Path)
-	local contents2 = tostring(SPTFile)
+	local contents2 = tostring(SPT)
 	
 	if contents ~= contents2 then
 		print(#contents, #contents2)
