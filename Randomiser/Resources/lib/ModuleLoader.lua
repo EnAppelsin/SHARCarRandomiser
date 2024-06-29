@@ -191,7 +191,7 @@ Module = setmetatable({
 ModuleLoader = {}
 
 local function CompareModules(Module1, Module2)
-	return Module1.Priority > Module2.Priority
+	return Module1.Priority < Module2.Priority
 end
 
 function ModuleLoader.LoadModules(path)
@@ -226,4 +226,8 @@ function ModuleLoader.LoadModules(path)
 	end
 	
 	table.sort(Modules, CompareModules)
+	print("Module priority:")
+	for i=1,ModulesN do
+		print("", Modules[i].Priority, Modules[i].Name)
+	end
 end
