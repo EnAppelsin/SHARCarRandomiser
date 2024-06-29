@@ -6,7 +6,7 @@ local MaximumHP = Settings.MaximumHP
 local DefaultHP = 2 -- Default HP if `SetHitPoints` isn't called
 
 if Settings[ClampHP.Setting] and MaximumHP < MinimumHP then
-	Alert("You cannot have \"Maximum HP\" lower than \"Minimum HP\")
+	Alert("You cannot have \"Maximum HP\" lower than \"Minimum HP\".")
 	os.exit()
 end
 
