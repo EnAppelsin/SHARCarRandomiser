@@ -60,13 +60,19 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		MissionInit:InsertFunction(2, "SetForcedCar")
 		MissionInit:InsertFunction(2, "InitLevelPlayerVehicle", {RandomVehicleName, CarLocator, "OTHER"})
 		
+		local stageVehicles = {}
+		local stageVehiclesN = 0
+		
 		if ResetToHereIndex then
 			local remove = false
 			for i=ResetToHereIndex+1,1,-1 do -- We want the function before AddStage. We've inserted 2. Add 1.
 				local func = functions[i]
 				local name = func.Name:lower()
 				
-				print(name)
+				if name == "addstagevehicle" then
+					stageVehiclesN = stageVehiclesN + 1
+					stageVehicles[stageVehiclesN] = func.Arguments
+				end
 				
 				if name == "closestage" then
 					remove = true
@@ -80,6 +86,30 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 					remove = false
 				end
 			end
+		end
+		
+		if stageVehiclesN > 0 then
+			local Index
+			for i=1,#functions do
+				if functions[i].Name:lower() == "addstage" then
+					Index = i
+					break
+				end
+			end
+			MissionInit:InsertFunction(Index, "AddStage")
+			Index = Index + 1
+			for i=1,stageVehiclesN do
+				MissionInit:InsertFunction(Index, "AddStageVehicle", stageVehicles[i])
+				Index = Index + 1
+			end
+			MissionInit:InsertFunction(Index, "AddObjective", "timer")
+			Index = Index + 1
+			MissionInit:InsertFunction(Index, "SetDurationTime", 0)
+			Index = Index + 1
+			MissionInit:InsertFunction(Index, "CloseObjective")
+			Index = Index + 1
+			MissionInit:InsertFunction(Index, "CloseStage")
+			Index = Index + 1
 		end
 		
 		if Settings.RemoveOutOfVehicle then
