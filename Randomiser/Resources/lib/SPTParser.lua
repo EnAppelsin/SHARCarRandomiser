@@ -15,10 +15,6 @@ local table_unpack = table.unpack
 
 local Exists = Exists
 
-local srrtypesPath = "/GameData/sound/typ/srrtypes.typ"
-assert(Exists(srrtypesPath, true, false), "Could not find \"srrtypes.typ\".")
-local srrtypes = ReadFile(srrtypesPath)
-
 -- Gotta love some good ol' radical hardcoding.
 -- Key is actual class name.
 -- Value is SPT entry name.
@@ -62,6 +58,10 @@ local CurlyBraces = {
 local KnownClasses = {}
 
 do
+	local srrtypesPath = "/GameData/sound/typ/srrtypes.typ"
+	assert(Exists(srrtypesPath, true, false), "Could not find \"srrtypes.typ\".")
+	local srrtypes = ReadFile(srrtypesPath)
+	
 	local StartTime = GetTime()
 	local TokenType = {
 		Version = 0x43,
