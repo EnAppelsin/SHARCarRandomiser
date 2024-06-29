@@ -3,7 +3,7 @@ local table_remove = table.remove
 local RemoveMissionLocks = Module("Remove Mission Locks", "RemoveMissionLocks", 1000)
 
 local function RemoveLocks(LevelNumber, MissionNumber, MissionLoad, MissionInit)
-	local functions = MissionInit.functions
+	local functions = MissionInit.Functions
 	local toRemove = {}
 	local toRemoveN = 0
 	
