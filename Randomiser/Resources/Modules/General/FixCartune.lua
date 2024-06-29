@@ -12,7 +12,6 @@ FixCartune:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPTFile)
 			for j=#variables,1,-1 do
 				local variable = variables[j]
 				local variableName = variable.Name
-				print(variableName)
 				if variableName == "SetEngineClipName" or variableName == "SetEngineIdleClipName" then
 					if variable.Arguments[1].Value == "tt" then
 						variable.Arguments[1].Value = "snake_car"

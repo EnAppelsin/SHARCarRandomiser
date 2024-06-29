@@ -43,12 +43,14 @@ end
 SPT.SPTFile = setmetatable({load = LoadSPTFile, new = LoadSPTFile, LoadFromData = LoadSPTFromData}, {__call = LoadSPTFile})
 
 function SPT.SPTFile:__tostring()
-	local Output = {}
 	local Classes = self.Classes
+	
+	local Output = {}
 	for i=1,#Classes do
 		Output[i] = tostring(Classes[i])
 	end
-	return table_concat(Output, "\r\n") .. "\r\n"
+	
+	return table_concat(Output)
 end
 
 SPT.Class = setmetatable({}, {
@@ -106,10 +108,10 @@ SPT.Class = setmetatable({}, {
 							else
 								str[strN] = word
 							end
-						elseif string_match(word, "^%d+%.%d+$") then
+						elseif string_match(word, "^-?%d+%.%d+$") then
 							argumentsN = argumentsN + 1
 							arguments[argumentsN] = SPT.Argument(tonumber(word), "float")
-						elseif string_match(word, "^%d+$") then
+						elseif string_match(word, "^-?%d+$") then
 							argumentsN = argumentsN + 1
 							arguments[argumentsN] = SPT.Argument(tonumber(word), "int")
 						elseif word == "true" then
@@ -147,7 +149,7 @@ function SPT.Class:__tostring()
 			data[i] = string_format("    %s ( %s )", variable.Name, arguments)
 		end
 	end
-	return string_format("create %s named %s\r\n{\r\n%s\r\n}", self.Type, self.Name, table_concat(data, "\r\n"))
+	return string_format("create %s named %s\r\n{\r\n%s\r\n}\r\n", self.Type, self.Name, table_concat(data, "\r\n"))
 end
 
 local TypeMap = {
