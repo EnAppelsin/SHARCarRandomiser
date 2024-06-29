@@ -77,20 +77,27 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 			if Settings.RandomNPCVehiclesStats then
 				func.Arguments[4] = randomCarName .. ".con"
 			end
-			MissionInit:SetAll("ActivateVehicle", 1, randomCarName, origCarName)
-			MissionInit:SetAll("SetVehicleAIParams", 1, randomCarName, origCarName)
-			MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, randomCarName, origCarName)
-			MissionInit:SetAll("SetStageAITargetCatchupParams", 1, randomCarName, origCarName)
-			MissionInit:SetAll("SetCondTargetVehicle", 1, randomCarName, origCarName)
-			MissionInit:SetAll("SetObjTargetVehicle", 1, randomCarName, origCarName)
-			MissionInit:SetAll("AddDriver", 2, randomCarName, origCarName)
+			MissionInit:SetAll("ActivateVehicle", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("SetVehicleAIParams", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("SetStageAITargetCatchupParams", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("SetCondTargetVehicle", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("SetObjTargetVehicle", 1, "|" .. randomCarName, origCarName)
+			MissionInit:SetAll("AddDriver", 2, "|" .. randomCarName, origCarName)
 		end
 	end
 	
 	for k,v in pairs(addedCars) do
-		--if not LoadedCars[v] and not LoadedMissionsCars[v] then
+		MissionInit:SetAll("ActivateVehicle", 1, v, "|" .. v)
+		MissionInit:SetAll("SetVehicleAIParams", 1, v, "|" .. v)
+		MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, v, "|" .. v)
+		MissionInit:SetAll("SetStageAITargetCatchupParams", 1, v, "|" .. v)
+		MissionInit:SetAll("SetCondTargetVehicle", 1, v, "|" .. v)
+		MissionInit:SetAll("SetObjTargetVehicle", 1, v, "|" .. v)
+		MissionInit:SetAll("AddDriver", 2, v, "|" .. v)
+		if not LoadedCars[v] and not LoadedMissionsCars[v] then
 			MissionLoad:AddFunction("LoadDisposableCar", {k,v,"AI"})
-		--end
+		end
 	end
 	
 	return true
