@@ -113,6 +113,15 @@ Module = setmetatable({
 			Callback = callback
 		}
 	end,
+	AddSPTHandler = function(self, path, callback)
+		assert(type(path) == "string", "Path (Arg #1) must be a string.")
+		assert(type(callback) == "function", "Callback (Arg #2) must be a function.")
+		
+		self.Handlers.SPT[#self.Handlers.SPT + 1] = {
+			Path = path,
+			Callback = callback
+		}
+	end,
 	AddGenericHandler = function(self, path, callback)
 		assert(type(path) == "string", "Path (Arg #1) must be a string.")
 		assert(type(callback) == "function", "Callback (Arg #2) must be a function.")
@@ -146,6 +155,8 @@ Module = setmetatable({
 				P3D = {},
 				
 				CON = {},
+				
+				SPT = {},
 				
 				Generic = {},
 			}
