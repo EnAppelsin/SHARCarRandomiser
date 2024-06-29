@@ -9,7 +9,7 @@ FixCartune:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPTFile)
 			if name == "SetEngineClipName" or name == "SetEngineIdleClipName" then
 				local clipNameArgument = variable.Arguments[1]
 				if clipNameArgument.Value == "tt" then
-					clipNameArgument.Value = "snake_car"
+					clipNameArgument.Value = "apu_car"
 				end
 			elseif name == "SetOverlayClipName" then
 				local clipName = variable.Arguments[1].Value
