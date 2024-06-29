@@ -62,6 +62,7 @@ local CurlyBraces = {
 local KnownClasses = {}
 
 do
+	local StartTime = GetTime()
 	local TokenType = {
 		Version = 0x43,
 		Class = 0x40,
@@ -143,6 +144,8 @@ do
 			error(string.format("Unknown token: 0x%X", token))
 		end
 	end
+	local EndTime = GetTime()
+	print("SPTParser.lua", string_format("Parsed SPT type data in: %.2fms", (EndTime - StartTime) * 1000))
 end
 
 for name, data in pairs(KnownClasses) do
