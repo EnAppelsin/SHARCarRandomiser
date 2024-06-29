@@ -55,7 +55,8 @@ RandomTraffic:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	functions = LevelLoad.Functions
 	for i=#functions,1,-1 do
 		local func = functions[i]
-		if func.Name:lower() == "loadp3dfile" then
+		local name = func.Name:lower()
+		if name == "loadp3dfile" then
 			local carName = string_match(func.Arguments[1], "art[\\/]cars[\\/]([^\\/]+)%.p3d")
 			if carName ~= nil then
 				if chaseCar ~= carName and removedTraffic[carName] then
@@ -64,7 +65,7 @@ RandomTraffic:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 					loadedCars[carName] = true
 				end
 			end
-		elseif func.Name:lower() == "loaddisposablecar" then
+		elseif name == "loaddisposablecar" then
 			local carName = string_match(func.Arguments[1], "art[\\/]cars[\\/]([^\\/]+)%.p3d")
 			if carName then
 				loadedCars[carName] = true

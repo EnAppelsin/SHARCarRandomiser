@@ -29,7 +29,7 @@ local function RemoveCondition(LevelNumber, MissionNumber, MissionLoad, MissionI
 	end
 	
 	for i=toRemoveN,1,-1 do
-		table.remove(functions, toRemove[i])
+		table_remove(functions, toRemove[i])
 	end
 	
 	return toRemoveN > 0
