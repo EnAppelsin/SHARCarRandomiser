@@ -1,5 +1,4 @@
 local math_random = math.random
-local string_sub = string.sub
 
 local RandomBonusVehicles = Module("Random Bonus Vehicles", "RandomBonusVehicles", 1)
 
