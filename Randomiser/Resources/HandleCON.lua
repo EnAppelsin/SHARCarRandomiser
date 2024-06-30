@@ -3,7 +3,6 @@ local assert = assert
 local pcall = pcall
 local print = print
 local string_format = string.format
-local table_unpack = table.unpack
 local WildcardMatch = WildcardMatch
 -- End efficiency bullshit
 
@@ -15,12 +14,12 @@ local CON
 local isChanged = false
 for moduleN=1,#Modules do
 	local module = Modules[moduleN]
-	local handlers = {table_unpack(module.Handlers.CON)}
+	local handlers = module.Handlers.CON
 	
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]
 		
-		if WildcardMatch(Path, handler.Path, true, true) then
+		if handler and WildcardMatch(Path, handler.Path, true, true) then
 			GamePath = GamePath or GetGamePath(Path)
 			CON = CON or MFKLexer.Lexer:Parse(ReadFile(GamePath))
 			

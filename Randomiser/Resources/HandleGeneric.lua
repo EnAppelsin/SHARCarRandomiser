@@ -22,7 +22,7 @@ for moduleN=1,#Modules do
 	for handlerN=1,#handlers do
 		local handler = handlers[handlerN]
 		
-		if WildcardMatch(Path, handler.Path, true, true) then
+		if handler and WildcardMatch(Path, handler.Path, true, true) then
 			if Exists(GamePath, true, false) then
 				contents = contents or ReadFile(GamePath)
 			end
