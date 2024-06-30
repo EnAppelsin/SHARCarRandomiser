@@ -56,11 +56,7 @@ RandomTraffic:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		if name == "loadp3dfile" then
 			local carName = string_match(func.Arguments[1], "art[\\/]cars[\\/]([^\\/]+)%.p3d")
 			if carName ~= nil then
-				if removedTraffic[carName] then
-					table_remove(functions, i)
-				else
-					loadedCars[carName] = true
-				end
+				loadedCars[carName] = true
 			end
 		elseif name == "loaddisposablecar" then
 			local carName = string_match(func.Arguments[1], "art[\\/]cars[\\/]([^\\/]+)%.p3d")
