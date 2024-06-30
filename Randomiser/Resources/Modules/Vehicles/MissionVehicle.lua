@@ -29,8 +29,6 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 	if isForced then
 		MissionInit:SetAll("InitLevelPlayerVehicle", 1, RandomVehicleName)
 	else
-		MissionLoad:AddFunction("LoadDisposableCar", {RandomVehicleP3D, RandomVehicleName, "OTHER"})
-		
 		local CarLocator
 		local LastStageIndex
 		local ResetToHereIndex
