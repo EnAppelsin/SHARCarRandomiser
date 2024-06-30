@@ -25,6 +25,8 @@ local ClassMap = {
 	["IGlobalSettings"] = "globalSettings",
 	["IReverbSettings"] = "reverbSettings",
 }
+-- Key is C++ type
+-- Value is Lua type
 local TypeMap = {
 	["char*"] = "string",
 	["float"] = "number",
@@ -32,6 +34,8 @@ local TypeMap = {
 	["unsigned int"] = "number",
 	["bool"] = "boolean",
 }
+-- Key is C++ type
+-- Value is Lua pattern
 local TypePatternMap = {
 	["char*"] = "\"(.-)\"",
 	["float"] = "(-?%d+%.%d+)",
@@ -39,6 +43,8 @@ local TypePatternMap = {
 	["unsigned int"] = "(%d+)",
 	["bool"] = "(%a%a%a%a%a?)",
 }
+-- Key is C++ type
+-- Value is Lua format
 local TypeFormatMap = {
 	["char*"] = "\"%s\"",
 	["float"] = "%.6f",
@@ -46,10 +52,12 @@ local TypeFormatMap = {
 	["unsigned int"] = "%u",
 	["bool"] = "%s",
 }
+-- I hate this, but Lua
 local BoolMap = {
 	["true"] = true,
 	["false"] = false,
 }
+-- Hate this too
 local CurlyBraces = {
 	["{"] = true,
 	["}"] = true,
@@ -107,11 +115,11 @@ do
 				KnownClasses[className] = knownClass
 			end
 		elseif token == TokenType.Method then
-			local name, numParams, paramName, paramType, indLvl
-			name, numParams, paramName, paramType, indLvl, pos = string_unpack("<s4Is4s4I", srrtypes, pos)
+			local name, numParams, paramName, paramType, indirectLevel
+			name, numParams, paramName, paramType, indirectLevel, pos = string_unpack("<s4Is4s4I", srrtypes, pos)
 			name = NullTerminate(name)
 			paramName = NullTerminate(paramName)
-			paramType = NullTerminate(paramType) .. string_rep("*", indLvl)
+			paramType = NullTerminate(paramType) .. string_rep("*", indirectLevel)
 			
 			local method = {}
 			
@@ -120,9 +128,9 @@ do
 			end
 			
 			for i=1,numParams do
-				paramName, paramType, indLvl, pos = string.unpack("<s4s4I", srrtypes, pos)
+				paramName, paramType, indirectLevel, pos = string.unpack("<s4s4I", srrtypes, pos)
 				paramName = NullTerminate(paramName)
-				paramType = NullTerminate(paramType) .. string_rep("*", indLvl)
+				paramType = NullTerminate(paramType) .. string_rep("*", indirectLevel)
 				
 				assert(knownClass == nil or TypeMap[paramType], "Unknown param type: " .. paramType)
 				method[i] = { paramName, paramType }
@@ -132,9 +140,7 @@ do
 			name, numEnum, pos = string.unpack("s4I", srrtypes, pos)
 			name = NullTerminate(name)
 			
-			if knownClass then
-				error("A known class has an enum. This is currently unsupported.")
-			end
+			assert(knownClass == nil, "A known class has an enum. This is currently unsupported.")
 			
 			for i=1,numEnum do
 				literalName, literalValue, pos = string.unpack("s4I", srrtypes, pos)
@@ -145,11 +151,11 @@ do
 		end
 	end
 	local EndTime = GetTime()
-	print("SPTParser.lua", string_format("Parsed SPT type data in: %.2fms", (EndTime - StartTime) * 1000))
+	print("SPTParser", string_format("Parsed SPT type data in: %.2fms", (EndTime - StartTime) * 1000))
 end
 
 for name, data in pairs(KnownClasses) do
-	print("SPTParser.lua", "Known Class: " .. name)
+	print("SPTParser", "Known Class: " .. name)
 end
 
 SPTParser = {}
