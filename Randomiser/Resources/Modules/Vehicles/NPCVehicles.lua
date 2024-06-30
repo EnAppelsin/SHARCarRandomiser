@@ -30,6 +30,16 @@ RandomNPCVehicles:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	return false
 end)
 
+local VehicleFunctions = {
+	["activatevehicle"] = 1,
+	["setvehicleaiparams"] = 1,
+	["setstageairacecatchupparams"] = 1,
+	["setstageaitargetcatchupparams"] = 1,
+	["setcondtargetvehicle"] = 1,
+	["setobjtargetvehicle"] = 1,
+	["adddriver"] = 2,
+}
+
 function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	-- TODO: Save on reload if some setting enabled or something
 	local carP3DPool = {table_unpack(CarP3DFiles)}
@@ -52,6 +62,7 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	end
 	
 	local addedCars = {}
+	local carMap = {}
 	
 	functions = MissionInit.Functions
 	for i=1,#functions do
@@ -69,32 +80,25 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 				carNamePool = {table_unpack(CarNames)}
 			end
 			
-			addedCars[randomCarP3D] = randomCarName
-			
 			local origCarName = func.Arguments[1]
+			addedCars[randomCarP3D] = randomCarName
+			carMap[origCarName] = randomCarName
+			
 			print("Replacing NPC car \"" .. origCarName .. "\" with: " .. randomCarName)
 			func.Arguments[1] = randomCarName
 			if Settings.RandomNPCVehiclesStats then
 				func.Arguments[4] = randomCarName .. ".con"
 			end
-			MissionInit:SetAll("ActivateVehicle", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("SetVehicleAIParams", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("SetStageAITargetCatchupParams", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("SetCondTargetVehicle", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("SetObjTargetVehicle", 1, "|" .. randomCarName, origCarName)
-			MissionInit:SetAll("AddDriver", 2, "|" .. randomCarName, origCarName)
+		elseif VehicleFunctions[name] then
+			local index = VehicleFunctions[name]
+			local car = carMap[func.Arguments[index]]
+			if car then
+				func.Arguments[index] = car
+			end
 		end
 	end
 	
 	for k,v in pairs(addedCars) do
-		MissionInit:SetAll("ActivateVehicle", 1, v, "|" .. v)
-		MissionInit:SetAll("SetVehicleAIParams", 1, v, "|" .. v)
-		MissionInit:SetAll("SetStageAIRaceCatchupParams", 1, v, "|" .. v)
-		MissionInit:SetAll("SetStageAITargetCatchupParams", 1, v, "|" .. v)
-		MissionInit:SetAll("SetCondTargetVehicle", 1, v, "|" .. v)
-		MissionInit:SetAll("SetObjTargetVehicle", 1, v, "|" .. v)
-		MissionInit:SetAll("AddDriver", 2, v, "|" .. v)
 		if not LoadedCars[v] and not LoadedMissionsCars[v] then
 			MissionLoad:AddFunction("LoadDisposableCar", {k,v,"AI"})
 		end
