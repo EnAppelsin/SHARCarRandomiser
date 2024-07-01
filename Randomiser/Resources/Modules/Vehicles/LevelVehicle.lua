@@ -3,9 +3,7 @@ local math_random = math.random
 local RandomLevelVehicle = Module("Random Level Vehicle", "RandomLevelVehicle", 1)
 
 RandomLevelVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
-	local RandomVehicleIndex = math_random(CarCount)
-	local RandomVehicleP3D = CarP3DFiles[RandomVehicleIndex]
-	local RandomVehicleName = CarNames[RandomVehicleIndex]
+	local RandomVehicleName = CarNames[math_random(CarCount)]
 	
 	print("Setting level vehicle to: " .. RandomVehicleName)
 	
