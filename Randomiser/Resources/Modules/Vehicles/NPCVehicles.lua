@@ -21,6 +21,7 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	local carNamePool = {table_unpack(CarNames)}
 	
 	local carMap = {}
+	local spawnMap = {}
 	
 	functions = MissionInit.Functions
 	for i=1,#functions do
@@ -28,20 +29,28 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 		local name = func.Name:lower()
 		
 		if name == "addstagevehicle" then
-			local randomCarIndex = math_random(#carP3DPool)
-			local randomCarP3D = carP3DPool[randomCarIndex]
-			local randomCarName = carNamePool[randomCarIndex]
-			table_remove(carP3DPool, randomCarIndex)
-			table_remove(carNamePool, randomCarIndex)
-			if #carP3DPool == 0 then
-				carP3DPool = {table_unpack(CarP3DFiles)}
-				carNamePool = {table_unpack(CarNames)}
+			local origCarName = func.Arguments[1]
+			local spawnLocator = func.Arguments[2]
+			
+			local randomCarP3D, randomCarName
+			if spawnMap[spawnLocator] then
+				randomCarP3D, randomCarName = table_unpack(spawnMap[spawnLocator])
+			else
+				local randomCarIndex = math_random(#carP3DPool)
+				randomCarP3D = carP3DPool[randomCarIndex]
+				randomCarName = carNamePool[randomCarIndex]
+				table_remove(carP3DPool, randomCarIndex)
+				table_remove(carNamePool, randomCarIndex)
+				if #carP3DPool == 0 then
+					carP3DPool = {table_unpack(CarP3DFiles)}
+					carNamePool = {table_unpack(CarNames)}
+				end
+				spawnMap[spawnLocator] = {randomCarP3D, randomCarName}
+				print("Replacing NPC car \"" .. origCarName .. "\" with: " .. randomCarName)
 			end
 			
-			local origCarName = func.Arguments[1]
 			carMap[origCarName] = randomCarName
 			
-			print("Replacing NPC car \"" .. origCarName .. "\" with: " .. randomCarName)
 			func.Arguments[1] = randomCarName
 			if Settings.RandomNPCVehiclesStats then
 				func.Arguments[4] = randomCarName .. ".con"
