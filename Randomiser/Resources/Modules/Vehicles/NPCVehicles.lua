@@ -33,8 +33,9 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 			local spawnLocator = func.Arguments[2]
 			
 			local randomCarP3D, randomCarName
-			if spawnMap[spawnLocator] then
-				randomCarP3D, randomCarName = table_unpack(spawnMap[spawnLocator])
+			spawnMap[origCarName] = spawnMap[origCarName] or {}
+			if spawnMap[origCarName][spawnLocator] then
+				randomCarP3D, randomCarName = table_unpack(spawnMap[origCarName][spawnLocator])
 			else
 				local randomCarIndex = math_random(#carP3DPool)
 				randomCarP3D = carP3DPool[randomCarIndex]
@@ -45,7 +46,7 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 					carP3DPool = {table_unpack(CarP3DFiles)}
 					carNamePool = {table_unpack(CarNames)}
 				end
-				spawnMap[spawnLocator] = {randomCarP3D, randomCarName}
+				spawnMap[origCarName][spawnLocator] = {randomCarP3D, randomCarName}
 				print("Replacing NPC car \"" .. origCarName .. "\" with: " .. randomCarName)
 			end
 			
