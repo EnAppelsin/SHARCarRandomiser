@@ -63,7 +63,7 @@ Module = setmetatable({
 		local missionHandlers = self.Handlers.Mission
 		for Level=1,7 do
 			local level = missionHandlers[Level]
-			for Mission=1,8 do
+			for Mission=1,9 do
 				local mission = level[Mission]
 				if missions == nil or missions[Level] == nil or missions[Level][Mission] then
 					mission[#mission + 1] = callback
@@ -172,6 +172,8 @@ Module = setmetatable({
 			
 			for mission=1,8 do
 				SundayDrive[mission] = {}
+			end
+			for mission=1,9 do
 				Mission[mission] = {}
 			end
 			for race=1,4 do
