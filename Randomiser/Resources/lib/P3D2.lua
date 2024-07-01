@@ -734,11 +734,17 @@ local function LoadP3DFileFromData(self, contents)
 	return setmetatable(Data, self)
 end
 
-local function LoadP3DFile(self, Path)
+local function LoadP3DFile(self, Path, NewOnDoesntExist)
 	if Path == nil then
 		self.__index = self
 		return setmetatable({ Endian = "<", Chunks = {} }, self)
 	else
+		if not Exists(Path, true, false) then
+			assert(NewOnDoesntExist, "Arg #1 (Path) does not exist.")
+			
+			self.__index = self
+			return setmetatable({ Endian = "<", Chunks = {} }, self)
+		end
 		local success, contents = pcall(ReadFile, Path)
 		assert(success, string.format("Failed to read file at '%s': %s", Path, contents))
 		

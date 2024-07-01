@@ -21,7 +21,7 @@ for moduleN=1,#Modules do
 		
 		if handler and WildcardMatch(Path, handler.Path, true, true) then
 			GamePath = GamePath or GetGamePath(Path)
-			P3DFile = P3DFile or P3D.P3DFile(GamePath)
+			P3DFile = P3DFile or P3D.P3DFile(GamePath, true)
 			
 			print("ModuleHandler", "Running P3D module: " .. module.Name)
 			local success, changed = pcall(handler.Callback, Path, P3DFile)
