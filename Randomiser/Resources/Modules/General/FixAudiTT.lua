@@ -22,4 +22,22 @@ FixAudiTT:AddP3DHandler("art/cars/tt.p3d", function(Path, P3DFile)
 	return true
 end)
 
+FixAudiTT:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPT)
+	local changed = false
+	
+	for carSoundParameters in SPT:GetClasses("carSoundParameters") do
+		for method, index in carSoundParameters:GetMethods(true) do
+			local name = method.Name
+			if name == "SetEngineClipName" or name == "SetEngineIdleClipName" then
+				if method.Parameters[1] == "tt" then
+					method.Parameters[1] = "apu_car"
+					changed = true
+				end
+			end
+		end
+	end
+	
+	return changed
+end)
+
 return FixAudiTT
