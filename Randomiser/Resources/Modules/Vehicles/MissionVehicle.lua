@@ -113,6 +113,7 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		
 		for i=#functions,1,-1 do
 			if functions[i].Name:lower() == "closestage" then
+				MissionInit:InsertFunction(i, "SetFadeOut", 0.1)
 				MissionInit:InsertFunction(i, "SwapInDefaultCar")
 				break
 			end
