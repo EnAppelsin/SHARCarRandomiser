@@ -25,7 +25,6 @@ HandleVehicleLoads:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		if name == "initlevelplayervehicle" then
 			local carName = func.Arguments[1]
 			LevelLoad:AddFunction("LoadDisposableCar", {"art\\cars\\" .. carName .. ".p3d",carName,"DEFAULT"})
-			LoadedCars[carName] = true
 		elseif name == "createchasemanager" or name == "addtrafficmodel" then
 			local carName = func.Arguments[1]
 			if not LoadedCars[carName] then
@@ -44,7 +43,7 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 		local func = functions[i]
 		local name = func.Name:lower()
 		
-		if name == "loadp3dfile" and string_match(func.Arguments[1], "art[\\/]cars[\\/.][^\\/]+%.p3d") then
+		if name == "loaddisposablecar" or (name == "loadp3dfile" and string_match(func.Arguments[1], "art[\\/]cars[\\/.][^\\/]+%.p3d")) then
 			table_remove(functions, i)
 		end
 	end
@@ -60,7 +59,6 @@ function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 			local carName = func.Arguments[1]
 			if not LoadedCars[carName] and not MissionLoadedCars[carName] then
 				MissionLoad:AddFunction("LoadDisposableCar", {"art\\cars\\" .. carName .. ".p3d",carName,"OTHER"})
-				MissionLoadedCars[carName] = true
 			end
 		elseif name == "addstagevehicle" then
 			local carName = func.Arguments[1]
