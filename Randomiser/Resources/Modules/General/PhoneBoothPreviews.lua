@@ -1,3 +1,6 @@
+local assert = assert
+local Exists = Exists
+local GetFileName = GetFileName
 local table_remove = table.remove
 
 local PhoneBoothPreviews = Module("3D Phone Booth Previews", nil, 1)
