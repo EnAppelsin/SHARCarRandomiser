@@ -10,6 +10,8 @@ local AmbientCharacters
 local function ReplaceCharacter(Path, P3DFile)
 	local ReplaceP3D = P3D.P3DFile(AmbientCharacters[Path])
 	
+	print("Handling ambient character: " .. Path)
+	
 	return P3DUtils.ReplaceCharacter(P3DFile, ReplaceP3D)
 end
 
