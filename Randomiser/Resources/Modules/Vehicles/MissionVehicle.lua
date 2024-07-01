@@ -110,6 +110,14 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 			Index = Index + 1
 		end
 		
+		
+		for i=#functions,1,-1 do
+			if functions[i].Name:lower() == "closestage" then
+				MissionInit:InsertFunction(i, "SwapInDefaultCar")
+				break
+			end
+		end
+		
 		if Settings.RemoveOutOfVehicle then
 			local toRemove = {}
 			local toRemoveN = 0
