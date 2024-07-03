@@ -24,6 +24,7 @@ local AudioVisualSettings = {
 	[1 << 4] = Settings.RandomMissionCharacters,
 	[1 << 5] = Settings.RandomDrivers,
 	[1 << 6] = Settings.RandomMusic,
+	[1 << 6] = Settings.RandomCarSounds,
 }
 
 local ChaosSettings = {
