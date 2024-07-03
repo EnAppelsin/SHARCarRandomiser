@@ -28,6 +28,7 @@ local function LoadRSDsFromRCF(Path)
 			local Signature, Channels, Bits, SampleRate = string_unpack("<c8III", file.Data)
 			if Signature == RSDSignature and Channels == 1 and Bits == 16 and SampleRate == 24000 then
 				RSDFiles[#RSDFiles + 1] = file
+				file.Name = Path .. "/" .. file.Name
 				loaded = loaded + 1
 			else
 				Alert(string_format("Invalid dialog file found.\n\nRCF File: %s\nFile name: %s\nSignature: %s\nChannels: %i\nBits: %i\nSample Rate: %i", Path, file.Name, Signature, Channels, Bits, SampleRate))
