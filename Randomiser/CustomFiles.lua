@@ -10,6 +10,7 @@ P3D.LoadChunks(Paths.Lib .. "/P3DChunks")
 dofile(Paths.Lib .. "/P3DUtils.lua")
 dofile(Paths.Lib .. "/MFKLexer.lua")
 dofile(Paths.Lib .. "/SPTParser.lua")
+dofile(Paths.Lib .. "/RCF.lua")
 
 dofile(Paths.Lib .. "/ModuleLoader.lua")
 
