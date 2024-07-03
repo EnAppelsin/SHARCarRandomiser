@@ -39,5 +39,9 @@ for moduleN=1,#Modules do
 end
 
 if isChanged then
-	Output(contents)
+	if contents == nil then
+		Redirect(nil)
+	else
+		Output(contents)
+	end
 end
