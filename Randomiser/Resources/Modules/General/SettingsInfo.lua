@@ -6,15 +6,14 @@ local GameplaySettings = {
 	[1 << 3] = Settings.SkipCutscenes,
 	[1 << 4] = Settings.ClampHP,
 	[1 << 5] = Settings.RandomLevelVehicle,
-	[1 << 6] = Settings.RandomLevelVehicleStats,
-	[1 << 7] = Settings.RandomMissionVehicle,
-	[1 << 8] = Settings.RandomNPCVehicles,
-	[1 << 9] = Settings.RandomNPCVehiclesStats,
-	[1 << 10] = Settings.RandomTraffic,
-	[1 << 11] = Settings.RandomChaseVehicle,
-	[1 << 12] = Settings.RandomChaseVehicleStats,
-	[1 << 13] = Settings.RandomChaseAmount,
-	[1 << 14] = Settings.RandomBonusVehicles,
+	[1 << 6] = Settings.RandomMissionVehicle,
+	[1 << 7] = Settings.RandomNPCVehicles,
+	[1 << 8] = Settings.RandomNPCVehiclesStats,
+	[1 << 9] = Settings.RandomTraffic,
+	[1 << 10] = Settings.RandomChaseVehicle,
+	[1 << 11] = Settings.RandomChaseVehicleStats,
+	[1 << 12] = Settings.RandomChaseAmount,
+	[1 << 13] = Settings.RandomBonusVehicles,
 }
 
 local AudioVisualSettings = {
