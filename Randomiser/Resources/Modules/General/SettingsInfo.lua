@@ -29,6 +29,7 @@ local AudioVisualSettings = {
 local ChaosSettings = {
 	[1 << 1] = Settings.RandomText,
 	[1 << 2] = Settings.RandomTextCase,
+	[1 << 3] = Settings.RandomMissionOrder,
 }
 
 local GameplayN = 0
