@@ -30,6 +30,7 @@ local ChaosSettings = {
 	[1 << 1] = Settings.RandomText,
 	[1 << 2] = Settings.RandomTextCase,
 	[1 << 3] = Settings.RandomMissionOrder,
+	[1 << 4] = Settings.RandomNPCMissions,
 }
 
 local GameplayN = 0
