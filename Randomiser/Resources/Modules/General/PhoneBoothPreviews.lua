@@ -7,9 +7,18 @@ local PhoneBoothPreviews = Module("3D Phone Booth Previews", nil, 1)
 
 PhoneBoothPreviews:AddP3DHandler("art\\frontend\\scrooby\\ingame.p3d", function(Path, P3DFile)
 	local FrontendProjectChunk = P3DFile:GetChunk(P3D.Identifiers.Frontend_Project)
+	if not FrontendProjectChunk then
+		return false
+	end
 	local PhoneboothPageChunk = FrontendProjectChunk:GetChunk(P3D.Identifiers.Frontend_Page, false, "PhoneBooth.pag")
+	if not PhoneboothPageChunk then
+		return false
+	end
 
 	local ForegroundLayerIndex, ForegroundLayerChunk = PhoneboothPageChunk:GetChunkIndexed(P3D.Identifiers.Frontend_Layer, false, "Foreground")
+	if not ForegroundLayerChunk then
+		return false
+	end
 
 	PhoneboothPageChunk:AddChunk(P3D.FrontendPure3DResourceP3DChunk("3Dmodel", 1, "pure3d\\_stubs\\dummy.p3d", "dummy", "Pedestal_Camera", "", ""), ForegroundLayerIndex)
 	PhoneboothPageChunk:AddChunk(P3D.FrontendPure3DResourceP3DChunk("phonebg", 1, "pure3d\\_stubs\\dummy.p3d", "dummy", "Pedestal_Camera", "", ""), ForegroundLayerIndex + 1)
