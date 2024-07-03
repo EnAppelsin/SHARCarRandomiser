@@ -1,7 +1,23 @@
 local math_random = math.random
 local table_remove = table.remove
+local table_unpack = table.unpack
 
 local RandomMissionVehicle = Module("Random Mission Vehicle", "RandomMissionVehicle", 3)
+
+local CarNames = {table_unpack(CarNames)}
+local CarP3DFiles = {table_unpack(CarP3DFiles)}
+for i=CarCount,1,-1 do
+	if not Settings[CarNames[i] .. "Mission"] then
+		table_remove(CarNames, i)
+		table_remove(CarP3DFiles, i)
+	end
+end
+local CarCount = #CarNames
+
+if CarCount < 5 and Settings[RandomMissionVehicle.Setting] then
+	Alert("You must have at least 5 vehicle selected for the random player pool.")
+	os.exit()
+end
 
 RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	-- TODO: Save on reload if some setting enabled or something

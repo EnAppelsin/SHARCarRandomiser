@@ -5,6 +5,21 @@ local table_unpack = table.unpack
 
 local RandomNPCVehicles = Module("Random NPC Vehicles", "RandomNPCVehicles", 4)
 
+local CarNames = {table_unpack(CarNames)}
+local CarP3DFiles = {table_unpack(CarP3DFiles)}
+for i=CarCount,1,-1 do
+	if not Settings[CarNames[i] .. "Mission"] then
+		table_remove(CarNames, i)
+		table_remove(CarP3DFiles, i)
+	end
+end
+local CarCount = #CarNames
+
+if CarCount < 5 and Settings[RandomNPCVehicles.Setting] then
+	Alert("You must have at least 5 vehicle selected for the random mission pool.")
+	os.exit()
+end
+
 local VehicleFunctions = {
 	["activatevehicle"] = 1,
 	["setvehicleaiparams"] = 1,

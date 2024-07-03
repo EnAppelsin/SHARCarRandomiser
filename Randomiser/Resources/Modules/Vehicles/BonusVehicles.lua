@@ -1,6 +1,23 @@
 local math_random = math.random
+local table_remove = table.remove
+local table_unpack = table.unpack
 
 local RandomBonusVehicles = Module("Random Bonus Vehicles", "RandomBonusVehicles", 1)
+
+local CarNames = {table_unpack(CarNames)}
+local CarP3DFiles = {table_unpack(CarP3DFiles)}
+for i=CarCount,1,-1 do
+	if not Settings[CarNames[i] .. "Player"] then
+		table_remove(CarNames, i)
+		table_remove(CarP3DFiles, i)
+	end
+end
+local CarCount = #CarNames
+
+if CarCount < 5 and Settings[RandomBonusVehicles.Setting] then
+	Alert("You must have at least 5 vehicle selected for the random player pool.")
+	os.exit()
+end
 
 local BonusVehicleP3D
 local BonusVehicleCON

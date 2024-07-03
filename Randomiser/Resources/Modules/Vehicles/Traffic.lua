@@ -8,6 +8,21 @@ local RemoveFileExtension = RemoveFileExtension
 
 local RandomTraffic = Module("Random Traffic", "RandomTraffic", 3)
 
+local CarNames = {table_unpack(CarNames)}
+local CarP3DFiles = {table_unpack(CarP3DFiles)}
+for i=CarCount,1,-1 do
+	if not Settings[CarNames[i] .. "Traffic"] then
+		table_remove(CarNames, i)
+		table_remove(CarP3DFiles, i)
+	end
+end
+local CarCount = #CarNames
+
+if CarCount < 5 and Settings[RandomTraffic.Setting] then
+	Alert("You must have at least 5 vehicle selected for the random traffic pool.")
+	os.exit()
+end
+
 RandomTraffic:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	local carP3DPool = {table_unpack(CarP3DFiles)}
 	local carNamePool = {table_unpack(CarNames)}
