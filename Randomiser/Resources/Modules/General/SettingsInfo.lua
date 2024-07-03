@@ -1,46 +1,47 @@
 local SettingsInfo = Module("Settings Info", nil, 100)
 
 local GameplaySettings = {
-	[1 << 1]=Settings.RemoveMissionLocks,
-	[1 << 2]=Settings.RemoveOutOfVehicle,
-	[1 << 3]=Settings.SkipCutscenes,
-	[1 << 4]=Settings.ClampHP,
-	[1 << 5]=Settings.RandomLevelVehicle,
-	[1 << 6]=Settings.RandomLevelVehicleStats,
-	[1 << 7]=Settings.RandomMissionVehicle,
-	[1 << 8]=Settings.RandomNPCVehicles,
-	[1 << 9]=Settings.RandomNPCVehiclesStats,
-	[1 << 10]=Settings.RandomTraffic,
-	[1 << 11]=Settings.RandomChaseVehicle,
-	[1 << 12]=Settings.RandomChaseVehicleStats,
-	[1 << 13]=Settings.RandomChaseAmount,
-	[1 << 14]=Settings.RandomBonusVehicles,
+	[1 << 1] = Settings.RemoveMissionLocks,
+	[1 << 2] = Settings.RemoveOutOfVehicle,
+	[1 << 3] = Settings.SkipCutscenes,
+	[1 << 4] = Settings.ClampHP,
+	[1 << 5] = Settings.RandomLevelVehicle,
+	[1 << 6] = Settings.RandomLevelVehicleStats,
+	[1 << 7] = Settings.RandomMissionVehicle,
+	[1 << 8] = Settings.RandomNPCVehicles,
+	[1 << 9] = Settings.RandomNPCVehiclesStats,
+	[1 << 10] = Settings.RandomTraffic,
+	[1 << 11] = Settings.RandomChaseVehicle,
+	[1 << 12] = Settings.RandomChaseVehicleStats,
+	[1 << 13] = Settings.RandomChaseAmount,
+	[1 << 14] = Settings.RandomBonusVehicles,
 }
 
-local GraphicalSettings = {
-	[1 << 1]=Settings.RandomCouchCharacter,
-	[1 << 2]=Settings.RandomPlayerCharacter,
-	[1 << 3]=Settings.RandomPedestrians,
-	[1 << 4]=Settings.RandomMissionCharacters,
-	[1 << 5]=Settings.RandomDrivers,
+local AudioVisualSettings = {
+	[1 << 1] = Settings.RandomCouchCharacter,
+	[1 << 2] = Settings.RandomPlayerCharacter,
+	[1 << 3] = Settings.RandomPedestrians,
+	[1 << 4] = Settings.RandomMissionCharacters,
+	[1 << 5] = Settings.RandomDrivers,
+	[1 << 6] = Settings.RandomMusic,
 }
 
 local ChaosSettings = {
-	[1 << 1]=Settings.RandomText,
-	[1 << 2]=Settings.RandomTextCase,
+	[1 << 1] = Settings.RandomText,
+	[1 << 2] = Settings.RandomTextCase,
 }
 
 local GameplayN = 0
-local GraphicalN = 0
+local AudioVisualN = 0
 local ChaosN = 0
 for k, v in pairs(GameplaySettings) do
 	if v then
 		GameplayN = GameplayN | k
 	end
 end
-for k, v in pairs(GraphicalSettings) do
+for k, v in pairs(AudioVisualSettings) do
 	if v then
-		GraphicalN = GraphicalN | k
+		AudioVisualN = AudioVisualN | k
 	end
 end
 for k, v in pairs(ChaosSettings) do
@@ -49,7 +50,7 @@ for k, v in pairs(ChaosSettings) do
 	end
 end
 
-local Values = string.format("%s\n%s v%s%s%s\nSettings: Gameplay: %X, Graphics: %X, Chaos: %X", os.date("[%Y-%m-%d]"), GetModName(), GetModVersion(), Settings.SpeedrunMode and " (speedrun)" or "", Settings.UseDebugSettings and " (debug)" or "", GameplayN, GraphicalN, ChaosN)
+local Values = string.format("%s\n%s v%s%s%s\nGameplay: %X, Audio/Visual: %X, Chaos: %X", os.date("[%Y-%m-%d]"), GetModName(), GetModVersion(), Settings.SpeedrunMode and " (speedrun)" or "", Settings.UseDebugSettings and " (debug)" or "", GameplayN, AudioVisualN, ChaosN)
 if Settings.IsSeeded then
 	Values = string.format("%s\nSeed: %s", Values, Settings.Seed)
 	if ChaosN > 0 then
