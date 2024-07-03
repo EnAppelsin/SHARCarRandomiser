@@ -8,6 +8,7 @@ local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
 assert(P3D.FrontendLanguageP3DChunk == nil, "Chunk type already loaded.")
 
+local string_byte = string.byte
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
@@ -108,7 +109,7 @@ function P3D.FrontendLanguageP3DChunk:GetNameHash(Name, Modulo, Endian)
 	assert(type(Endian) == "string" and (Endian == ">" or Endian == "<"), "Arg #3 (Endian) must be either \"<\" or \">\"")
 	
 	local Hash = 0
-	local chars = {string_unpack(Endian .. string_rep("B", #Name), Name)}
+	local chars = {string_byte(Name, 1, #Name)}
 	for i=1,#Name do
 		local c = chars[i]
 		Hash = (c + (Hash << 6)) % Modulo
