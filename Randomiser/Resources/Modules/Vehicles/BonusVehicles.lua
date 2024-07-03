@@ -23,7 +23,9 @@ local BonusVehicleP3D
 local BonusVehicleCON
 
 local function ReplaceCar(Path, P3DFile)
-	RandomBonusVehicles.Handlers.P3D[3] = nil
+	for i=3,#RandomBonusVehicles.Handlers.P3D do
+		RandomBonusVehicles.Handlers.P3D[i] = nil
+	end
 	
 	local ReplaceP3D = P3D.P3DFile(BonusVehicleP3D)
 	
@@ -63,5 +65,14 @@ end
 
 RandomBonusVehicles:AddP3DHandler("art/l?r*.p3d", FindBonusVehicle)
 RandomBonusVehicles:AddP3DHandler("art/l?z*.p3d", FindBonusVehicle)
+
+RandomBonusVehicles:AddLevelHandler(function()
+	for i=3,#RandomBonusVehicles.Handlers.P3D do
+		RandomBonusVehicles.Handlers.P3D[i] = nil
+	end
+	RandomBonusVehicles.Handlers.CON = {}
+	
+	return false
+end)
 
 return RandomBonusVehicles
