@@ -330,34 +330,6 @@ SPTParser.Class = setmetatable({}, {
 	end,
 })
 
-function SPTParser.Class:AddMethod(Name, Parameters, Option)
-	assert(type(Name) == "string", "Name (Arg #1) must be a string.")
-	assert(type(Parameters) == "table", "Parameters (Arg #2) must be a table.")
-	assert(Option == nil or type(Option) == "string", "Option (Arg #3) must be a string.")
-	
-	local knownClass = KnownClasses[self.Type]
-	assert(knownClass, string_format("Unknown class type: %s", self.Type))
-	local knownMethod = knownClass[Name]
-	assert(knownMethod, string_format("Unknown method: %s->%s", self.Type, method.Name))
-	local numParameters = #knownMethod
-	assert(numParameters == #Parameters, string_format("Method \"%s->%s\" expects %i parameters. Got %i.", numParameters, #Parameters))
-	
-	for i=1,numParameters do
-		local paramType = knownMethod[i][2]
-		local parameter = Parameters[i]
-		assert(type(parameter) == TypeMap[paramType], string_format("Method \"%s->%s\" expects parameter %i (%s) to be: %s. Got %s", self.Type, method.Name, i, knownMethod[i][1], TypeMap[paramType], type(parameter)))
-	end
-	
-	local method = {
-		Name = Name,
-		Option = Option,
-		Parameters = Parameters
-	}
-	local methodIndex = #self.Methods + 1
-	self.Methods[methodIndex] = method
-	return method, methodIndex
-end
-
 function SPTParser.Class:GetMethods(Backwards, Name)
 	assert(Name == nil or type(Name) == "string", "Arg #2 (Name) must be a string.")
 	
@@ -390,6 +362,34 @@ end
 
 function SPTParser.Class:GetMethod(Backwards, Name)
 	return self:GetMethods(Backwards, Name)()
+end
+
+function SPTParser.Class:AddMethod(Name, Parameters, Option)
+	assert(type(Name) == "string", "Name (Arg #1) must be a string.")
+	assert(type(Parameters) == "table", "Parameters (Arg #2) must be a table.")
+	assert(Option == nil or type(Option) == "string", "Option (Arg #3) must be a string.")
+	
+	local knownClass = KnownClasses[self.Type]
+	assert(knownClass, string_format("Unknown class type: %s", self.Type))
+	local knownMethod = knownClass[Name]
+	assert(knownMethod, string_format("Unknown method: %s->%s", self.Type, Name))
+	local numParameters = #knownMethod
+	assert(numParameters == #Parameters, string_format("Method \"%s->%s\" expects %i parameters. Got %i.", self.Type, Name, numParameters, #Parameters))
+	
+	for i=1,numParameters do
+		local paramType = knownMethod[i][2]
+		local parameter = Parameters[i]
+		assert(type(parameter) == TypeMap[paramType], string_format("Method \"%s->%s\" expects parameter %i (%s) to be: %s. Got %s", self.Type, Name, i, knownMethod[i][1], TypeMap[paramType], type(parameter)))
+	end
+	
+	local method = {
+		Name = Name,
+		Option = Option,
+		Parameters = Parameters
+	}
+	local methodIndex = #self.Methods + 1
+	self.Methods[methodIndex] = method
+	return method, methodIndex
 end
 
 function SPTParser.Class:RemoveMethod(Index)
