@@ -1,7 +1,6 @@
 local math_random = math.random
 local string_match = string.match
 local table_concat = table.concat
-local table_remove = table.remove
 local tonumber = tonumber
 
 local RandomMissionOrder = Module("Random Mission Order", "RandomMissionOrder")
@@ -10,14 +9,8 @@ local MissionOrder = {}
 
 if Settings[RandomMissionOrder.Setting] then
 	for level=1,7 do
-		MissionOrder[level] = {}
-		
-		local Missions = {1, 2, 3, 4, 5, 6, 7}
-		for mission=1,7 do
-			local index = math_random(#Missions)
-			MissionOrder[level][mission] = Missions[index]
-			table_remove(Missions, index)
-		end
+		MissionOrder[level] = {1, 2, 3, 4, 5, 6, 7}
+		ShuffleTable(MissionOrder[level])
 	end
 	print("Random mission order:")
 	for level=1,7 do

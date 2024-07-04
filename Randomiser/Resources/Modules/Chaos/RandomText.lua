@@ -47,11 +47,7 @@ RandomText:AddP3DHandler("art/frontend/scrooby/resource/txtbible/srr2.p3d", func
 	
 	for FrontendLanguage in FrontendTextBible:GetChunks(P3D.Identifiers.Frontend_Language) do
 		if RandomTextMode == 1 then -- Shuffle lines
-			local Offsets = FrontendLanguage.Offsets
-			for i=#Offsets,2,-1 do
-				local j = math_random(i)
-				Offsets[i], Offsets[j] = Offsets[j], Offsets[i]
-			end
+			Utils.ShuffleTable(FrontendLanguage.Offsets)
 		elseif RandomTextMode == 2 then -- Fully Random
 			local Buffer = FrontendLanguage.Buffer
 			for i=1,#Buffer do

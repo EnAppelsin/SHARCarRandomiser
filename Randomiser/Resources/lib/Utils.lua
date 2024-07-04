@@ -1,6 +1,7 @@
 local assert = assert
 local type = type
 
+local math_random = math.random
 local string_format = string.format
 
 local GetFileExtension = GetFileExtension
@@ -33,4 +34,11 @@ function GetFilesInDirectory(Dir, Tbl, Extension, ProcessSubDirs)
 		
 		return true
 	end)
+end
+
+function ShuffleTable(tbl)
+	for i=#tbl,2,-1 do
+		local j = math_random(i)
+		tbl[i], tbl[j] = tbl[j], tbl[i]
+	end
 end

@@ -15,14 +15,15 @@ RandomNPCMissions:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 		end
 	end
 	
+	ShuffleTable(NPCMissions)
+	
 	local npcMissionPosMap = {}
 	for i=1,#functions do
 		local func = functions[i]
 		local name = func.Name:lower()
 		if name == "addnpccharacterbonusmission" then
-			local index = math_random(#NPCMissions)
-			local NPCMission = NPCMissions[index]
-			table_remove(NPCMissions, index)
+			local NPCMission = NPCMissions[1]
+			table_remove(NPCMissions, 1)
 			print("Replacing NPC mission \"" .. func.Arguments[4] .. "\" with: " .. NPCMission[1])
 			npcMissionPosMap[func.Arguments[4]] = NPCMission[1]
 			func.Arguments[4] = NPCMission[1]
