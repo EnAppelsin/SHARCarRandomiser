@@ -1,9 +1,10 @@
 local math_random = math.random
+local string_gsub = string.gsub
 local string_match = string.match
 local table_concat = table.concat
 local tonumber = tonumber
 
-local RandomMissionOrder = Module("Random Mission Order", "RandomMissionOrder")
+local RandomMissionOrder = Module("Random Mission Order", "RandomMissionOrder", 3)
 
 local MissionOrder = {}
 
@@ -48,6 +49,25 @@ RandomMissionOrder:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 			local MissionNumber = tonumber(string_match(func.Arguments[1], "m(%d)"))
 			if MissionOrder[LevelNumber][MissionNumber] then
 				func.Arguments[1] = "m" .. MissionOrder[LevelNumber][MissionNumber]
+			end
+		end
+	end
+	
+	return true
+end)
+
+RandomMissionOrder:AddSPTHandler("sound/scripts/dialog*.spt", function(Path, SPT)
+	for daSoundResourceData in SPT:GetClasses("daSoundResourceData") do
+		if string_match(daSoundResourceData.Name, "L(%d)M%d$") then
+			daSoundResourceData.Name = string_gsub(daSoundResourceData.Name, "L(%d)M%d$", "L%1")
+			for AddFilename in daSoundResourceData:GetMethods(nil, "AddFilename") do
+				local oldFilename = AddFilename.Parameters[1]
+				local newFilename = string_gsub(oldFilename, "L(%d)M%d%.([^.]+)$", "L%1.%2")
+				RandomMissionOrder:AddGenericHandler(newFilename, function(Path, Contents)
+					print("Redirecting \"" .. Path .. "\" to: " .. oldFilename)
+					return true, ReadFile(GetGamePath(oldFilename))
+				end)
+				AddFilename.Parameters[1] = newFilename
 			end
 		end
 	end
