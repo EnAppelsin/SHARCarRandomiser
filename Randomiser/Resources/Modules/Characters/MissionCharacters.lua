@@ -24,20 +24,16 @@ RandomMissionCharacters:AddLevelHandler(function(LevelNumber, LevelLoad, LevelIn
 	RandomMissionCharacters.Handlers.P3D = {}
 	BonusCharacters = {}
 	BonusCharactersN = 0
-	for i=1,#LevelInit.Functions do
-		local func = LevelInit.Functions[i]
-		local name = func.Name:lower()
-		if name == "addnpccharacterbonusmission" then
-			local char = func.Arguments[1]
-			if #char > 6 then
-				char = string_sub(char, 1, 6)
-			end
-			BonusCharactersN = BonusCharactersN + 1
-			local path = "art\\chars\\" .. char .. "_m.p3d"
-			BonusCharacters[path] = CharP3DFiles[math_random(CharCount)]
-			print("Replacing bonus mission character \"" .. char .. "\" with: " .. BonusCharacters[path])
-			RandomMissionCharacters:AddP3DHandler(path, ReplaceBonusCharacter)
+	for Function in LevelInit:GetFunctions("AddNPCCharacterBonusMission") do
+		local char = Function.Arguments[1]
+		if #char > 6 then
+			char = string_sub(char, 1, 6)
 		end
+		BonusCharactersN = BonusCharactersN + 1
+		local path = "art\\chars\\" .. char .. "_m.p3d"
+		BonusCharacters[path] = CharP3DFiles[math_random(CharCount)]
+		print("Replacing bonus mission character \"" .. char .. "\" with: " .. BonusCharacters[path])
+		RandomMissionCharacters:AddP3DHandler(path, ReplaceBonusCharacter)
 	end
 	return false
 end)
@@ -48,19 +44,15 @@ local function HandleMission(LevelNumber, MissionNumber, MissionLoad, MissionIni
 		handlers[i] = nil
 	end
 	MissionCharacters = {}
-	for i=1,#MissionInit.Functions do
-		local func = MissionInit.Functions[i]
-		local name = func.Name:lower()
-		if name == "addnpc" then
-			local char = func.Arguments[1]
-			if #char > 6 then
-				char = string_sub(char, 1, 6)
-			end
-			local path = "art\\chars\\" .. char .. "_m.p3d"
-			MissionCharacters[path] = CharP3DFiles[math_random(CharCount)]
-			print("Replacing mission character \"" .. char .. "\" with: " .. MissionCharacters[path])
-			RandomMissionCharacters:AddP3DHandler(path, ReplaceMissionCharacter)
+	for Function in MissionInit:GetFunctions("AddNPC") do
+		local char = Function.Arguments[1]
+		if #char > 6 then
+			char = string_sub(char, 1, 6)
 		end
+		local path = "art\\chars\\" .. char .. "_m.p3d"
+		MissionCharacters[path] = CharP3DFiles[math_random(CharCount)]
+		print("Replacing mission character \"" .. char .. "\" with: " .. MissionCharacters[path])
+		RandomMissionCharacters:AddP3DHandler(path, ReplaceMissionCharacter)
 	end
 	return false
 end

@@ -4,42 +4,38 @@ local table_remove = table.remove
 local RandomNPCMissions = Module("Random NPC Missions", "RandomNPCMissions")
 
 RandomNPCMissions:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
-	local functions = LevelInit.Functions
-	
 	local NPCMissions = {}
+	local NPCMissionsN = 0
 	
-	for i=1,#functions do
-		local func = functions[i]
-		if func.Name:lower() == "addnpccharacterbonusmission" then
-			NPCMissions[#NPCMissions + 1] = { func.Arguments[4], func.Arguments[5], func.Arguments[7] }
-		end
+	for Function in LevelInit:GetFunctions("AddNPCCharacterBonusMission") do
+		NPCMissionsN = NPCMissionsN + 1
+		NPCMissions[NPCMissionsN] = { Function.Arguments[4], Function.Arguments[5], Function.Arguments[7] }
 	end
 	
 	ShuffleTable(NPCMissions)
 	
 	local npcMissionPosMap = {}
-	for i=1,#functions do
-		local func = functions[i]
-		local name = func.Name:lower()
+	for Function in LevelInit:GetFunctions() do
+		local name = Function.Name:lower()
 		if name == "addnpccharacterbonusmission" then
 			local NPCMission = NPCMissions[1]
 			table_remove(NPCMissions, 1)
-			print("Replacing NPC mission \"" .. func.Arguments[4] .. "\" with: " .. NPCMission[1])
-			npcMissionPosMap[func.Arguments[4]] = NPCMission[1]
-			func.Arguments[4] = NPCMission[1]
-			func.Arguments[5] = NPCMission[2]
-			func.Arguments[7] = NPCMission[3]
+			print("Replacing NPC mission \"" .. Function.Arguments[4] .. "\" with: " .. NPCMission[1])
+			npcMissionPosMap[Function.Arguments[4]] = NPCMission[1]
+			Function.Arguments[4] = NPCMission[1]
+			Function.Arguments[5] = NPCMission[2]
+			Function.Arguments[7] = NPCMission[3]
 		elseif name == "setbonusmissiondialoguepos" then
-			if npcMissionPosMap[func.Arguments[1]] then
-				func.Arguments[1] = npcMissionPosMap[func.Arguments[1]]
+			if npcMissionPosMap[Function.Arguments[1]] then
+				Function.Arguments[1] = npcMissionPosMap[Function.Arguments[1]]
 			end
 		elseif name == "setconversationcam" then
-			if npcMissionPosMap[func.Arguments[3]] then
-				func.Arguments[3] = npcMissionPosMap[func.Arguments[3]]
+			if npcMissionPosMap[Function.Arguments[3]] then
+				Function.Arguments[3] = npcMissionPosMap[Function.Arguments[3]]
 			end
 		elseif name == "setcambestside" then
-			if npcMissionPosMap[func.Arguments[2]] then
-				func.Arguments[2] = npcMissionPosMap[func.Arguments[2]]
+			if npcMissionPosMap[Function.Arguments[2]] then
+				Function.Arguments[2] = npcMissionPosMap[Function.Arguments[2]]
 			end
 		end
 	end

@@ -9,10 +9,8 @@ local UFOBehaviours = {
 FixAbductable:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	IsUFOPresent = false
 	
-	local functions = LevelInit.Functions
-	for i=1,#functions do
-		local func = functions[i]
-		if func.Name:lower() == "addbehaviour" and UFOBehaviours[func.Arguments[2]] then
+	for Function in LevelInit:GetFunctions("AddBehaviour") do
+		if UFOBehaviours[Function.Arguments[2]] then
 			IsUFOPresent = true
 			break
 		end
@@ -28,14 +26,10 @@ local function MissionHandler(LevelNumber, MissionNumber, MissionLoad, MissionIn
 	
 	local changed = false
 	
-	local functions = MissionInit.Functions
-	for i=#functions,1,-1 do
-		local func = functions[i]
-		if func.Name:lower() == "addstagevehicle" then
-			changed = true
-			
-			MissionInit:InsertFunction(i + 1, "SetStageVehicleAbductable", {func.Arguments[1], "false"})
-		end
+	for Function, Index in MissionInit:GetFunctions("AddStageVehicle", true) do
+		changed = true
+		
+		MissionInit:InsertFunction(Index + 1, "SetStageVehicleAbductable", {Function.Arguments[1], "false"})
 	end
 	
 	return changed

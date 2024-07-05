@@ -26,16 +26,10 @@ RandomChaseVehicle:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	
 	print("Setting chase vehicle to: " .. RandomVehicleName)
 	
-	local functions = LevelInit.Functions
-	for i=1,#functions do
-		local func = functions[i]
-		local name = func.Name:lower()
-		if name == "createchasemanager" then
-			func.Arguments[1] = RandomVehicleName
-			if Settings.RandomChaseVehicleStats then
-				func.Arguments[2] = RandomVehicleName .. ".con"
-			end
-			break
+	for Function in LevelInit:GetFunctions("CreateChaseManager") do
+		Function.Arguments[1] = RandomVehicleName
+		if Settings.RandomChaseVehicleStats then
+			Function.Arguments[2] = RandomVehicleName .. ".con"
 		end
 	end
 	

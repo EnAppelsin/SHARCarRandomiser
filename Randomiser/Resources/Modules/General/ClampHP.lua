@@ -14,24 +14,21 @@ ClampHP:AddCONHandler("*.con", function(Path, CON)
 	if WildcardMatch(Path, "scripts/cars/*husk*.con", true, true) then
 		return false
 	end
-	local functions = CON.Functions
 	
-	for i=#functions,1,-1 do
-		local func = functions[i]
-		if func.Name:lower() == "sethitpoints" then
-			local hp = func.Arguments[1]
-			if hp < MinimumHP then
-				print("Increasing HP to " .. MinimumHP .. " from " .. hp .. " for: " .. Path)
-				func.Arguments[1] = MinimumHP
-				return true
-			end
-			if hp > MaximumHP then
-				print("Decreasing HP to " .. MaximumHP .. " from " .. hp .. " for: " .. Path)
-				func.Arguments[1] = MaximumHP
-				return true
-			end
-			return false
+	local Function = CON:GetFunction("SetHitPoints")
+	if Function then
+		local hp = Function.Arguments[1]
+		if hp < MinimumHP then
+			print("Increasing HP to " .. MinimumHP .. " from " .. hp .. " for: " .. Path)
+			Function.Arguments[1] = MinimumHP
+			return true
 		end
+		if hp > MaximumHP then
+			print("Decreasing HP to " .. MaximumHP .. " from " .. hp .. " for: " .. Path)
+			Function.Arguments[1] = MaximumHP
+			return true
+		end
+		return false
 	end
 	
 	if DefaultHP < MinimumHP then

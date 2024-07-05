@@ -3,13 +3,9 @@ local SkipCutscenes = Module("Skip Cutscenes", "SkipCutscenes")
 local function RemoveFMVs(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	local changed = MissionInit:SetAll("addobjective", 1, "timer", "fmv")
 	if changed then
-		local functions = MissionInit.Functions
-		for i=1,#functions do
-			local func = functions[i]
-			if func.Name:lower() == "setfmvinfo" then
-				func.Name = "SetDurationTime"
-				func.Arguments[1] = 0
-			end
+		for Function in MissionInit:GetFunctions("SetFMVInfo") do
+			Function.Name = "SetDurationTime"
+			Function.Arguments[1] = 0
 		end
 		return true
 	end

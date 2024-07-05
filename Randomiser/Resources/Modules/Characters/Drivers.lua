@@ -44,11 +44,8 @@ local CarDrivers = {
 local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	local changed = false
 	local driverPool = {table_unpack(CharNames)}
-	local functions = MissionInit.Functions
-	for i=1,#functions do
-		local func = functions[i]
-		local name = func.Name:lower()
-		if name:lower() == "addstagevehicle" and CarDrivers[func.Arguments[5]] then
+	for Function in MissionInit:GetFunctions("AddStageVehicle") do
+		if CarDrivers[Function.Arguments[5]] then
 			changed = true
 			
 			local randomDriverIndex = math_random(#driverPool)
@@ -58,9 +55,9 @@ local function MissionDrivers(LevelNumber, MissionNumber, MissionLoad, MissionIn
 				driverPool = {table_unpack(CharNames)}
 			end
 			
-			print("Setting driver to \"" .. randomDriver .. "\" for: " .. func.Arguments[1])
+			print("Setting driver to \"" .. randomDriver .. "\" for: " .. Function.Arguments[1])
 			
-			func.Arguments[5] = randomDriver
+			Function.Arguments[5] = randomDriver
 		end
 	end
 	return changed

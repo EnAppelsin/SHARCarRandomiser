@@ -21,12 +21,10 @@ RandomPedestrians:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 	
 	local pedPool = {table_unpack(CharNames)}
 	
-	local functions = LevelInit.Functions
-	for i=#functions,1,-1 do
-		local func = functions[i]
-		local name = func.Name:lower()
+	for Function, Index in LevelInit:GetFunctions(nil, true) do
+		local name = Function.Name:lower()
 		if name == "addped" then
-			table_remove(functions, i)
+			LevelInit:RemoveFunction(Index)
 		elseif name == "createpedgroup" then
 			for j=1,7 do
 				local randomPedIndex = math_random(#pedPool)
@@ -36,10 +34,10 @@ RandomPedestrians:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
 					pedPool = {table_unpack(CharNames)}
 				end
 				
-				LevelInit:InsertFunction(i + 1, "AddPed", {randomPed, 1})
+				LevelInit:InsertFunction(Index + 1, "AddPed", {randomPed, 1})
 			end
 		elseif name == "addambientcharacter" then
-			local char = func.Arguments[1]
+			local char = Function.Arguments[1]
 			if #char > 6 then
 				char = string_sub(char, 1, 6)
 			end

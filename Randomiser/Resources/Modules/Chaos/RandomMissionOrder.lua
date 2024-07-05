@@ -42,15 +42,11 @@ RandomMissionOrder:AddP3DHandler("art/frontend/scrooby/resource/txtbible/srr2.p3
 end)
 
 RandomMissionOrder:AddLevelHandler(function(LevelNumber, LevelLoad, LevelInit)
-	local functions = LevelLoad.Functions
-	for i=1,#functions do
-		local func = functions[i]
-		if func.Name:lower() == "addmission" then
-			local MissionNumber = tonumber(string_match(func.Arguments[1], "m(%d)"))
+	for Function in LevelLoad:GetFunctions("AddMission") do
+		local MissionNumber = tonumber(string_match(Function.Arguments[1], "m(%d)"))
 			if MissionOrder[LevelNumber][MissionNumber] then
-				func.Arguments[1] = "m" .. MissionOrder[LevelNumber][MissionNumber]
+				Function.Arguments[1] = "m" .. MissionOrder[LevelNumber][MissionNumber]
 			end
-		end
 	end
 	
 	return true

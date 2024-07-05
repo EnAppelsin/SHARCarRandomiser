@@ -393,6 +393,7 @@ local string_format = string.format
 local string_lower = string.lower
 local string_sub = string.sub
 local table_concat = table.concat
+local table_remove = table.remove
 
 local assert = assert
 local tonumber = tonumber
@@ -760,8 +761,14 @@ function MFKLexer.Lexer:GetFunctions(Name, Backwards)
 	end
 end
 
-function MFKLexer.Lexer:GetFunction(Type, Backwards, Name)
-	return self:GetClasses(Type, Backwards, Name)()
+function MFKLexer.Lexer:GetFunction(Name, Backwards)
+	return self:GetFunctions(Name, Backwards)()
+end
+
+function MFKLexer.Lexer:RemoveFunction(Index)
+	assert(type(Index) == "number", "Arg #1 (Index) must be a number.")
+	assert(Index > 0 and Index <= #self.Functions, "Arg #1 (Index) out of bounds.")
+	table_remove(self.Functions, Index)
 end
 
 local function SetFunctionArgument(FunctionName, Function, Index, Value, Condition)

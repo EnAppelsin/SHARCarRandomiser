@@ -3,24 +3,22 @@ local table_remove = table.remove
 local RemoveOutOfVehicle = Module("Remove Out Of Vehicle", "RemoveOutOfVehicle", 1000)
 
 RemoveOutOfVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
-	local functions = MissionInit.Functions
 	local toRemove = {}
 	local toRemoveN = 0
 	
 	local remove = false
-	for i=1,#functions do
-		local func = functions[i]
-		local name = func.Name:lower()
+	for Function, Index in MissionInit:GetFunctions() do
+		local name = Function.Name:lower()
 		
 		if name == "addcondition" then
-			if func.Arguments[1] == "outofvehicle" then
+			if Function.Arguments[1] == "outofvehicle" then
 				remove = true
 			end
 		end
 		
 		if remove then
 			toRemoveN = toRemoveN + 1
-			toRemove[toRemoveN] = i
+			toRemove[toRemoveN] = Index
 			
 			if name == "closecondition" then
 				remove = false
@@ -29,7 +27,7 @@ RemoveOutOfVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Missio
 	end
 	
 	for i=toRemoveN,1,-1 do
-		table_remove(functions, toRemove[i])
+		MissionInit:RemoveFunction(toRemove[i])
 	end
 	
 	return toRemoveN > 0

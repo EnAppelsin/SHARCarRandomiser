@@ -22,22 +22,15 @@ end
 RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
 	-- TODO: Save on reload if some setting enabled or something
 	
-	local RandomVehicleIndex = math_random(CarCount)
-	local RandomVehicleP3D = CarP3DFiles[RandomVehicleIndex]
-	local RandomVehicleName = CarNames[RandomVehicleIndex]
+	local RandomVehicleName = CarNames[math_random(CarCount)]
 	
 	print("Setting mission vehicle to: " .. RandomVehicleName)
 	
 	local isForced = false
-	local functions = MissionLoad.Functions
 	
-	for i=1,#functions do
-		local func = functions[i]
-		local name = func.Name:lower()
-		if name == "loaddisposablecar" and func.Arguments[3] == "OTHER" then
+	for Function in MissionLoad:GetFunctions("LoadDisposableCar") do
+		if Function.Arguments[3] == "OTHER" then
 			isForced = true
-			func.Arguments[1] = RandomVehicleP3D
-			func.Arguments[2] = RandomVehicleName
 			break
 		end
 	end
@@ -48,17 +41,16 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		local CarLocator
 		local LastStageIndex
 		local ResetToHereIndex
-		local functions = MissionInit.Functions
-		for i=1,#functions do
-			local func = functions[i]
-			local name = func.Name:lower()
+		
+		for Function, Index in MissionInit:GetFunctions() do
+			local name = Function.Name:lower()
 			
 			if name == "setmissionresetplayeroutcar" then
-				CarLocator = func.Arguments[2]
+				CarLocator = Function.Arguments[2]
 			elseif name == "setmissionresetplayerincar" then
-				CarLocator = func.Arguments[1]
+				CarLocator = Function.Arguments[1]
 			elseif name == "addstage" then
-				LastStageIndex = i
+				LastStageIndex = Index
 			elseif name == "reset_to_here" then
 				ResetToHereIndex = LastStageIndex
 			end
@@ -69,7 +61,7 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		end
 		if not CarLocator then
 			-- TODO: Is this even possible?
-			print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+			Alert("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 		end
 		MissionInit:InsertFunction(2, "SetForcedCar")
 		MissionInit:InsertFunction(2, "InitLevelPlayerVehicle", {RandomVehicleName, CarLocator, "OTHER"})
@@ -79,6 +71,7 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		
 		if ResetToHereIndex then
 			local remove = false
+			local functions = MissionInit.Functions
 			for i=ResetToHereIndex+1,1,-1 do -- We want the function before AddStage. We've inserted 2. Add 1.
 				local func = functions[i]
 				local name = func.Name:lower()
@@ -103,13 +96,7 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		end
 		
 		if stageVehiclesN > 0 then
-			local Index
-			for i=1,#functions do
-				if functions[i].Name:lower() == "addstage" then
-					Index = i
-					break
-				end
-			end
+			local Function, Index = MissionInit:GetFunction("AddStage")
 			MissionInit:InsertFunction(Index, "AddStage")
 			Index = Index + 1
 			for i=1,stageVehiclesN do
@@ -126,40 +113,34 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 			Index = Index + 1
 		end
 		
-		
-		for i=#functions,1,-1 do
-			if functions[i].Name:lower() == "closestage" then
-				MissionInit:InsertFunction(i, "SetFadeOut", 0.1)
-				MissionInit:InsertFunction(i, "SwapInDefaultCar")
-				break
-			end
-		end
+		local Function, Index = MissionInit:GetFunction("CloseStage", true)
+		MissionInit:InsertFunction(Index, "SetFadeOut", 0.1)
+		MissionInit:InsertFunction(Index, "SwapInDefaultCar")
 		
 		if Settings.RemoveOutOfVehicle then
 			local toRemove = {}
 			local toRemoveN = 0
 			local addCondition
 			local remove = false
-			for i=1,#functions do
-				local func = functions[i]
-				local name = func.Name:lower()
+			for Function, Index in MissionInit:GetFunctions() do
+				local name = Function.Name:lower()
 				
 				if name == "addcondition" then
-					if func.Arguments[1] == "damage" then
-						addCondition = i
+					if Function.Arguments[1] == "damage" then
+						addCondition = Index
 					end
 				end
 				
 				if addCondition then
 					if name == "setcondtargetvehicle" then
-						if func.Arguments[1] == RandomVehicleName then -- TODO: Check if "current" is valid
+						if Function.Arguments[1] == RandomVehicleName then -- TODO: Check if "current" is valid
 							remove = true
 						end
 					end
 					
 					if name == "closecondition" then
 						if remove then
-							for j=addCondition,i do
+							for j=addCondition,Index do
 								toRemoveN = toRemoveN + 1
 								toRemove[toRemoveN] = j
 							end
@@ -171,7 +152,7 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 			end
 			
 			for i=toRemoveN,1,-1 do
-				table_remove(functions, toRemove[i])
+				MissionInit:RemoveFunction(toRemove[i])
 			end
 		end
 	end
