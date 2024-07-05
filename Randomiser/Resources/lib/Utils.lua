@@ -37,6 +37,7 @@ function GetFilesInDirectory(Dir, Tbl, Extension, ProcessSubDirs)
 end
 
 function ShuffleTable(tbl)
+	assert(type(tbl) == "table", "Arg #1 (Table1) must be a table.")
 	for i=#tbl,2,-1 do
 		local j = math_random(i)
 		tbl[i], tbl[j] = tbl[j], tbl[i]
