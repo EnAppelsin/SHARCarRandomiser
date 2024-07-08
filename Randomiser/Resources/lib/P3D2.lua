@@ -740,7 +740,7 @@ local function LoadP3DFile(self, Path, NewOnDoesntExist)
 		return setmetatable({ Endian = "<", Chunks = {} }, self)
 	else
 		if not Exists(Path, true, false) then
-			assert(NewOnDoesntExist, "Arg #1 (Path) does not exist.")
+			assert(NewOnDoesntExist, "Could not find the path specified in Arg #1: " .. Path)
 			
 			self.__index = self
 			return setmetatable({ Endian = "<", Chunks = {} }, self)
