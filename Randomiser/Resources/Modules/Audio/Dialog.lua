@@ -126,7 +126,25 @@ local function HandleDialog(Path, Contents)
 	return false
 end
 
-RandomDialog:AddGenericHandler("*c_*_*_convinit*.rsd", HandleDialog)
+RandomDialog:AddSPTHandler("sound/scripts/dialog*.spt", function(Path, SPT)
+	local DialogFileCount = 0
+	for daSoundResourceData in SPT:GetClasses("daSoundResourceData") do
+		for filename in daSoundResourceData:GetMethods(false, "AddFilename") do
+			local filenameWithoutExtension = RemoveFileExtension(filename.Parameters[1])
+			RandomDialog:AddGenericHandler(filenameWithoutExtension .. ".rsd", HandleDialog)
+			RandomDialog:AddGenericHandler(filenameWithoutExtension .. ".ogg", HandleDialog)
+			RandomDialog:AddGenericHandler(filenameWithoutExtension .. ".flac", HandleDialog)
+			
+			DialogFileCount = DialogFileCount + 1
+		end
+	end
+	
+	print("Added handlers for " .. DialogFileCount .. " dialog files.")
+	
+	return false
+end)
+
+--[[RandomDialog:AddGenericHandler("*c_*_*_convinit*.rsd", HandleDialog)
 RandomDialog:AddGenericHandler("*c_*_*_noboxconv*.rsd", HandleDialog)
 RandomDialog:AddGenericHandler("*c_*_*_tutorial*.rsd", HandleDialog)
 
@@ -200,6 +218,6 @@ RandomDialog:AddGenericHandler("*w_ridereply*.rsd", HandleDialog)
 RandomDialog:AddGenericHandler("*w_springboard*.rsd", HandleDialog)
 RandomDialog:AddGenericHandler("*w_tail*.rsd", HandleDialog)
 RandomDialog:AddGenericHandler("*w_time*.rsd", HandleDialog)
-RandomDialog:AddGenericHandler("*w_turbo*.rsd", HandleDialog)
+RandomDialog:AddGenericHandler("*w_turbo*.rsd", HandleDialog)]]
 
 return RandomDialog
