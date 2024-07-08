@@ -55,7 +55,7 @@ end
 local Values = string.format("%s\n%s v%s%s%s\nGameplay: %X, Audio/Visual: %X, Chaos: %X", os.date("[%Y-%m-%d]"), GetModName(), GetModVersion(), Settings.SpeedrunMode and " (speedrun)" or "", Settings.UseDebugSettings and " (debug)" or "", GameplayN, AudioVisualN, ChaosN)
 if Settings.IsSeeded then
 	Values = string.format("%s\nSeed: %s", Values, Settings.Seed)
-	if ChaosN > 0 then
+	if (ChaosN & ~(1 << 3)) ~= 0 then -- Random Mission Order _is_ seeded
 		Alert("Chaos randomisations are not seeded and should be disabled for consistent races")
 	end
 end
