@@ -1,4 +1,6 @@
 local assert = assert
+local setmetatable = setmetatable
+local tostring = tostring
 local type = type
 
 local string_find = string.find
@@ -297,9 +299,9 @@ SPTParser.Class = setmetatable({}, {
 								
 								parameterPattern[i] = pattern
 							end
-							parameterPattern = table.concat(parameterPattern, "%s+")
+							parameterPattern = table_concat(parameterPattern, "%s+")
 							
-							local parameters = {string.match(methodParameters, "^" .. parameterPattern .. "$")}
+							local parameters = {string_match(methodParameters, "^" .. parameterPattern .. "$")}
 							assert(#parameters == numParameters, string_format("Method \"%s->%s\" should have %i parameters.", classType, methodName, numParameters))
 							
 							for i=1,numParameters do
