@@ -107,9 +107,6 @@ RCF.RCFFile = setmetatable({}, {
 			
 			file.Hash = nil
 			file.Data = string_sub(contents, file.Position + 1, file.Position + file.Size)
-			
-			file.Position = nil
-			file.Size = nil
 		end
 		
 		self.__index = self
