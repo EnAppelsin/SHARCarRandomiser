@@ -438,21 +438,35 @@ function MFKLexer.MFKFunction:__tostring()
 	end
 	
 	local output = {}
-	if self.Not then output[1] = "!" end
-	output[#output + 1] = "\"" .. FunctionName .. "\"("
-	for i=1,ArgumentsN do
-		if i > 1 then output[#output + 1] = "," end
-		output[#output + 1] = "\"" .. Arguments[i] .. "\""
+	local outputN = 0
+	if self.Not then
+		outputN = 1
+		output[outputN] = "!"
 	end
-	output[#output + 1] = ")"
-	if self.Conditional then
-		output[#output + 1] = "{"
-		for i=1,#self.Children do
-			output[#output + 1] = tostring(self.Children[i])
+	outputN = outputN + 1
+	output[outputN] = "\"" .. FunctionName .. "\"("
+	for i=1,ArgumentsN do
+		if i > 1 then
+			outputN = outputN + 1
+			output[outputN] = ","
 		end
-		output[#output + 1] = "}"
+		outputN = outputN + 1
+		output[outputN] = "\"" .. Arguments[i] .. "\""
+	end
+	outputN = outputN + 1
+	output[outputN] = ")"
+	if self.Conditional then
+		outputN = outputN + 1
+		output[outputN] = "{"
+		for i=1,#self.Children do
+			outputN = outputN + 1
+			output[outputN] = tostring(self.Children[i])
+		end
+		outputN = outputN + 1
+		output[outputN] = "}"
 	else
-		output[#output + 1] = ";"
+		outputN = outputN + 1
+		output[outputN] = ";"
 	end
 	return table_concat(output)
 end
@@ -505,13 +519,14 @@ end
 function MFKLexer.Lexer:Parse(Text)
 	local RetVal = {}
 	local TextBytes = {string_byte(Text, 1, #Text)}
+	local TextBytesN = #TextBytes
 	local TextOffset = 0
 	local Line = 1
 	local Character
 	
 	local function Advance()
 		TextOffset = TextOffset + 1
-		if TextOffset <= #TextBytes then
+		if TextOffset <= TextBytesN then
 			Character = TextBytes[TextOffset]
 		else
 			Character = 0
@@ -646,7 +661,10 @@ function MFKLexer.Lexer:Parse(Text)
 	
 	local ConditionalLevel = 0
 	local ConditionalParents = {}
-	RetVal.Functions = {}
+	local ConditionalParentsN = 0
+	local Functions = {}
+	local FunctionsN = 0
+	RetVal.Functions = Functions
 	
 	while true do
 		local FunctionName = ReadToken()
@@ -654,7 +672,8 @@ function MFKLexer.Lexer:Parse(Text)
 		
 		if FunctionName == "}" then
 			ConditionalLevel = ConditionalLevel - 1
-			ConditionalParents[#ConditionalParents] = nil
+			ConditionalParents[ConditionalParentsN] = nil
+			ConditionalParentsN = ConditionalParentsN - 1
 		else
 			local Not = FunctionName == "!"
 			if Not then
@@ -701,13 +720,15 @@ function MFKLexer.Lexer:Parse(Text)
 			end
 			
 			local Func = MFKLexer.MFKFunction:New(FunctionName, Arguments, Conditional, Not)
-			if #ConditionalParents > 0 then
-				ConditionalParents[#ConditionalParents]:AddChildFunction(Func)
+			if ConditionalParentsN > 0 then
+				ConditionalParents[ConditionalParentsN]:AddChildFunction(Func)
 			else
-				RetVal.Functions[#RetVal.Functions + 1] = Func
+				FunctionsN = FunctionsN + 1
+				Functions[FunctionsN] = Func
 			end
 			if Conditional then
-				ConditionalParents[#ConditionalParents + 1] = Func
+				ConditionalParentsN = ConditionalParentsN + 1
+				ConditionalParents[ConditionalParentsN] = Func
 			end
 		end
 	end
