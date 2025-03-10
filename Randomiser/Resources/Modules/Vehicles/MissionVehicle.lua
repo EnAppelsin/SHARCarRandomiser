@@ -19,10 +19,16 @@ if CarCount < 5 and Settings[RandomMissionVehicle.Setting] then
 	os.exit()
 end
 
-RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, MissionLoad, MissionInit)
-	-- TODO: Save on reload if some setting enabled or something
-	
-	local RandomVehicleName = CarNames[math_random(CarCount)]
+local RandomVehicleName
+local LastLevel
+local LastMission
+
+local function ReplaceCar(LevelNumber, MissionNumber, MissionLoad, MissionInit)
+	if RandomVehicleName == nil or LevelNumber ~= LastLevel or LastMission ~= MissionNumber then
+		RandomVehicleName = CarNames[math_random(CarCount)]
+		LastLevel = LevelNumber
+		LastMission = MissionNumber
+	end
 	
 	print("Setting mission vehicle to: " .. RandomVehicleName)
 	
@@ -114,8 +120,9 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 		end
 		
 		local Function, Index = MissionInit:GetFunction("CloseStage", true)
-		MissionInit:InsertFunction(Index, "SetFadeOut", 0.1)
+		MissionInit:InsertFunction(Index, "SetSwapDefaultCarLocator", CarLocator)
 		MissionInit:InsertFunction(Index, "SwapInDefaultCar")
+		MissionInit:InsertFunction(Index, "SetFadeOut", 0.1)
 		
 		if Settings.RemoveOutOfVehicle then
 			local toRemove = {}
@@ -158,6 +165,14 @@ RandomMissionVehicle:AddMissionHandler(function(LevelNumber, MissionNumber, Miss
 	end
 	
 	return true
+end
+
+RandomMissionVehicle:AddMissionHandler(ReplaceCar)
+RandomMissionVehicle:AddRaceHandler(ReplaceCar)
+
+RandomMissionVehicle:AddSundayDriveHandler(function()
+	RandomVehicleName = nil
+	return false
 end)
 
 return RandomMissionVehicle
