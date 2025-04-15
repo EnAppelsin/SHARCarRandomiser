@@ -14,7 +14,7 @@ if Settings.RandomChase then
 	else
 		Mission = tbl.Mission[sort]
 	end
-		
+  
 	function Level.RandomChase(LoadFile, InitFile, Level, Path)
 		RandomChase = GetRandomFromTbl(RandomCarPoolChase, false)
 		if Settings.UseDebugSettings and Exists("/GameData/RandomiserSettings/RandomChaseCar.txt", true, false) then

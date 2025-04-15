@@ -16,16 +16,16 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         path: randomiser
         
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: 3.7
         
-    - uses: actions/cache@v2
+    - uses: actions/cache@v4
       with:
         path: ~\AppData\Local\pip\Cache
         key: ${{ runner.os }}-pip-a
@@ -40,14 +40,14 @@ jobs:
     - name: Check mod launcher version
       id: mod-launcher-version
       run: |
-        $Request = Invoke-WebRequest -Uri "https://api.donutteam.com/?Event=AppLookup&Apps=4&Format=XML" -Method:Get -Headers $head -ContentType "application/xml" -ErrorAction:Stop -TimeoutSec 60
+        $Request = Invoke-WebRequest -Uri "https://api.donutteam.com/?Event=AppLookup&Apps=4&Format=XML" -Method:Get -ErrorAction:Stop -TimeoutSec 60
         $Version = ([XML]$Request.Content).DonutTeamAPI.Data.Version
         Write-Output "::set-output name=version::$Version"
 
     # Runs a single command using the runners shell
     - name: Cache mod launcher
       id: cache-mod-launcher
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         key: ${{ runner.os }}-shar-mod-launcher-${{ steps.mod-launcher-version.outputs.version }}
         path: './mod-launcher'
@@ -77,13 +77,13 @@ jobs:
         & '.\mod-launcher\Lucas Simpsons Hit & Run Mod Launcher.exe' -ignoreloaderrors -mods ".\randomiser" -compile "Randomiser" -outputpath ".\" | Out-String
         
     - name: Upload mod
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Randomiser mod
         path: Randomiser.lmlm
       
     - name: Upload frameworks
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Additional frameworks
         path: |
@@ -95,7 +95,7 @@ jobs:
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           path: ./
       - name: Create archive

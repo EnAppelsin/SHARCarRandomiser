@@ -63,6 +63,7 @@ dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
 if Settings.IsSeeded then
 	Seed.PrintSpoiler()
 end
+
 Cache = {}
 
 if Settings.UseDebugSettings then
