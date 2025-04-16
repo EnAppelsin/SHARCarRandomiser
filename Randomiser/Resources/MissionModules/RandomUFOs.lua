@@ -27,6 +27,6 @@ AddFlyingActorByLocator("spaceship","Planet Express Ship","l]]
 AddBehaviour( "Planet Express Ship", "UFO_BEAM_ALWAYS_ON", "UfoBeam" );]]
 			UFO = "l" .. Level .. "_spaceship"
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "UFO" }
 	end
 end

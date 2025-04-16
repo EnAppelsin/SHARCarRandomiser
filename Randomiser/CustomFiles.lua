@@ -9,6 +9,7 @@ dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
 dofile(Paths.Resources .. "lib/P3DFunctions.lua")
+dofile(Paths.Resources .. "lib/Seed.lua")
 
 GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
 local ExcludedChars = {["npd_m"]=true,["ndr_m"]=true,["nps_m"]=true}
@@ -50,7 +51,18 @@ if Settings.SpeedrunMode then
 	DebugPrint("Speedrun mode enabled, settings have been overridden")
 end
 
+-- FOr now!!
+if Settings.IsSeeded then
+	Seed.Init()
+end
+
 dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+
+
+-- Seed.NonModuleSeed
+if Settings.IsSeeded then
+	Seed.PrintSpoiler()
+end
 
 Cache = {}
 

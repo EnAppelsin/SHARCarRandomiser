@@ -11,8 +11,8 @@ if Settings.RandomTraffic then
 	
 	function Level.RandomTraffic(LoadFile, InitFile, Level, Path)
 		TrafficCars = {}
-		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		local Cars = ""
+		local TmpCarPool = {table.unpack(RandomCarPoolTraffic)}
 		for i = 1, math.min(5, #TmpCarPool) do
 			local carName = GetRandomFromTbl(TmpCarPool, true)
 			table.insert(TrafficCars, carName)
@@ -48,12 +48,14 @@ if Settings.RandomTraffic then
 				end
 			end
 			local parked = ""
-			if math.random(3) == 1 then
+			local parked_check
+			parked_check = math.random(3)
+			if parked_check == 1 then
 				parked = ",1"
 			end
 			InitFile = InitFile .. "\r\nAddTrafficModel( \"" .. carName .. "\"," .. amount .. parked .. " );"
 		end
 		InitFile = InitFile .. "\r\nCloseTrafficGroup( );"
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "TrafficCars" }
 	end
 end

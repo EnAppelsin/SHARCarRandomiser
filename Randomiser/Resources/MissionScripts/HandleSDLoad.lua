@@ -1,5 +1,11 @@
 local Path = "/GameData/" .. GetPath();
 loading = true
+
+if Settings.IsSeeded then
+	Seed.HandleModulesSDMission(Path)
+	return
+end
+
 if MissionModules.SundayDrive then
 	local level = tonumber(Path:match("level0(%d)"))
 	local mission = tonumber(Path:match("m(%d)sdl"))

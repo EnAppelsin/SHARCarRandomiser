@@ -138,6 +138,8 @@ if Exists("/GameData/" .. Path, true, false) then
 			end
 		end
 	end
-elseif Settings.RandomPedestrians and Settings.CustomChars and (ExistsInTbl(LevelPedestrians, FileName) or ExistsInTbl(MissionDrivers, FileName)) and CustomChars[FileName] then
-	Output(ReadFile(CustomChars[FileName]))
+--elseif Settings.RandomPedestrians and Settings.CustomChars and (ExistsInTbl(LevelPedestrians, FileName) or ExistsInTbl(MissionDrivers, FileName)) and CustomChars[FileName] then
+	--Output(ReadFile(CustomChars[FileName]))
+elseif Settings.CustomChars and CustomChars[FileName] then
+	Redirect(CustomChars[FileName])
 end
