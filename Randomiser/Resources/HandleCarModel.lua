@@ -29,7 +29,7 @@ if not loading and loadTime and Settings.RandomStaticCars then
 			replaceCarPath = "/GameData/art/cars/" .. RandomStaticCarName .. ".p3d"
 		end
 
-		Output(ReplaceCar(ReadFile(replaceCarPath), ReadFile(baseCarPath))
+		Output(ReplaceCar(ReadFile(replaceCarPath), ReadFile(baseCarPath)))
 	end
 	DebugPrint("Not-loading car load: " .. GetPath(), 2)
 elseif Settings.CustomCars then
