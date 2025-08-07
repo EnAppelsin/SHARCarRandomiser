@@ -18,11 +18,18 @@ if not loading and loadTime and Settings.RandomStaticCars then
 			end
 		end
 		DebugPrint("Replacing dynamically loaded car \"" .. carName .. "\" with \"" .. RandomStaticCarName .. "\".")
-		if Settings.CustomCars and ExistsInTbl(CustomCarPool, RandomStaticCarName) then
-			Output(ReplaceCar(ReadFile("/GameData/CustomCars/" .. RandomStaticCarName .. "/" .. RandomStaticCarName .. ".p3d"), ReadFile(Path)))
+
+		local baseCarPath
+		local replaceCarPath
+		if Settings.CustomCars then
+			baseCarPath = ExistsInTbl(CustomCarPool, carName) and ("/GameData/CustomCars/" .. carName .. "/" .. carName .. ".p3d") or ("/GameData/art/cars/" .. carName .. ".p3d")
+			replaceCarPath = ExistsInTbl(CustomCarPool, RandomStaticCarName) and ("/GameData/CustomCars/" .. RandomStaticCarName .. "/" .. RandomStaticCarName .. ".p3d") or ("/GameData/art/cars/" .. RandomStaticCarName .. ".p3d")
 		else
-			Output(ReplaceCar(ReadFile("/GameData/art/cars/" .. RandomStaticCarName .. ".p3d"), ReadFile(Path)))
+			baseCarPath = "/GameData/art/cars/" .. carName .. ".p3d"
+			replaceCarPath = "/GameData/art/cars/" .. RandomStaticCarName .. ".p3d"
 		end
+
+		Output(ReplaceCar(ReadFile(replaceCarPath), ReadFile(baseCarPath))
 	end
 	DebugPrint("Not-loading car load: " .. GetPath(), 2)
 elseif Settings.CustomCars then
