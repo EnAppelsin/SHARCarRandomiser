@@ -66,6 +66,7 @@ local CurlyBraces = {
 }
 
 local KnownClasses = {}
+local Enums = {}
 
 do
 	local srrtypesPath = "/GameData/sound/typ/srrtypes.typ"
@@ -144,9 +145,13 @@ do
 			
 			assert(knownClass == nil, "A known class has an enum. This is currently unsupported.")
 			
+			local values = {}
+			Enums[name] = values
+			
 			for i=1,numEnum do
 				literalName, literalValue, pos = string.unpack("s4I", srrtypes, pos)
 				literalName = NullTerminate(literalName)
+				values[i] = literalName
 			end
 		else
 			error(string.format("Unknown token: 0x%X", token))
@@ -186,7 +191,6 @@ local function LoadSPTFile(self, Path)
 	else
 		local success, contents = pcall(ReadFile, Path)
 		assert(success, string_format("Failed to read file at '%s': %s", Path, contents))
-		
 		
 		return LoadSPTFromData(self, contents)
 	end
