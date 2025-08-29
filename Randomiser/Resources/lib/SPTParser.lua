@@ -124,7 +124,9 @@ do
 			paramName = NullTerminate(paramName)
 			paramType = NullTerminate(paramType) .. string_rep("*", indirectLevel)
 			
-			local method = {}
+			local method = {
+				ReturnType = paramType
+			}
 			
 			if knownClass then
 				knownClass[name] = method
@@ -161,8 +163,23 @@ do
 	print("SPTParser", string_format("Parsed SPT type data in: %.2fms", (EndTime - StartTime) * 1000))
 end
 
-for name, data in pairs(KnownClasses) do
-	print("SPTParser", "Known Class: " .. name)
+if IsTesting() then
+	for name, data in pairs(KnownClasses) do
+		print("SPTParser", "Known Class: " .. name)
+		for methodName,methodData in pairs(data) do
+			local params = {}
+			for i=1,#methodData do
+				params[i] = methodData[i][2] .. " " .. methodData[i][1]
+			end
+			print("SPTParser", "", methodData.ReturnType .. " " .. methodName .. "(" .. table.concat(params, ", ") .. ")")
+		end
+	end
+	for name, data in pairs(Enums) do
+		print("SPTParser", "Enum: " .. name)
+		for i=1,#data do
+			print("SPTParser", "", data[i])
+		end
+	end
 end
 
 SPTParser = {}
