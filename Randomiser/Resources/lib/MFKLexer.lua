@@ -332,8 +332,7 @@ local KnownFunctions = {
 	["TaskMessage"] = { MinArgs = 3, MaxArgs = 4, Hack = "DebugTest" },
 }
 local LoadedHacks = {}
-for i=1,#KnownFunctions do
-	local KnownFunction = KnownFunctions[i]
+for _,KnownFunction in pairs(KnownFunctions) do
 	if KnownFunction and KnownFunction.Hack and LoadedHacks[KnownFunction.Hack] == nil then
 		LoadedHacks[KnownFunction.Hack] = IsHackLoaded(KnownFunction.Hack)
 	end
