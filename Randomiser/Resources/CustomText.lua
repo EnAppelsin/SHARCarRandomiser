@@ -83,7 +83,7 @@ end
 
 local Values = os.date("[%Y-%m-%d]") .. "\n" .. ModName .. " v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)
 if Settings.IsSeeded then
-	Values = Values .. string.format("\nSeed: %s", Settings.Seed)
+	Values = Values .. string.format("\nSeed: %s, Check: %s", Settings.Seed, Seed.CheckWord())
 	if ChaosN > 0 then
 		Alert("Chaos randomisations are not seeded and should be disabled for consistent races")
 	end

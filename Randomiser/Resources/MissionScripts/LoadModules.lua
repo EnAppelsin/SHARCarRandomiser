@@ -66,6 +66,6 @@ end
 
 if Settings.IsSeeded then
 	DebugPrint("Generating seeded mission scripts")
-	Seed.CacheModulesMission()
+	Seed.CacheModules()
 end
 

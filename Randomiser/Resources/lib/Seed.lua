@@ -33,6 +33,22 @@ function Seed.Base64dec(s)
 	return base64dec(s .. "=", Seed._bs, Seed._bsi)
 end
 
+function Seed.CheckWord()
+	if Seed._CHECKWORD ~= nil then
+		return Seed._CHECKWORD
+	end
+	
+	local wordstxt = ReadFile(Paths.Resources .. "checkwords.txt")
+	local words = {}
+	for s in wordstxt:gmatch("[^\r\n]+") do
+		table.insert(words, s)
+	end
+	
+	Seed._CHECKWORD = GetRandomFromTbl(words)
+	DebugPrint("Seed checkword is: " .. Seed._CHECKWORD)
+	return Seed._CHECKWORD
+end
+
 -- Always iterate modules in Seeded mode with spairs which runs in a deterministic order!
 -- Otherwise the seeded is still random!
 local function spairs(t, f)
@@ -192,7 +208,7 @@ function Seed.InternalCacheModuleSDMission(i, Path, j, prefix, mission)
 	DebugPrint = old_DebugPrint
 end
 
-function Seed.CacheModulesMission() 
+function Seed.CacheModules() 
 	for i=1,Seed.MAX_LEVELS do
 		Seed.InternalCacheModulesLevel(i)
 		local path = string.format("/GameData/scripts/missions/level%02d/", i)
@@ -210,6 +226,8 @@ function Seed.CacheModulesMission()
 			end
 		end
 	end
+	
+	Seed.CheckWord()
 end
 
 function Seed.HandleModulesLevel(Path)
@@ -218,6 +236,9 @@ function Seed.HandleModulesLevel(Path)
 		return
 	end
 	local Attempt = Seed.CachedLevel[Path].Attempt
+    
+    local level = tonumber(Path:match("level0(%d)"))
+	DebugPrint("NEW LEVEL LOAD: Level " .. level)
 	
 	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
 	
@@ -248,6 +269,27 @@ function Seed.HandleModulesMission(Path)
 		return
 	end
 	local Attempt = Seed.CachedMission[Path].Attempt
+    
+    local level = tonumber(Path:match("level0(%d)"))
+	local prefix, mission = Path:match("([bsg]?[rm])(%d)l")
+	mission = tonumber(mission)
+	local misstype, missname
+	if prefix == "m" then
+		misstype = MissionType.Normal
+		missname = "Mission"
+	elseif prefix == "sr" then
+		misstype = MissionType.Race
+		missname = "Race"
+	elseif prefix == "bm" then
+		misstype = MissionType.BonusMission
+		missname = "Bonus Mission"
+	elseif prefix == "gr" then
+		misstype = MissionType.GamblingRace
+		missname = "Gambling Race"
+	else
+		error("unknown mission script type")
+	end
+	DebugPrint("NEW MISSION/RACE LOAD: Level " .. level .. ", " .. missname .. " " .. mission)
 	
 	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
 	
@@ -278,6 +320,10 @@ function Seed.HandleModulesSDMission(Path)
 		return
 	end
 	local Attempt = Seed.CachedSDMission[Path].Attempt
+    
+    local level = tonumber(Path:match("level0(%d)"))
+	local mission = tonumber(Path:match("m(%d)sdl"))
+	DebugPrint("NEW SD LOAD: Level " .. level .. ", Mission " .. mission)
 	
 	DebugPrint("Returning cached mission for Path " .. Path .. ", Attempt is " .. Attempt)
 	

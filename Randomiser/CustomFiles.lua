@@ -51,20 +51,9 @@ if Settings.SpeedrunMode then
 	DebugPrint("Speedrun mode enabled, settings have been overridden")
 end
 
--- FOr now!!
 if Settings.IsSeeded then
 	Seed.Init()
 end
-
-dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
-
-
--- Seed.NonModuleSeed
-if Settings.IsSeeded then
-	Seed.PrintSpoiler()
-end
-
-Cache = {}
 
 if Settings.UseDebugSettings then
 	if not Confirm("You have Use Debug Settings enabled. This allows a secondary mod to force certain randomisations and sometimes run code.\nAre you sure you want this enabled?") then
@@ -130,3 +119,12 @@ DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission p
 DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 DebugPrint("Using " .. #RandomCharP3DPool .. " characters")
+
+dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+
+-- Seed.NonModuleSeed
+if Settings.IsSeeded then
+	Seed.PrintSpoiler()
+end
+Cache = {}
+
