@@ -254,7 +254,7 @@ if Settings.RandomDirectives then
 		for orig,rand in pairs(iconReplace) do
 			InitFile = InitFile:gsub("SetHUDIcon%s*%(%s*\"" .. orig .. "\"%s*%)", "SetHUDIcon(\"" .. rand .. "\")")
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "iconReplace" }
 	end
 	Mission.RandomDirectives = SundayDrive.RandomDirectives
 end

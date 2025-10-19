@@ -47,11 +47,11 @@ if Settings.RandomWaypoints then
 				DebugPrint("Found " .. GetWaypoints(sdInit) .. " waypoints in L" .. Level .. "SD" .. i, 2)
 			end
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "Waypoints" }
 	end
 	
-	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, IsRace)
-		if not IsRace then
+	function Mission.RandomWaypoints(LoadFile, InitFile, Level, Mission, Path, Type)
+		if Type ~= MissionType.Race and Type ~= MissionType.GamblingRace then
 			Waypoints = {}
 			local WaypointN = GetWaypoints(InitFile)
 			if WaypointN > 0 then
@@ -67,6 +67,6 @@ if Settings.RandomWaypoints then
 				DebugPrint("Found " .. WaypointN .. " waypoints in L" .. Level .. "M" .. Mission .. ".")
 			end
 		end
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "Waypoints" }
 	end
 end

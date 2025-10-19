@@ -30,16 +30,19 @@ if Settings.RandomPlayerVehicles then
 		
 		InitFile = InitFile:gsub("InitLevelPlayerVehicle%s*%(%s*\"[^\n]-\"%s*,%s*\"([^\n]-)\"%s*,%s*\"DEFAULT\"%s*%)", "InitLevelPlayerVehicle(\"" .. RandomCarName .. "\",\"%1\",\"DEFAULT\")", 1)
 		DebugPrint("Randomising car for level -> " .. RandomCarName)
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevel", "RandomCar", "RandomCarName" }
 	end
 	
-	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path)
+	function Mission.RandomPlayerVehicles(LoadFile, InitFile, Level, Mission, Path, Type)
 		if SettingSaveChoice then
 			if LastLevel ~= Path then
-				RandomCar = math.random(#RandomCarPoolPlayer)
+				RandomCar = nil
 			end
 			LastLevel = Path
 		else
+			RandomCar = nil
+		end
+		if RandomCar == nil then
 			RandomCar = math.random(#RandomCarPoolPlayer)
 		end
 		RandomCarName = RandomCarPoolPlayer[RandomCar]
@@ -115,6 +118,6 @@ if Settings.RandomPlayerVehicles then
 			end)
 		end
 		
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "LastLevel", "RandomCar", "RandomCarName" }
 	end
 end

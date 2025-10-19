@@ -13,6 +13,6 @@ if Settings.SaveChoiceRSC then
 	
 	function Level.RandomStaticCar(LoadFile, InitFile, Level, Mission, Path)
 		RandomStaticCarSave = {}
-		return LoadFile, InitFile
+		return LoadFile, InitFile, { "RandomStaticCar" }
 	end
 end
