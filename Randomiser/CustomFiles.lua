@@ -9,6 +9,7 @@ dofile(Paths.Resources .. "GlobalVariables.lua")
 dofile(Paths.Resources .. "GlobalFunctions.lua")
 dofile(Paths.Resources .. "lib/P3D.lua")
 dofile(Paths.Resources .. "lib/P3DFunctions.lua")
+dofile(Paths.Resources .. "lib/Seed.lua")
 
 GetFiles(RandomCharP3DPool, "/GameData/art/chars/", {".p3d"})
 local ExcludedChars = {["npd_m"]=true,["ndr_m"]=true,["nps_m"]=true}
@@ -50,9 +51,9 @@ if Settings.SpeedrunMode then
 	DebugPrint("Speedrun mode enabled, settings have been overridden")
 end
 
-dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
-
-Cache = {}
+if Settings.IsSeeded then
+	Seed.Init()
+end
 
 if Settings.UseDebugSettings then
 	if not Confirm("You have Use Debug Settings enabled. This allows a secondary mod to force certain randomisations and sometimes run code.\nAre you sure you want this enabled?") then
@@ -63,20 +64,6 @@ if Settings.UseDebugSettings then
 end
 
 DebugPrint("Debug settings enabled: " .. (Settings.UseDebugSettings and "true" or "false"))
-
-if #RandomCarPoolPlayer < 5 and Settings.RandomPlayerVehicles then
-	Alert("You have chosen less than 5 cars for the random player pool. You must choose at least 5 cars.")
-	os.exit()
-elseif #RandomCarPoolTraffic < 5 and Settings.RandomTraffic then
-	Alert("You have chosen less than 5 cars for the random traffic pool. You must choose at least 5 cars.")
-	os.exit()
-elseif #RandomCarPoolMission < 5 and Settings.RandomMissionVehicles then
-	Alert("You have chosen less than 5 cars for the random mission pool. You must choose at least 5 cars.")
-	os.exit()
-elseif #RandomCarPoolChase < 5 and Settings.RandomChase then
-	Alert("You have chosen less than 5 cars for the random chase pool. You must choose at least 5 cars.")
-	os.exit()
-end
 
 if Settings.VerboseDebug then
 	local OldOutput = Output
@@ -112,9 +99,32 @@ if Settings.RandomDialogue then
 	dofile(Paths.Resources .. "RandomDialogue.lua")
 end
 
+if #RandomCarPoolPlayer < 5 and Settings.RandomPlayerVehicles then
+	Alert("You have chosen less than 5 cars for the random player pool. You must choose at least 5 cars.")
+	os.exit()
+elseif #RandomCarPoolTraffic < 5 and Settings.RandomTraffic then
+	Alert("You have chosen less than 5 cars for the random traffic pool. You must choose at least 5 cars.")
+	os.exit()
+elseif #RandomCarPoolMission < 5 and Settings.RandomMissionVehicles then
+	Alert("You have chosen less than 5 cars for the random mission pool. You must choose at least 5 cars.")
+	os.exit()
+elseif #RandomCarPoolChase < 5 and Settings.RandomChase then
+	Alert("You have chosen less than 5 cars for the random chase pool. You must choose at least 5 cars.")
+	os.exit()
+end
+
 DebugPrint("Loaded " .. #RandomCarPoolPlayer .. " cars for the random Player pool")
 DebugPrint("Loaded " .. #RandomCarPoolTraffic .. " cars for the random Traffic pool")
 DebugPrint("Loaded " .. #RandomCarPoolMission .. " cars for the random Mission pool")
 DebugPrint("Loaded " .. #RandomCarPoolChase .. " cars for the random Chase pool")
 DebugPrint("Using " .. RandomPedPoolN .. " pedestrians")
 DebugPrint("Using " .. #RandomCharP3DPool .. " characters")
+
+dofile(Paths.Resources .. "MissionScripts/LoadModules.lua")
+
+-- Seed.NonModuleSeed
+if Settings.IsSeeded then
+	Seed.PrintSpoiler()
+end
+Cache = {}
+

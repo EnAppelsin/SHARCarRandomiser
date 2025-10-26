@@ -82,6 +82,12 @@ for k, v in pairs(ChaosSettings) do
 end
 
 local Values = os.date("[%Y-%m-%d]") .. "\n" .. ModName .. " v" .. ModVersion .. (Settings.SpeedrunMode and " (speedrun)" or "").. (Settings.UseDebugSettings and " (debug)" or "") .. "\n" .. string.format("Settings: Gameplay: %X, Graphics: %X, Chaos: %X", GameplayN, GraphicalN, ChaosN)
+if Settings.IsSeeded then
+	Values = Values .. string.format("\nSeed: %s, Check: %s", Settings.Seed, Seed.CheckWord())
+	if ChaosN > 0 then
+		Alert("Chaos randomisations are not seeded and should be disabled for consistent races")
+	end
+end
 
 local Chunk = P3D.P3DChunk:new{Raw = ReadFile(Path)}
 local BibleIdx = Chunk:GetChunkIndex(P3D.Identifiers.Frontend_Text_Bible)

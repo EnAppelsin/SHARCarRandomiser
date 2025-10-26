@@ -3,11 +3,19 @@ MissionModules.Level = {}
 MissionModules.Mission = {}
 MissionModules.SundayDrive = {}
 
+MissionType = 
+{
+	Normal = 1,
+	Race = 2,
+	BonusMission = 3,
+	GamblingRace = 4
+}
+
 local ModuleFiles = {}
 GetFiles(ModuleFiles, Paths.MissionModules, {".lua"}, 1)
 for i=1, #ModuleFiles do
 	DebugPrint("Loading module: " .. ModuleFiles[i], 2)
-	loadfile(ModuleFiles[i])(MissionModules)
+	assert(loadfile(ModuleFiles[i]))(MissionModules)
 end
 
 LevelMin = 0
@@ -55,3 +63,9 @@ for k,_ in pairs(MissionModules.SundayDrive) do
 		SundayMax = math.max(SundayMax, i)
 	end
 end
+
+if Settings.IsSeeded then
+	DebugPrint("Generating seeded mission scripts")
+	Seed.CacheModules()
+end
+

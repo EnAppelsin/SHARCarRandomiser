@@ -70,7 +70,7 @@ if IsModEnabled("RandomiserCars") then
 						end
 					end
 				else
-					DebugPrint("No carsound.spt found for Custom Car " .. customCarName .. ".")
+					DebugPrint("No carsound.spt found for Custom Car " .. customCarName .. ".", 3)
 				end
 			end
 		end

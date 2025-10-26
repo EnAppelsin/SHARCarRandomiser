@@ -1,5 +1,11 @@
 local Path = "/GameData/" .. GetPath();
 loading = true
+
+if Settings.IsSeeded then
+	Seed.HandleModulesLevel(Path)
+	return
+end
+
 if MissionModules.Level then
 	local level = tonumber(Path:match("level0(%d)"))
 	DebugPrint("NEW LEVEL LOAD: Level " .. level)
