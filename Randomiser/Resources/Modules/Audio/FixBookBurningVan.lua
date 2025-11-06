@@ -2,7 +2,15 @@ local FixBookBurningVan = Module("Fix Book Burning Van", nil, 1)
 
 FixBookBurningVan:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPT)
 	local bookbVCarSoundParameters = SPT:GetClass("carSoundParameters", false, "bookb_v")
+	if not bookbVCarSoundParameters then
+		return false
+	end
+	
 	local overlayClipMethod = bookbVCarSoundParameters:GetMethod(false, "SetOverlayClipName")
+	if not overlayClipMethod then
+		return false
+	end
+	
 	overlayClipMethod.Parameters[1] = "book_fire"
 	
 	return true
