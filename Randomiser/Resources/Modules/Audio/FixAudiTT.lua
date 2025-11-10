@@ -33,13 +33,13 @@ FixAudiTT:AddSPTHandler("sound/scripts/car_tune.spt", function(Path, SPT)
 	local engineClipMethod = ttCarSoundParameters:GetMethod(false, "SetEngineClipName")
 	if engineClipMethod and engineClipMethod.Parameters[1] == "tt" then
 		changed = true
-		engineClipMethod.Parameters[1] == "apu_car"
+		engineClipMethod.Parameters[1] = "apu_car"
 	end
 	
 	local engineIdleClipMethod = ttCarSoundParameters:GetMethod(false, "SetEngineIdleClipName")
 	if engineIdleClipMethod and engineIdleClipMethod.Parameters[1] == "tt" then
 		changed = true
-		engineIdleClipMethod.Parameters[1] == "apu_car"
+		engineIdleClipMethod.Parameters[1] = "apu_car"
 	end
 	
 	return changed
