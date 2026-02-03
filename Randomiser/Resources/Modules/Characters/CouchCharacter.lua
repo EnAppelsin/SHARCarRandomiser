@@ -33,10 +33,11 @@ local function ReplaceCouch(Path, P3DFile)
 			ReplaceP3D:AddChunk(ScenegraphChunk, idx)
 			addedMultiController = true
 		elseif identifier == P3D.Identifiers.Shader then
-			if chunk.Name == "eyeball_m" then
-				local tex = chunk:GetParameter("TEX")
-				if tex and tex.Value:sub(-2) == ".0" then
-					tex.Value = tex.Value:sub(1, -3) .. ".3"
+			local tex = chunk:GetParameter("TEX")
+			if tex then
+				local eyeball = tex.Value:match("^((.*)eyeball(.*))%.0$")
+				if eyeball then
+					tex.Value = eyeball .. ".3"
 				end
 			end
 			
