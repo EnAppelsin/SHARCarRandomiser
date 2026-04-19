@@ -42,32 +42,20 @@ end
 
 RCF.RCFFile = setmetatable({}, {
 	__call = function(self, Path)
-		if Path == nil then
-			local Data = {
-				BigEndian = 0,
-				Alignment = 2048,
-				PadNetSize = 0,
-				HashedFileEntriesPointer = 0,
-				HashedFileEntriesPointer = 0,
-				Files = {}
-			}
-			
-			self.__index = self
-			return setmetatable(Data, self)
-		end
 		assert(type(Path) == "string", "Arg #1 (Path) must be a string.")
 		assert(Exists(Path, true, false), "Arg #1 (Path) must be a valid filepath.")
 		
 		local contents = ReadFile(Path)
-		
-		local Data = {}
+		local Data = {
+			Path = Path
+		}
 		
 		local signature, pos = string_unpack("<c32", contents)
 		assert(signature == RadCoreSignature, "Unknown signature: " .. signature)
 		
 		Data.VersionMajor, Data.VersionMinor, Data.BigEndian, Data.Valid, pos = string_unpack("<BBBB", contents, pos)
 		assert(Data.VersionMajor == SupportedMajorVersion, "Unsupported major version: " .. Data.VersionMajor)
-		assert(Data.VersionMinor == SupportedMinorVersion, "Unsupported minor version: " .. Data.VersionMajor)
+		assert(Data.VersionMinor == SupportedMinorVersion, "Unsupported minor version: " .. Data.VersionMinor)
 		assert(Data.Valid ~= 0, "File marked as invalid.")
 		local endian = Data.BigEndian ~= 0 and ">" or "<"
 		
@@ -78,14 +66,12 @@ RCF.RCFFile = setmetatable({}, {
 		Data.HashedFileEntriesPointer = hashedFileEntriesPointer
 		
 		local files = {}
-		local fileHashMap = {}
 		Data.Files = files
 		
 		for i=1,numFiles do
 			local file = {}
-			files[i] = file
 			file.Hash, file.Position, file.Size, pos = string_unpack(endian .. "III", contents, pos)
-			fileHashMap[file.Hash] = i
+			files[file.Hash] = file
 		end
 		
 		local numEntries, nameEntriesPointer, pos = string_unpack(endian .. "I<I", contents, detailedFileInfoStartPos + 1)
@@ -97,16 +83,9 @@ RCF.RCFFile = setmetatable({}, {
 			name, timestamp, pos = string_unpack(endian .. "s4I", contents, pos)
 			name = NullTerminate(name)
 			
-			local file = files[fileHashMap[radMakeCaseInsensitiveKey32(name)]]
+			local file = files[radMakeCaseInsensitiveKey32(name)]
 			file.Name = name
 			file.Timestamp = timestamp
-		end
-		
-		for i=1,numFiles do
-			local file = files[i]
-			
-			file.Hash = nil
-			file.Data = string_sub(contents, file.Position + 1, file.Position + file.Size)
 		end
 		
 		self.__index = self
@@ -114,6 +93,10 @@ RCF.RCFFile = setmetatable({}, {
 	end,
 })
 
-function RCF.RCFFile:__tostring()
-	error("Writing RCF files not currently supported")
+function RCF.RCFFile:ReadFile(Path)
+	local hash = type(Path) == "number" and Path or radMakeCaseInsensitiveKey32(Path)
+	local file = self.Files[hash]
+	assert(file, "Could not find file in RCF with path: " .. Path)
+	
+	return ReadFileOffset(self.Path, file.Position + 1, file.Size)
 end

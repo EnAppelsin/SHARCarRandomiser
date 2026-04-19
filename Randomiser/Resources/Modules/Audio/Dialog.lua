@@ -22,11 +22,12 @@ local function LoadRSDsFromRCF(Path)
 	local RCFFile = RCF.RCFFile(Path)
 	
 	local loaded = 0
-	for i=1,#RCFFile.Files do
-		local file = RCFFile.Files[i]
+	for hash, file in pairs(RCFFile.Files) do
 		if string_lower(GetFileExtension(file.Name)) == ".rsd" then
-			local Signature, Channels, Bits, SampleRate = string_unpack("<c8III", file.Data)
+			local contents = RCFFile:ReadFile(hash)
+			local Signature, Channels, Bits, SampleRate = string_unpack("<c8III", contents)
 			if Signature == RSDSignature and Channels == 1 and Bits == 16 and SampleRate == 24000 then
+				file.RCF = RCFFile
 				RSDFiles[#RSDFiles + 1] = file
 				file.Name = Path .. "/" .. file.Name
 				loaded = loaded + 1
@@ -95,7 +96,7 @@ local function HandleDialog(Path, Contents)
 	if RandomDialogMode == 1 or (RandomDialogMode == 3 and math.random(2) == 1) then -- Normal or 50% on Mixed
 		local RSDFile = RSDFiles[math_random(RSDFilesN)]
 		print("Replacing dialog \"" .. Path .. "\" with: " .. RSDFile.Name)
-		return true, RSDFile.Data
+		return true, RSDFile.RCF:ReadFile(RSDFile.Hash)
 	else -- Super Random or 50% on Mixed
 		print("Replacing dialog \"" .. Path .. "\" with super random dialog")
 		local header = string_pack("<c8III", RSDSignature, 1, 16, 24000) .. string_rep("*", 108) .. string_rep("-", 1920)
@@ -109,7 +110,7 @@ local function HandleDialog(Path, Contents)
 		local frameCount = 0
 		while frameCount < OrigFrames do
 			local RSDFile = RSDFiles[math_random(RSDFilesN)]
-			local AudioData = string_sub(RSDFile.Data, 2049)
+			local AudioData = string_sub(RSDFile.RCF:ReadFile(RSDFile.Hash), 2049)
 			
 			local BlockCount = #AudioData / frameSize
 			
