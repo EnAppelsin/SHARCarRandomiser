@@ -1,3 +1,4 @@
+local math_floor = math.floor
 local math_min = math.min
 local math_random = math.random
 local string_format = string.format
@@ -18,16 +19,18 @@ local RSDFiles = {}
 local RSDFilesN = 0
 
 local RSDSignature = "RSD4RADP"
+local FrameSize = 20 -- * Channels, which is 1
 local function LoadRSDsFromRCF(Path)
 	local RCFFile = RCF.RCFFile(Path)
 	
 	local loaded = 0
 	for hash, file in pairs(RCFFile.Files) do
 		if string_lower(GetFileExtension(file.Name)) == ".rsd" then
-			local contents = RCFFile:ReadFile(hash)
+			local contents = RCFFile:ReadFileOffset(hash, 1, 20)
 			local Signature, Channels, Bits, SampleRate = string_unpack("<c8III", contents)
 			if Signature == RSDSignature and Channels == 1 and Bits == 16 and SampleRate == 24000 then
 				file.RCF = RCFFile
+				file.BlockCount = math_floor((file.Size - 2048) / FrameSize)
 				RSDFiles[#RSDFiles + 1] = file
 				file.Name = Path .. "/" .. file.Name
 				loaded = loaded + 1
@@ -100,27 +103,25 @@ local function HandleDialog(Path, Contents)
 	else -- Super Random or 50% on Mixed
 		print("Replacing dialog \"" .. Path .. "\" with super random dialog")
 		local header = string_pack("<c8III", RSDSignature, 1, 16, 24000) .. string_rep("*", 108) .. string_rep("-", 1920)
-		local frameSize = 20 -- * Channels, which is 1
 		
 		local Output = {header}
 		local OutputN = 1
 		
-		local OrigFrames = (#Contents - 2048) / frameSize
+		local OrigFrames = math_floor((#Contents - 2048) / FrameSize)
 		
 		local frameCount = 0
 		while frameCount < OrigFrames do
 			local RSDFile = RSDFiles[math_random(RSDFilesN)]
-			local AudioData = string_sub(RSDFile.RCF:ReadFile(RSDFile.Hash), 2049)
+			local BlockCount = RSDFile.BlockCount
 			
-			local BlockCount = #AudioData / frameSize
+			local StartBlock = math_random(0, BlockCount - 1)
+			local Frames = math_min(math_random(700, 1000), BlockCount - StartBlock)
+			frameCount = frameCount + Frames
 			
-			local StartBlock = math_random(BlockCount)
-			local EndBlock = math_min(BlockCount, StartBlock + math_random(700, 1000))
-			
-			frameCount = frameCount + EndBlock - StartBlock
+			local AudioData = RSDFile.RCF:ReadFileOffset(RSDFile.Hash, 2048 + StartBlock * FrameSize + 1, Frames * FrameSize)
 			
 			OutputN = OutputN + 1
-			Output[OutputN] = string_sub(AudioData, StartBlock * frameSize + 1, EndBlock * frameSize)
+			Output[OutputN] = AudioData
 		end
 		return true, table_concat(Output)
 	end

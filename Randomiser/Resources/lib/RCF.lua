@@ -7,6 +7,7 @@ local string_pack = string.pack
 local string_rep = string.rep
 local string_sub = string.sub
 local string_unpack = string.unpack
+local math_min = math.min
 
 RCF = {}
 local RadCoreSignature = "RADCORE CEMENT LIBRARY" .. string.rep("\0", 10)
@@ -63,7 +64,6 @@ RCF.RCFFile = setmetatable({}, {
 		Data.Alignment, Data.PadNetSize, headerStartPos, pos = string_unpack(endian .. "III", contents, pos)
 		
 		local numFiles, detailedFileInfoStartPos, firstFileStartPos, hashedFileEntriesPointer, pos = string_unpack(endian .. "III<I", contents, headerStartPos + 1)
-		Data.HashedFileEntriesPointer = hashedFileEntriesPointer
 		
 		local files = {}
 		Data.Files = files
@@ -99,4 +99,19 @@ function RCF.RCFFile:ReadFile(Path)
 	assert(file, "Could not find file in RCF with path: " .. Path)
 	
 	return ReadFileOffset(self.Path, file.Position + 1, file.Size)
+end
+
+function RCF.RCFFile:ReadFileOffset(Path, Offset, Length)
+	local hash = type(Path) == "number" and Path or radMakeCaseInsensitiveKey32(Path)
+	local file = self.Files[hash]
+	assert(file, "Could not find file in RCF with path: " .. Path)
+	
+	local maxSize = file.Size - Offset + 1
+	if Length then
+		Length = math_min(Length, maxSize)
+	else
+		Length = maxSize
+	end
+	
+	return ReadFileOffset(self.Path, file.Position + Offset, Length)
 end
