@@ -19,7 +19,9 @@ local RSDFiles = {}
 local RSDFilesN = 0
 
 local RSDSignature = "RSD4RADP"
+local RSDHeader = string_pack("<c8III", RSDSignature, 1, 16, 24000) .. string_rep("*", 108) .. string_rep("-", 1920)
 local FrameSize = 20 -- * Channels, which is 1
+
 local function LoadRSDsFromRCF(Path)
 	local RCFFile = RCF.RCFFile(Path)
 	
@@ -102,9 +104,8 @@ local function HandleDialog(Path, Contents)
 		return true, RSDFile.RCF:ReadFile(RSDFile.Hash)
 	else -- Super Random or 50% on Mixed
 		print("Replacing dialog \"" .. Path .. "\" with super random dialog")
-		local header = string_pack("<c8III", RSDSignature, 1, 16, 24000) .. string_rep("*", 108) .. string_rep("-", 1920)
 		
-		local Output = {header}
+		local Output = {RSDHeader}
 		local OutputN = 1
 		
 		local OrigFrames = math_floor((#Contents - 2048) / FrameSize)
